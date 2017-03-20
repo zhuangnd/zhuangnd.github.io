@@ -132,7 +132,7 @@
 
 	d3.selectAll("svg").on("click",function(){upd();});
 						
-		d3.csv("Fujian.csv",function(error,d){
+		d3.csv("https://zhuangnd.github.io/Fujian.csv",function(error,d){
 			mydataset=d;
 			d.forEach(function(d){Mon.push(d.Mon);
 			AV.push(parseFloat(d.AV));			
