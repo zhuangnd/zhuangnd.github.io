@@ -98,10 +98,12 @@ for number in range(1,11)
 	print(number)
 ```
 ---
-#in line 引用
+#in line 引用  
+
 `引用`
 ---
-#link and image
+#link and image  
+
 [gallery “breathe”](https://zhuangnd.github.io/gallery/breathe)
 
 ![image](G:\pic\葛饰北斋 富岳三十六景\IMG_3905.jpg)
@@ -110,20 +112,23 @@ for number in range(1,11)
 
 <img src="G:\pic\葛饰北斋 富岳三十六景\IMG_3901.jpg" style="zoom:50%;" />
 ---
-#highlight
+#highlight  
+
 ```markdown
 ==highlight==
 ```
 ==高亮==
 ---
-#table
+#table  
+
 | id   | name |
 | ---- | ---- |
 | 1    | li   |
 | 2    | zs   |
 | 3    | ds   |
 ---
-#another link
+#another link  
+
 <zhuangnd@me.com>
 
 This is [an example][https://zhuangnd.github.io/gallery/usa] reference-style link.
@@ -138,7 +143,8 @@ This is [an example](https://zhuangnd.github.io/md/readme.html) inline link.
 
 [This link](https://zhuangnd.github.io/d3/fjzone.html) has no title attribute.
 ---
-#footernote
+#footnote  
+
 可以添加脚注[^1] 
 Flavored :香料
 binary :二进制
