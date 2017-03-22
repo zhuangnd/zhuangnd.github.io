@@ -1,8 +1,12 @@
 ---
-一天一天人员
+markdown手册
 ---
+# markdown guide
+##overview
 [TOC]
-
+##块元素
+###标题
+`#`的数量表示标题的级别
 ```markdown
 # 标题1
 ## 标题2
@@ -11,22 +15,9 @@
 ##### 标题5
 ###### 标题6
 ```
+
 ---
-#标题
-# 标题1
-
-
-## 标题2
-
-### 标题3
-
-#### 标题4
-
-##### 标题5
-
-###### 标题6
----
-#列表
+###列表
 ####有序列表
 ```markdown
 1. item1
@@ -64,108 +55,243 @@
 - [ ] tasklist2
 
 - [x] tasklist3
+
 ---
-#引用
+###引用  
 ```markdown
 尼采：
 > 上帝已死
 ```
 尼采：
 > 上帝已死
+
 ---
-#代码模块
-```
+### 脚注
+
+可以添加脚注[^1] 
+
+---
+###代码模块  
+```markdown
 ​```
 #未指定语言
 for number in range(1,11)
 	print(number)
 ​```
+```
+```
+#未指定语言
+for number in range(1,11)
+	print(number)
+```
+```markdown
 ​```python
 #指定语言，语法高亮
 for number in range(1,11)
 	print(number)
 ​```
 ```
-
-```
-#未指定语言
-for number in range(1,11)
-	print(number)
-```
 ```python
 #指定语言，语法高亮
 for number in range(1,11)
 	print(number)
 ```
+
 ---
-#in line 引用  
-
-`引用`
----
-#link and image  
-
-[gallery “breathe”](https://zhuangnd.github.io/gallery/breathe)
-
-![image](G:\pic\葛饰北斋 富岳三十六景\IMG_3905.jpg)
-
-<img src="G:\pic\葛饰北斋 富岳三十六景\IMG_3881.jpg" width="400px" />
-
-<img src="G:\pic\葛饰北斋 富岳三十六景\IMG_3901.jpg" style="zoom:50%;" />
----
-#highlight  
-
+###image
+###图片  
+####markdown
 ```markdown
-==highlight==
+![usa](https://zhuangnd.github.io/gallery/usa/images/large/DSC01362.jpg)
 ```
-==高亮==
+![usa](https://zhuangnd.github.io/gallery/usa/images/large/DSC01362.jpg)
+
+####html
+```html
+width px
+<img src="https://zhuangnd.github.io/gallery/usa/images/large/DSC01622.jpg" width="400px" />
+style zoom %
+<img src="https://zhuangnd.github.io/gallery/usa/images/large/DSC01850.jpg" style="zoom:50%;" />
+div align center
+<div align=center>
+	<p><strong>居中对齐</strong></p>
+	<image src="https://zhuangnd.github.io/gallery/usa/images/large/DSC01835.jpg" width=50% />
+</div>
+```
+#####width px
+<img src="https://zhuangnd.github.io/gallery/usa/images/large/DSC01622.jpg" width="400px" />
+
+#####style zoom
+<img src="https://zhuangnd.github.io/gallery/usa/images/large/DSC01850.jpg" style="zoom:50%;" />
+
+#####div align center  
+```html
+<div align=center>
+	<p><strong>居中对齐</strong></p>
+	<img src="https://zhuangnd.github.io/gallery/usa/images/large/DSC01835.jpg" width="50%" />
+</div>  
+```
+<div align=center>
+	<p><strong>居中对齐</strong></p>
+	<img src="https://zhuangnd.github.io/gallery/usa/images/large/DSC01835.jpg" width="80%" />
+
+</div> 
 ---
-#table  
+###数学公式
+####单行公式
+``` markdown
+$y=(a \times x  +  b)^{2}$
+```
+$y=(a \times x  +  b)^{2}$  
 
-| id   | name |
-| ---- | ---- |
-| 1    | li   |
-| 2    | zs   |
-| 3    | ds   |
+
+####复杂公式模块
+You can render *LaTeX* mathematical expressions using **MathJax**.
+
+In markdown source file, math block is *LaTeX* expression wrapped by ‘$$’ mark:
+
+``` markdown
+$$
+\mathbf{V}_1 \times \mathbf{V}_2 =  \begin{vmatrix} 
+\mathbf{i} & \mathbf{j} & \mathbf{k} \\
+\frac{\partial X}{\partial u} &  \frac{\partial Y}{\partial u} & 0 \\
+\frac{\partial X}{\partial v} &  \frac{\partial Y}{\partial v} & 0 \\
+\end{vmatrix}
+$$
+```
+
+Input `$$`, then press 'Return' key will trigger an input field which accept *Tex/LaTex* source. Following is an example:
+$$
+\mathbf{V}_1 \times \mathbf{V}_2 =  \begin{vmatrix} 
+\mathbf{i} & \mathbf{j} & \mathbf{k} \\
+\frac{\partial X}{\partial u} &  \frac{\partial Y}{\partial u} & 0 \\
+\frac{\partial X}{\partial v} &  \frac{\partial Y}{\partial v} & 0 \\
+\end{vmatrix}
+$$
+
 ---
-#another link  
 
-<zhuangnd@me.com>
+###表格
+```markdown
+| id   | name | phone |
+| --- | --- | --- |
+| 1    | li   | 8888888 |
+| 2    | zs   | 6666666 |
+| 3    | ds   | 5555555 |
+```
+| id   | name | phone   |
+| ---- | ---- | ------- |
+| 1    | li   | 8888888 |
+| 2    | zs   | 6666666 |
+| 3    | ds   | 5555555 |
 
-This is [an example][https://zhuangnd.github.io/gallery/usa] reference-style link.
+---
+##行元素
+###链接  
+####方括号[]链接
+```markdown
+点击[zhuangnd's homepage](https://zhuangnd.github.io/ "zhaungnd的主页")，打开zhuangnd的主页
+点击[zhuangnd's gallery](https://zhuangnd.github.io/gallery/breathe/)，进入网上画廊
+```
+点击[zhuangnd's homepage](https://zhuangnd.github.io/ "zhaungnd的主页")，打开zhuangnd的主页
+点击[zhuangnd's gallery](https://zhuangnd.github.io/gallery/breathe/)，进入网上画廊
+####尖括号<>URLs地址
+```markdown
+发送email <zhuangnd@me.com> 
+```
+发送email <zhuangnd@me.com> 
+####内部链接  
+==一级标题#==的内部链接，只支持==英文==标题，空格用==-==代替，按Ctrl(Command) + Click 点击跳转
+```markdown
+点击[markdown指南](#markdown-guide)将转到`markdown guide`
+点击[怎么插入图片](#image)将转到`image`
+```
+点击[markdown指南](#markdown-guide)将转到`markdown guide`
+点击[怎么插入图片](#image)将转到`image`
 
+#### Reference Links 
+适合多次使用的链接，提高效率
+Reference-style links use a second set of square brackets, inside which you place a label of your choosing to identify the link:
+
+``` markdown
+This is [zhuangnd的主页][hp] reference-style link.
 Then, anywhere in the document, you define your link label like this, on a line by itself:
+这句可以放在任何位置：
+[hp]: https://zhuangnd.github.io/  "zhuangnd的主页"
+```
 
-open [this][https://zhuangnd.github.io/gallery/stone]
+In typora, they will be rendered like:
+This is [zhuangnd的主页][hp] reference-style link.
 
-[id]: https://zhuangnd.github.io/gallery/lsimaging "Optional Title Here"
+The implicit link name shortcut allows you to omit the name of the link, in which case the link text itself is used as the name. Just use an empty set of square brackets — e.g., to link the word “Google” to the google.com web site, you could simply write:
 
-This is [an example](https://zhuangnd.github.io/md/readme.html) inline link.
+``` markdown
+[Google][]
+And then define the link:
+[Google]: http://google.com/
+```
+[Google][]
 
-[This link](https://zhuangnd.github.io/d3/fjzone.html) has no title attribute.
+In typora click link will expand it for editing, command+click will open the hyperlink in web browser.
+
 ---
-#footnote  
+###高亮
+```markdown
+对需要强调的==文本高亮==显示
+```
+对需要强调的==文本高亮==显示 
 
-可以添加脚注[^1] 
-Flavored :香料
-binary :二进制
-parenthesis :插入语
-embedded :嵌入式
-lousy :糟糕
-modulus :系数
-octothorpe :井号
-beard :胡子
-assuming :假设
-twinkle :眨眼
-mischievous :恶作剧
-belittling :轻视
-condescending :居高临下
-insulting :侮辱
-weird :奇怪的
-prodigy :神童
-Persistence :坚持
-wean :断奶
-stuck :卡住
-slightly :略
-odd :奇
-arpeggios :琶音
+---
+###标注
+```markdown
+`色块标注`
+```
+`行内引用色块标注`  
+
+---
+###下标
+Subscript
+```markdown
+用两个 ~ 框住下标内容,空格用 "\ ", for example: H~2~O, X~long\ text~
+```
+Then use ~ to wrap subscript content, for example: H~2~O, X~long\ text~
+###上标
+Superscript
+```markdown
+用两个 ^ 框住上标内容,空格用 "\ ", for example: X^2^, X^long\ text^
+```
+Then use ^ to wrap superscript content, for example: X^2^, X^long\ text^
+
+---
+###斜体
+```markdown
+*斜体*，_斜体_
+```
+*斜体*，_斜体_
+
+---
+###加粗
+```markdown
+**粗体**，__粗体__
+```
+**粗体**，__粗体__
+
+---
+###删除线
+```markdown
+~~删除~~
+```
+~~删除~~
+
+---
+###下划线
+```html
+<u>Underline</u> becomes Underline.
+```
+<u>Underline</u> becomes Underline.
+
+---
+
 [^1]: 脚注1
+[hp]: https://zhuangnd.github.io/  "zhuangnd的主页"
+[Google]: http://google.com/
