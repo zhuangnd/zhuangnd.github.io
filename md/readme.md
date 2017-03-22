@@ -2,10 +2,10 @@
 markdown手册
 ---
 # markdown guide
-##overview
-[TOC]
-##块元素
-###标题
+## overview
+
+## 块元素
+### 标题
 `#`的数量表示标题的级别
 ```markdown
 # 标题1
@@ -17,8 +17,8 @@ markdown手册
 ```
 
 ---
-###列表
-####有序列表
+### 列表
+#### 有序列表
 ```markdown
 1. item1
 2. item2
@@ -31,7 +31,7 @@ markdown手册
 
 3. item3
 
-####无序列表
+#### 无序列表
 ```markdown
 * item1
 * item2
@@ -43,7 +43,7 @@ markdown手册
 
 * item3
 
-####任务清单
+#### 任务清单
 ```markdown
 - [ ] tasklist1
 - [ ] tasklist2
@@ -57,7 +57,7 @@ markdown手册
 - [x] tasklist3
 
 ---
-###引用  
+### 引用  
 ```markdown
 尼采：
 > 上帝已死
@@ -71,42 +71,42 @@ markdown手册
 可以添加脚注[^1] 
 
 ---
-###代码模块  
-```markdown
-​```
+### 代码模块  
+	```
+	#未指定语言
+	for number in range(1,11)
+		print(number)
+	```
+	
+```
 #未指定语言
 for number in range(1,11)
 	print(number)
-​```
 ```
-```
-#未指定语言
-for number in range(1,11)
-	print(number)
-```
-```markdown
-​```python
-#指定语言，语法高亮
-for number in range(1,11)
-	print(number)
-​```
-```
+
+	```python
+	#指定语言，语法高亮
+	for number in range(1,11)
+		print(number)
+	```
+	
 ```python
 #指定语言，语法高亮
 for number in range(1,11)
 	print(number)
 ```
 
----
-###image
-###图片  
-####markdown
+---  
+### image
+### 图片  
+#### markdown
+
 ```markdown
 ![usa](https://zhuangnd.github.io/gallery/usa/images/large/DSC01362.jpg)
 ```
 ![usa](https://zhuangnd.github.io/gallery/usa/images/large/DSC01362.jpg)
 
-####html
+#### html
 ```html
 width px
 <img src="https://zhuangnd.github.io/gallery/usa/images/large/DSC01622.jpg" width="400px" />
@@ -118,13 +118,13 @@ div align center
 	<image src="https://zhuangnd.github.io/gallery/usa/images/large/DSC01835.jpg" width=50% />
 </div>
 ```
-#####width px
+##### width px
 <img src="https://zhuangnd.github.io/gallery/usa/images/large/DSC01622.jpg" width="400px" />
 
-#####style zoom
+##### style zoom
 <img src="https://zhuangnd.github.io/gallery/usa/images/large/DSC01850.jpg" style="zoom:50%;" />
 
-#####div align center  
+##### div align center  
 ```html
 <div align=center>
 	<p><strong>居中对齐</strong></p>
@@ -137,15 +137,15 @@ div align center
 
 </div> 
 ---
-###数学公式
-####单行公式
+### 数学公式
+#### 单行公式
 ``` markdown
 $y=(a \times x  +  b)^{2}$
 ```
 $y=(a \times x  +  b)^{2}$  
 
 
-####复杂公式模块
+#### 复杂公式模块
 You can render *LaTeX* mathematical expressions using **MathJax**.
 
 In markdown source file, math block is *LaTeX* expression wrapped by ‘$$’ mark:
@@ -171,7 +171,7 @@ $$
 
 ---
 
-###表格
+### 表格
 ```markdown
 | id   | name | phone |
 | --- | --- | --- |
@@ -186,9 +186,9 @@ $$
 | 3    | ds   | 5555555 |
 
 ---
-##行元素
-###链接  
-####方括号[]链接
+## 行元素
+### 链接  
+#### 方括号[]链接
 ```markdown
 点击[zhuangnd's homepage](https://zhuangnd.github.io/ "zhaungnd的主页")，打开zhuangnd的主页
 点击[zhuangnd's gallery](https://zhuangnd.github.io/gallery/breathe/)，进入网上画廊
@@ -235,27 +235,27 @@ And then define the link:
 In typora click link will expand it for editing, command+click will open the hyperlink in web browser.
 
 ---
-###高亮
+### 高亮
 ```markdown
 对需要强调的==文本高亮==显示
 ```
 对需要强调的==文本高亮==显示 
 
 ---
-###标注
+### 标注
 ```markdown
 `色块标注`
 ```
 `行内引用色块标注`  
 
 ---
-###下标
+### 下标
 Subscript
 ```markdown
 用两个 ~ 框住下标内容,空格用 "\ ", for example: H~2~O, X~long\ text~
 ```
 Then use ~ to wrap subscript content, for example: H~2~O, X~long\ text~
-###上标
+### 上标
 Superscript
 ```markdown
 用两个 ^ 框住上标内容,空格用 "\ ", for example: X^2^, X^long\ text^
@@ -263,28 +263,28 @@ Superscript
 Then use ^ to wrap superscript content, for example: X^2^, X^long\ text^
 
 ---
-###斜体
+### 斜体
 ```markdown
 *斜体*，_斜体_
 ```
 *斜体*，_斜体_
 
 ---
-###加粗
+### 加粗
 ```markdown
 **粗体**，__粗体__
 ```
 **粗体**，__粗体__
 
 ---
-###删除线
+### 删除线
 ```markdown
 ~~删除~~
 ```
 ~~删除~~
 
 ---
-###下划线
+### 下划线
 ```html
 <u>Underline</u> becomes Underline.
 ```
