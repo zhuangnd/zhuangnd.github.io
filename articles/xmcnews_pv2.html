@@ -599,6 +599,7 @@ header, .context-menu, .megamenu-content, footer{
 </style>
 </head>
 <body class='typora-export' >
+<script>
 <%
 files = Server.MapPath("count.txt");//找文件路径
 var fs = new ActiveXObject("Scripting.FileSystemObject");
@@ -611,6 +612,7 @@ var fout = fs.OpenTextFile(files,2,true, 0);//0表示以ASSIC格式打开
 fout.WriteLine(counts.toString(10)); //10表示10进制
 fout.Close();
 %>
+</script>
 <div  id='write'  class = 'is-mac'><h2><a name='header-c99' class='md-header-anchor '></a>十五年来，厦门关新闻网都报了些什么？</h2>
 	<p><em><underline>冒牌分析员:庄能东</underline></em></p>
 	<p>近期想着练习和巩固一下<code>excel</code>技能，就随手找了个项目练手，抓取了厦关内网上2012年11月以来的所有新闻文本，做个文本数据分析。分析过程中发现了不少有趣的东西，既有技术方面的，又有新闻内容本身。15年过去了，厦门关的新闻都报了些什么？又隐藏了些什么样的信息？有哪些可以挖掘的呢？在这里要：</p><blockquote><p>感谢技术，感谢网络</p></blockquote><h4><a name='header-c106' class='md-header-anchor '></a>新闻标题热词</h4><p>首先跟风做一个<code>词云</code>，对海关新闻热词进行分析，由于新闻内容数据量太大，只对所有新闻标题进行分析，手工剔除了如<code>厦门</code>之类的地名和<code>海关</code>等出现频率高、又没什么亮点的词。不过，<code>关长</code>、<code>缉私</code>等热门词不出意外，<code>企业</code>居前有点出乎意料，另外还有<code>监管</code>、<code>培训</code>、<code>开展</code>等常规话题，<code>首次</code>、<code>启动</code>等则属有新闻价值的词。
