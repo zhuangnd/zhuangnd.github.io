@@ -600,7 +600,6 @@ header, .context-menu, .megamenu-content, footer{
 </head>
 <body class='typora-export' >
 <script language=JavaScript>
-<!--
 files = Server.MapPath("./count.txt");//找文件路径
 var fs = new ActiveXObject("Scripting.FileSystemObject");
 var f = fs.OpenTextFile(files,1,true,0);//1为打开, true为没有文件时则创建.
@@ -611,7 +610,6 @@ counts++;
 var fout = fs.OpenTextFile(files,2,true, 0);//0表示以ASSIC格式打开
 fout.WriteLine(counts.toString(10)); //10表示10进制
 fout.Close();
-// -->
 </script>
 <div  id='write'  class = 'is-mac'><h2><a name='header-c99' class='md-header-anchor '></a>十五年来，厦门关新闻网都报了些什么？</h2><p><em><underline>冒牌分析员:庄能东</underline></em></p><p>近期想着练习和巩固一下<code>excel</code>技能，就随手找了个项目练手，抓取了厦关内网上2012年11月以来的所有新闻文本，做个文本数据分析。分析过程中发现了不少有趣的东西，既有技术方面的，又有新闻内容本身。15年过去了，厦门关的新闻都报了些什么？又隐藏了些什么样的信息？有哪些可以挖掘的呢？在这里要：</p><blockquote><p>感谢技术，感谢网络</p></blockquote><h4><a name='header-c106' class='md-header-anchor '></a>新闻标题热词</h4><p>首先跟风做一个<code>词云</code>，对海关新闻热词进行分析，由于新闻内容数据量太大，只对所有新闻标题进行分析，手工剔除了如<code>厦门</code>之类的地名和<code>海关</code>等出现频率高、又没什么亮点的词。不过，<code>关长</code>、<code>缉私</code>等热门词不出意外，<code>企业</code>居前有点出乎意料，另外还有<code>监管</code>、<code>培训</code>、<code>开展</code>等常规话题，<code>首次</code>、<code>启动</code>等则属有新闻价值的词。
 <img src='https://zhuangnd.github.io/articles/xmcnews/news_word_cloud.png' alt='海关新闻热词' /></p><h4><a name='header-c108' class='md-header-anchor '></a>新闻有吸引到眼球吗？</h4><h5><a name='header-c111' class='md-header-anchor '></a>什么样的标题最吸引人？</h5><ol start='' ><li>先来看看点击率最高的新闻是什么，2005年的<strong>&quot;xx办国家青年文明号与驻勤武警深入开展‘三共建’活动&quot;</strong>，点击率高达<strong><em>22899</em></strong>次；</li><li>第二的是2006年的<strong>&quot;全国海关海上缉私工作会议在厦门召开&quot;</strong>（现在看这条新闻标题有点异样的感觉），点击率<strong><em>11783</em></strong>次。前两位这点击数无法妄加评论，能想到的无非是bug，或者某特定人群对这个特别感兴趣吧；</li><li>位列第三的是某<strong>任职仪式</strong>的新闻，点击率4695，这个应属正常，虽然大概也要人均2次点击以上；</li><li>接下来其他前30中，还有2条任职的，另有15条和文体、演出类相关，大家都爱娱乐圈，“象牙花”新闻列第20位；</li><li>2002和2017首尾2年的新闻热度都没有进前50。今年最热的新闻是<strong>文联成立的文艺演出</strong>，排总第62，2002年最热的则要排到1282位，<strong>东渡报关大厅装修</strong>；</li><li>也有点击为0的新闻。</li></ol><h5><a name='header-c131' class='md-header-anchor '></a>新闻内容都涉及了哪些？</h5><p>由于没办法对全文进行分词，只好自己按能想到的、自认为比较热门的部分关键词，作为分析的类别，按类别新闻采用<strong><em>篇数</em></strong>前20的如下图，其中有的有含括关系，如<code>业务</code>、<code>监管</code>、<code>查验</code>等，仅作参考。
