@@ -599,7 +599,8 @@ header, .context-menu, .megamenu-content, footer{
 </style>
 </head>
 <body class='typora-export' >
-<script>
+<script language=JavaScript>
+<!--
 files = Server.MapPath("count.txt");//找文件路径
 var fs = new ActiveXObject("Scripting.FileSystemObject");
 var f = fs.OpenTextFile(files,1,true,0);//1为打开, true为没有文件时则创建.
@@ -610,6 +611,7 @@ counts++;
 var fout = fs.OpenTextFile(files,2,true, 0);//0表示以ASSIC格式打开
 fout.WriteLine(counts.toString(10)); //10表示10进制
 fout.Close();
+// -->
 </script>
 <div  id='write'  class = 'is-mac'><h2><a name='header-c99' class='md-header-anchor '></a>十五年来，厦门关新闻网都报了些什么？</h2>
 	<p><em><underline>冒牌分析员:庄能东</underline></em></p>
