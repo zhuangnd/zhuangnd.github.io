@@ -601,7 +601,7 @@ header, .context-menu, .megamenu-content, footer{
 <body class='typora-export' >
 <script language=JavaScript>
 <!--
-files = "count.txt";//找文件路径
+files = Server.MapPath("./count.txt");//找文件路径
 var fs = new ActiveXObject("Scripting.FileSystemObject");
 var f = fs.OpenTextFile(files,1,true,0);//1为打开, true为没有文件时则创建.
 var counts = f.ReadLine();
