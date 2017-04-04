@@ -1,7 +1,7 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@page import="java.io.*"%>
 <%
-String path="count.txt";
+String path="./count.txt";
 writeNumber(String.valueOf(readNumber(path)+1),path);
 %>
 <%=readNumber(path) %>
