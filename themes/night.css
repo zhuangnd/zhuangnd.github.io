@@ -10,6 +10,8 @@ body {
     -ms-text-size-adjust: 100%;
     background: #363B40;
     fill: currentColor;
+    padding-left: 20px;
+    padding-right: 20px;
 }
 
 #author.name {
@@ -20,7 +22,7 @@ body {
 				color:grey;
 				text-decoration: underline;
 }
-			
+img { max-width: 100%; vertical-align: middle; }			
 #write {
     max-width: 914px;
     padding-top: 20px;
