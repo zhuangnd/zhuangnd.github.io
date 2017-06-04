@@ -1,0 +1,702 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+    	<meta name="viewport" content="initial-scale=1,maximum-scale=1"/>
+		<title>厦门关区通关时间月度表</title>
+		<script type="text/javascript" src="http://localhost:8080/d3.v3.js"></script>
+<style type="text/css">
+	.axis path,
+	.axis line{
+		fill: none;
+		stroke: black;
+		shape-rendering: crispEdges;
+	}
+
+	.axis text {
+		font-family: sans-serif;
+		font-size: 8px;
+	}
+	.MyText {
+		fill: white;
+		text-anchor: middle;
+	}
+	
+	.MyRect {
+		fill: steelblue;
+	}
+	
+	rect:hover {
+		fill: tomato;
+	}
+	
+	.title {
+		fill: dimgrey;
+		font-family: sans-serif;
+		font-size: 16px;
+		text-align: center;
+	}
+	.pagetitle {
+		color: dimgrey;
+		text-align: center;
+	}
+	.title:hover {
+		fill: red;
+		cursor: pointer;
+	}
+
+	#tooltip {
+		position: absolute;
+		width: auto;
+		height:auto;
+		padding: 10px;
+		background-color: rgba(255,255,255,0.9);
+		-webkit-border-radius: 10px;
+		-moz-border-radius: 10px;
+		border-radius: 10px;
+		-webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+		-moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+		box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+		pointer-events: none;
+	}
+			
+	#tooltip.hidden {
+		display: none;
+	}
+			
+	#tooltip p {
+		margin: 0;
+		font-family: sans-serif;
+		font-size: 14px;
+		line-height: 18px;
+	}
+
+	
+	
+	
+     body_bar {
+          font-family: Helvetica;
+     }
+     svg_bar {
+          width: 1000px;
+          height: 500px;
+     }
+     .play-button {
+          margin-left: 10px;
+          margin-bottom: 15px;
+          font-style: italic;
+          cursor: pointer;
+          color: grey;
+     }
+     .play-button:hover {
+          color: black;
+     }
+     .buttons-container {
+          width: 520px;
+          margin-bottom: 25px;
+     }
+     .button {
+          float: left;
+          margin-left: 10px;
+          font-weight: lighter;
+          cursor: pointer;
+     }
+     .selected {
+		  fill:tomato;
+     }
+     .top-label {
+          font-size: 13px;
+          font-style: italic;
+          text-transform: uppercase;
+          float: left;
+		  padding-left:50px;
+     }
+     .age-label {
+          text-align: right;
+          font-weight: bold;
+          width: 90px;
+          padding-right: 50px;
+     }
+     .clearfix {
+          clear: both;
+     }
+     .bar {
+          fill: DarkSlateBlue;
+          fill: steelBlue;
+     }
+     .bar-label {
+          text-anchor: end;
+     }
+     .axis_bar-label {
+          text-anchor: middle;
+          font-size: 13px;
+     }
+     .x_bar.axis_bar line {
+       fill: none;
+       stroke: #000;
+     }
+     .x_bar.axis_bar text {
+          font-size: 13px;
+     }
+     .axis_bar path {
+          display:none;
+     }
+     .y_bar.axis_bar line {
+          display:none;
+     }
+     .y_bar.axis_bar text {
+          font-size: 10px;
+     }	 
+</style>
+</head>
+<body>
+	<div id="tooltip" class="hidden">
+		<p><strong>月份</strong></p>
+		<p><span id="cmon"></span></p>
+		<p style="color:coral"><strong>放行率</strong></p>
+		<p style="color:coral"><span id="crate"></span>%</p>
+		<p style="color:steelblue"><strong>通关时间</strong></p>
+		<p style="color:steelblue"><span id="ctime"></span>小时</p>
+	</div>
+	<h2 class="pagetitle">厦门海关通关效率分析</h2>
+	<h4 class="pagetitle">&nbsp</h4>
+	<script type="text/javascript">
+
+		//画布大小
+	var width = screen.width/2-50;//900;
+	var height = screen.height/3;//400;
+	var body = d3.select("body");
+	
+	//body.append("h4")
+	//	.attr("class", "page title")
+	//	.text("厦门海关通关效率分析");
+	
+	//在 body 里添加一个 SVG 画布	
+	var svg = d3.select("body")
+		.append("svg")
+		.attr("width", width)
+		.attr("height", height);
+
+	//画布周边的空白
+	var padding = {left:50, right:50, top:30, bottom:50};
+
+	//x轴的比例尺
+	var xScale = d3.scale.ordinal()
+		.rangeRoundBands([0, width - padding.left - padding.right]);
+
+	//y轴的比例尺
+	var yScale = d3.scale.linear()
+		.range([height - padding.top - padding.bottom, 0]);
+
+	//y2轴的比例尺
+	var y2Scale = d3.scale.linear()
+		.range([height - padding.top - padding.bottom, 0]);
+
+	//矩形之间的空白
+	var rectPadding = 4;
+		
+	var line=d3.svg.line()
+		.x(function(d,i){return xScale(i) + xScale.rangeBand()/2+padding.left;})
+		.y(function(d){return y2Scale(d)+padding.top;});
+
+	//定义x轴
+	var xAxis = d3.svg.axis()
+		.scale(xScale)
+		.orient("bottom");
+		
+	//定义y轴
+	var yAxis = d3.svg.axis()
+		.scale(yScale)
+		.ticks(5)
+		.orient("left");
+
+	//定义y2轴	
+	var y2Axis = d3.svg.axis()
+		.scale(y2Scale)
+		.ticks(5)
+		.orient("right");
+
+
+	var w;
+		var IEflag=1;
+		var tt=["出口通关效率月度图","进口通关效率月度图"];
+		var mydataset=[];
+		var v1=[];
+		var v2=[];
+		var v2i=[];
+		var v2e=[];
+		var v3=[];
+		var v4=[];
+		var v5=[];
+
+	//d3.selectAll("svg").on("click",function(){upd();});
+						
+d3.csv("main_mon.csv",function(error,d){
+		//数据筛选
+		//d=d.filter(function(e){return e.spend_time_i_1 > 12});
+		alldata=d;
+		//d=d.filter(function(e){return e.mon == 201703});
+		//d=d.filter(function(e){return e.mon_axis > 1411});
+		//d=d.filter(function(e){return e.cus_code.substr(0,3) == "37A"});//隶属关办
+		//d=d.filter(function(e){return e.cus_code.substr(2,2) < 99});//现场
+		d=d.filter(function(e){return e.cus_code == "37"});//关区
+		mydataset=d;
+		d.forEach(function(d){
+			v1.push(d.mon_axis);
+			//v1.push(d.cus);
+			v2.push(parseFloat(d.spend_time_i_1));	
+			//v2i.push(parseFloat(d.spend_time_i_1));	//=========此处需要修改，点击标题选择进出口==============
+			//v2e.push(parseFloat(d.spend_time_e_1));			
+			v3.push(parseFloat(d.rate24_i_1));
+			v4.push(parseFloat(d.spend_time_e_1));			
+			v5.push(parseFloat(d.rate24_e_1));
+		});
+
+	
+
+	//x轴的比例尺
+	xScale.domain(d3.range(v1.length));
+	yScale.domain([0,d3.max(v2)*1.2]);
+	y2Scale.domain([d3.min(v3),100]);
+	//y2Scale.domain([70,100]);
+
+
+
+
+	//添加图表标题
+	svg.append("text")
+		.attr("class", "title")
+		.text(tt[1])
+		.attr("x", width/ 2-tt[1].length*7)
+		//标题x位置，svg宽度的一半减去文本长度的一半，文本长度为字数*像素（9*142px/2）
+		.on("click",function(){upd();})
+		.attr("y", 15);
+	//添加矩形元素
+	var rects = svg.selectAll(".MyRect")
+		.data(v2)
+		.enter()
+	  .append("rect")
+		//.attr("class","MyRect")
+        .attr("class", function(d,i) {
+               if(d == v1[i])//=====================================================此处需要修改，才能实现点中的改变颜色===========================================================
+                    return "MyRect button selected";
+               else
+                    return "button MyRect";
+          })		
+		//.attr("id", function(d,i) { return "rect-" + v1[i]; })
+		.attr("transform","translate(" + padding.left + "," + padding.top + ")")
+		.attr("x", function(d,i){
+			return xScale(i) + rectPadding;
+		})
+		.attr("width", (xScale.rangeBand() - rectPadding) )
+
+		.attr("y",function(d,i){
+			return yScale(v2[i]);
+		})
+		.attr("height", function(d,i){
+			return height - padding.top - padding.bottom - yScale(v2[i]);
+		})
+		.on("mouseover", function(d,i){
+			//Get this bar's x/y values, then augment for the tooltip
+			var xPosition = parseFloat(d3.select(this).attr("x")) + xScale.rangeBand() / 2;
+			var yPosition = parseFloat(d3.select(this).attr("y")) / 2 + height / 2;
+			//Update the tooltip position and value
+			d3.select("#tooltip")
+				.transition()
+				.duration(300)
+				.style("left", xPosition + "px")
+				.style("top", yPosition + "px")						
+				.select("#ctime")
+				.text(w1(d,i));//w1函数，总值
+			d3.select("#tooltip").select("#cmon")
+				.text(w2(d,i));
+			d3.select("#tooltip").select("#crate")
+				.text(w3(d,i));			   
+			//Show the tooltip
+			d3.select("#tooltip").classed("hidden", false);
+		})
+		.on("mouseout", function() {
+			//Hide the tooltip
+			d3.select("#tooltip").classed("hidden", true);
+		})
+		.on("click", function(d,i) {			
+			update(v1[i]);
+            clearInterval(playInterval);
+			d3.select(this).classed("selected",true);
+		})
+		;
+
+	//散点
+	var circle = svg.selectAll(".Mycircle")
+		.data(v3)
+		.enter()
+	  .append("circle")
+		.attr("class","Mycircle")
+		.attr("transform","translate(" + padding.left + "," + padding.top + ")")
+		.attr("cx", function(d,i){
+			return xScale(i) + xScale.rangeBand()/2 ;
+		})
+		.attr("cy",function(d,i){
+			return y2Scale(v3[i])
+		})
+		.attr("r", 1)
+		.style("fill","orange");
+
+	//折线
+
+	svg.selectAll("path.line")
+		.data(v3)
+		.enter()
+	  .append("path")
+		.attr("class","Myline")
+		.attr("d",line(v3))//function(d){return line(d.rate24_i_1);}
+		.style("fill","none")
+		.style("stroke","coral")
+		.style("stroke-width",1);
+
+	
+
+	//添加x轴
+	svg.append("g")
+		.attr("class","x axis")
+		.attr("transform","translate(" + padding.left + "," + (height - padding.bottom) + ")")
+		.call(xAxis)
+		.selectAll("text")
+		//微调x轴文字位置
+		.attr("transform","rotate(-45)")
+		.attr("x",-15)
+		.attr("y",10)
+		.text(function(d,i){return v1[i];}); 
+		
+	//添加y轴
+	svg.append("g")
+		.attr("class","y axis")
+		.attr("transform","translate(" + padding.left + "," + padding.top + ")")
+		.call(yAxis)
+	  .append("text")
+		.attr("x",-40)
+		.attr("y",-10)
+		.text("通关时间（小时）")
+		.style("fill","steelblue");
+
+
+	//添加y2轴
+	svg.append("g")
+		.attr("class","y2 axis")
+		.attr("transform","translate(" + (width-padding.left) + "," + padding.top + ")")
+		.call(y2Axis)
+	  .append("text")
+		.attr("x",-40)
+		.attr("y",-10)
+		.text("24小时放行率%")
+		.style("fill","coral");	
+	
+//});
+
+
+
+	var upd=function() {
+		switch  (IEflag){
+			case 1:
+				IEflag=0;
+				svg.selectAll(".title")
+				    .transition()
+				    .duration(1000)
+					.text(tt[0])
+					.attr('x', width/ 2-tt[0].length*7);
+
+				//Update scale domains
+				yScale.domain([0,d3.max(v4)*1.2]);
+				y2Scale.domain([d3.min(v5),100]);
+				//y2Scale.domain([70,100]);
+
+
+				//Update all Rects
+				svg.selectAll(".MyRect")
+				    .transition()
+				    .duration(1000)
+					.attr("y",function(d,i){
+						return yScale(v4[i]);
+					})
+					.attr("height", function(d,i){
+						return height - padding.top - padding.bottom - yScale(v4[i]);
+					});
+				//散点
+				svg.selectAll(".Mycircle")
+				    .transition()
+				    .duration(1000)
+					.attr("cy",function(d,i){
+						return y2Scale(v5[i]);
+					});
+
+				//折线
+				svg.selectAll("path")
+				    .transition()
+				    .duration(1000)
+					.attr("d",line(v5));
+		
+				//Update X axis
+				svg.select(".x.axis")
+				    .transition()
+				    .duration(1000)
+					.call(xAxis)
+					.selectAll("text")
+		.attr("x",-15)
+		.attr("y",10)
+					.text(function(d,i){return v1[i];});	
+		
+				//Update Y axis
+				svg.select(".y.axis")
+				    .transition()
+				    .duration(1000)
+					.call(yAxis);
+				//Update Y2 axis
+				svg.select(".y2.axis")
+				    .transition()
+				    .duration(1000)
+					.call(y2Axis);
+				break;
+			case 0:
+				IEflag=1;
+				svg.selectAll(".title")
+				    .transition()
+				    .duration(1000)
+					.text(tt[1])
+					.attr('x', width/ 2-tt[1].length*7);
+				//Update scale domains
+				yScale.domain([0,d3.max(v2)*1.2]);
+				y2Scale.domain([d3.min(v3),100]);
+				//y2Scale.domain([70,100]);
+
+
+				//Update all circles
+				svg.selectAll(".MyRect")
+				    .transition()
+				    .duration(1000)
+					.attr("y",function(d,i){
+						return yScale(v2[i]);
+					})
+					.attr("height", function(d,i){
+						return height - padding.top - padding.bottom - yScale(v2[i]);
+					});
+				//散点
+				svg.selectAll(".Mycircle")
+				    .transition()
+				    .duration(1000)
+					.attr("cy",function(d,i){
+						return y2Scale(v3[i]);
+					});
+
+				//折线
+				svg.selectAll("path")
+				    .transition()
+				    .duration(1000)
+					.attr("d",line(v3));
+		
+				//Update X axis
+				svg.select(".x.axis")
+				    .transition()
+				    .duration(1000)
+					.call(xAxis)
+					.selectAll("text")
+		.attr("x",-15)
+		.attr("y",10)
+					.text(function(d,i){return v1[i];});	
+				
+				//Update Y axis
+				svg.select(".y.axis")
+				    .transition()
+				    .duration(1000)
+					.call(yAxis);
+				//Update Y2 axis
+				svg.select(".y2.axis")
+				    .transition()
+				    .duration(1000)
+					.call(y2Axis);
+				break;
+		};
+	};
+
+	function w1(d,i){
+		switch (IEflag){
+			case 0:
+				return v4[i];
+			break;
+			case 1:
+				return v2[i];
+		}
+	}
+
+	function w2(d,i){
+		switch (IEflag){
+			case 0:
+				return v1[i];
+			break;
+			case 1:
+				return v1[i];
+		}
+	}
+	function w3(d,i){
+		switch (IEflag){
+			case 0:
+				return v5[i];
+			break;
+			case 1:
+				return v3[i];
+		}
+	}
+
+	
+	
+	
+	//现场通关时间
+	 //var year_bar = 1704;
+
+     //var buttonYears_bar = [1401,1402,1403,1404,1405,1406,1407,1408,1409,1410,1411,1412,1501,1502,1503,1504,1505,1506,1507,1508,1509,1510,1511,1512,1601,1602,1603,1604,1605,1606,1607,1608,1609,1610,1611,1612,1701,1702,1703,1704];
+
+     var margin_bar = {top: 30, right: 0, bottom: 0, left: 150},
+          width_bar = 500 - margin_bar.left - margin_bar.left,
+          height_bar = 450 - margin_bar.top - margin_bar.bottom;
+
+     var body_bar = d3.select("body");
+
+     var x_bar = d3.scale.linear()
+          .range([0, width_bar]);
+
+     var y_bar = d3.scale.ordinal()
+          .rangeBands([0, height_bar], 0.2, 0);
+
+     var xAxis_bar = d3.svg.axis()
+          .scale(x_bar)
+          .orient("top")
+          .ticks(5, "%");
+
+     var yAxis_bar = d3.svg.axis()
+          .scale(y_bar)
+          .orient("left");
+
+     function keys_bar(d) {
+          return d.cus;
+     }
+
+    // body_bar.append("text")
+    //           .text("现场通关时间")
+	//		   .attr("class", "title_bar");
+
+     var playAll = body_bar.append("div")
+          .attr("class", "play-button")
+          .text("▶ 点击浏览各现场每月通关时间动态变化情况");
+
+     //var buttons_bar = body_bar.append("div")
+     //     .attr("class", "buttons-container")
+     //     .selectAll("div").data(buttonYears_bar)
+     //  .enter().append("div")
+     //     .text(function(d) { return d; })
+     //     .attr("class", function(d) {
+     //          if(d == year_bar)
+     //               return "button selected";
+     //          else
+     //               return "button";
+     //     });
+
+     body_bar.append("div")
+          .attr("class", "clearfix")
+
+     body_bar.append("div")
+          .attr("class", "top-label age-label")
+       .append("p")
+          .text("海关/现场");
+
+     body_bar.append("div")
+          .attr("class", "top-label")
+       .append("p")
+          .text("通关时间（小时）");
+
+     body_bar.append("div")
+          .attr("class", "clearfix")
+
+ //    d3.csv("main_mon.csv", function(error, data){
+
+          //var data = data.filter(function(element) {return element.cus_code.substr(0,2) == "37"});
+          var data_bar = alldata.filter(function(element) {return element.cus_code.substr(0,3) == "37A" 
+			|| element.cus_code == "142"
+			|| element.cus_code == "37"
+			});
+          var popData_bar = data_bar.filter(function(element) {return element.mon_axis == d3.max(v1)});
+
+          x_bar.domain([0, 100]);//d3.max(data, function(element) { return parseFloat(element.spend_time_i_1); })]);
+
+          y_bar.domain(popData_bar.map(function(element) {return element.cus}));
+
+          var svg_bar = body.append("svg")
+               .attr("width", screen.width/2)
+               .attr("height", height_bar + margin_bar.top + margin_bar.bottom)
+           .append("g")
+               .attr("transform", "translate(" + margin_bar.left + "," + margin_bar.top + ")");
+
+          var barGroup_bar = svg_bar.append("g")
+               .attr("class", "bar");
+
+          var bars_bar = barGroup_bar.selectAll("rect")
+               .data(popData_bar, keys_bar)
+            .enter().append("rect")
+               .attr("x", 0)
+               .attr("y", function(d) {return y_bar(d.cus)})
+               .attr("width", function(d) {return x_bar(parseFloat(d.spend_time_i_1))})
+               .attr("height", y_bar.rangeBand());
+
+          svg_bar.append("g")
+               .call(xAxis_bar)
+               .attr("class", "x_bar axis_bar")
+
+          svg_bar.append("g")
+               .call(yAxis_bar)
+               .attr("class","y_bar axis_bar")
+
+          //buttons_bar.on("click", function(d) {
+          //     update(d);
+          //     clearInterval(playInterval);
+          //});
+
+          var playInterval;
+
+          playAll.on("click", function() {
+
+               var i = 0;
+
+               playInterval = setInterval(function() {
+                    update(v1[i]);
+
+                    i++;
+
+                    if(i > v1.length - 1) {
+                         clearInterval(playInterval);
+                    }
+
+               }, 1200);
+          });
+
+          function update(updateYear) {
+
+               d3.select(".selected")
+                    .classed("selected", false);
+
+               rects
+                    .filter(function(d,i) { return d == v1[i]; })
+                    .classed("selected", true)
+
+
+               popData_bar = alldata.filter(function(element) {return element.mon_axis == updateYear});
+
+               bars_bar.data(popData_bar, keys_bar)
+                    .transition()
+                    .duration(1000)
+                    .attr("width", function(d) { return x_bar(parseFloat(d.spend_time_i_1)); });
+
+          };
+     });
+	 
+	</script>
+</body>
+</html>
+
