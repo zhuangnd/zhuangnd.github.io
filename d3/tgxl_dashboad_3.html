@@ -168,7 +168,7 @@
 	<script type="text/javascript">
 
 		//画布大小
-	var width = 1280;//900;
+	var width = 800;//900;
 	var height =400;//400;
 	var body = d3.select("body");
 	
@@ -571,7 +571,7 @@ d3.csv("main_mon.csv",function(error,d){
      var body_bar = d3.select("body");
 
      var x_bar = d3.scale.linear()
-          .range([0, width_bar-200]);
+          .range([0, width/2-200]);
 
      var y_bar = d3.scale.ordinal()
           .rangeBands([60, height_bar], 0.2, 0);
