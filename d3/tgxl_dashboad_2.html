@@ -217,7 +217,7 @@
 		.ticks(5)
 		.orient("right");
 
-var year=d3.max(v1);
+
 	var w;
 		var IEflag=1;
 		var tt=["出口通关效率月度图","进口通关效率月度图"];
@@ -254,7 +254,7 @@ d3.csv("main_mon.csv",function(error,d){
 		});
 
 	
-
+var year=d3.max(v1);
 	//x轴的比例尺
 	xScale.domain(d3.range(v1.length));
 	yScale.domain([0,d3.max(v2)*1.2]);
