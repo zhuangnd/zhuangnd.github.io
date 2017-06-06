@@ -184,7 +184,7 @@
 		.attr("height", height);
 
 	//画布周边的空白
-	var padding = {left:50, right:50, top:30, bottom:50};
+	var padding = {left:50, right:50, top:80, bottom:80};
 
 	//x轴的比例尺
 	var xScale = d3.scale.ordinal()
@@ -572,7 +572,7 @@ d3.csv("main_mon.csv",function(error,d){
      var body_bar = d3.select("body");
 
      var x_bar = d3.scale.linear()
-          .range([0, width_bar/2-400]);
+          .range([0, width_bar/2-100]);
 
      var y_bar = d3.scale.ordinal()
           .rangeBands([60, height_bar], 0.2, 0);
@@ -580,7 +580,7 @@ d3.csv("main_mon.csv",function(error,d){
      var xAxis_bar = d3.svg.axis()
           .scale(x_bar)
           .orient("top")
-          .ticks(5, "%");
+          .ticks(10, "%");
 
      var yAxis_bar = d3.svg.axis()
           .scale(y_bar)
@@ -639,7 +639,7 @@ d3.csv("main_mon.csv",function(error,d){
 			});
           var popData_bar = data_bar.filter(function(element) {return element.mon_axis == d3.max(v1)});
 
-          x_bar.domain([0, 100]);//d3.max(data, function(element) { return parseFloat(element.spend_time_i_1); })]);
+          x_bar.domain([0, 200]);//d3.max(data, function(element) { return parseFloat(element.spend_time_i_1); })]);
 
           y_bar.domain(popData_bar.map(function(element) {return element.cus}));
 
