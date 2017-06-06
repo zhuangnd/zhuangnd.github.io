@@ -639,7 +639,7 @@ d3.csv("main_mon.csv",function(error,d){
 			});
           var popData_bar = data_bar.filter(function(element) {return element.mon_axis == d3.max(v1)});
 
-          x_bar.domain([0, 200]);//d3.max(data, function(element) { return parseFloat(element.spend_time_i_1); })]);
+          x_bar.domain([0, 100]);//d3.max(data, function(element) { return parseFloat(element.spend_time_i_1); })]);
 
           y_bar.domain(popData_bar.map(function(element) {return element.cus}));
 
@@ -663,7 +663,7 @@ d3.csv("main_mon.csv",function(error,d){
           svg.append("g")
                .call(xAxis_bar)
                .attr("class", "x_bar axis_bar")
-			   .attr("transform","translate(" + (width/2+150) + "," +  (padding.top+30) + ")")
+			   .attr("transform","translate(" + (width/2+150) + "," +  (padding.top) + ")")
 			//  .append("text")
 			 //  .text("小时")
 			 //  .attr("x",200)
