@@ -639,7 +639,7 @@ d3.csv("main_mon.csv",function(error,d){
 			});
           var popData_bar = data_bar.filter(function(element) {return element.mon_axis == d3.max(v1)});
 
-          x_bar.domain([0, 100]);//d3.max(data, function(element) { return parseFloat(element.spend_time_i_1); })]);
+          x_bar.domain([0, 50]);//d3.max(data, function(element) { return parseFloat(element.spend_time_i_1); })]);
 
           y_bar.domain(popData_bar.map(function(element) {return element.cus}));
 
@@ -718,7 +718,7 @@ d3.csv("main_mon.csv",function(error,d){
                     .duration(1200)
                     .attr("width", function(d) { 
                     	if (IEflag==1){
-                    		x_bar.domain([0, 100]);
+                    		x_bar.domain([0, 50]);
 				return x_bar(parseFloat(d.spend_time_i_1));
 				IEflag=0;
                     		}
@@ -739,6 +739,6 @@ d3.csv("main_mon.csv",function(error,d){
      });
 	 
 	</script>
-</body>
+</body>w
 </html>
 
