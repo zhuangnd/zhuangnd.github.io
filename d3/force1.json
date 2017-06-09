@@ -1,0 +1,51 @@
+{
+ "name": "科室管理", 
+ "children": [
+  {
+   "name": "防风险", "size": 55,
+   "children": [
+    {
+     "name": "前期基础", "size": 24,
+     "children": [
+      {"name": "科长以身作则", "size": 1},
+      {"name": "制度机制流程", "size": 5,
+		"children":[
+		{"name": "业务制度", "size": 4},
+		{"name": "内控机制", "size": 1}
+		]
+		},
+      {"name": "权利制约", "size": 8},
+      {"name": "提高业务水平", "size": 4},
+      {"name": "科技应用", "size": 6,
+		"children":[
+		{"name": "利用科技", "size": 4},
+		{"name": "HL2008", "size": 2}
+		]
+	  }
+     ]
+    },
+    {
+     "name": "中期运行", "size": 17,
+     "children": [
+      {"name": "风险分析", "size": 8},
+      {"name": "监督监控", "size": 9,
+		"children":[
+		{"name": "内外监督", "size": 7},
+		{"name": "日常监控", "size": 2}
+		]
+	   }
+     ]
+    },
+    {
+     "name": "后期反馈", "size": 14,
+     "children": [
+      {"name": "廉政教育", "size": 6},
+      {"name": "掌握人员思想动态", "size": 5},
+      {"name": "及时处理苗头问题", "size": 2},
+      {"name": "高薪养廉", "size": 1}
+     ]
+    }
+   ]
+  }
+ ]
+}
