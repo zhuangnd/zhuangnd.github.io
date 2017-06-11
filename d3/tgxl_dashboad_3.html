@@ -236,8 +236,10 @@
 		var v5=[];
 
 	//d3.selectAll("svg").on("click",function(){upd();});
-						
-d3.csv("main_mon.csv",function(error,d){
+
+var file_name = "main_mon.csv"
+
+d3.csv(file_name,function(error,d){
 		//数据筛选
 		//d=d.filter(function(e){return e.spend_time_i_1 > 12});
 		alldata=d;
