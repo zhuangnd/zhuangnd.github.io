@@ -72,8 +72,10 @@ var svg = d3.select("body").append("svg")
 
 var link = svg.selectAll(".link"),
     node = svg.selectAll(".node");
+	
+var nnn = 1;
 
-d3.json("force1.json", function(error, json) {
+d3.json("force" + nnn + ".json", function(error, json) {
   if (error) throw error;
 
   root = json;
