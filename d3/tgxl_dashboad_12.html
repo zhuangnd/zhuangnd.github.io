@@ -500,7 +500,7 @@ d3.csv(file_name,function(error,d){
 				svg.selectAll(".title")
 				    .transition()
 				    .duration(1000)
-					.text(function(d,i){return cus_names[i] + tt[1] + chart_title;});
+					.text(function(d,i){return cus_names[i] + tt[0] + chart_title;});
 
 				//Update scale domains
 				yScale.domain([0,d3.max(v4)*1.2]);
