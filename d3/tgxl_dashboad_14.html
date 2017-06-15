@@ -793,7 +793,7 @@ d3.csv(file_name,function(error,d){
 					})	
                .attr("x", margin_bar.left)
                .attr("y", function(d) {return y_bar(d.cus)+h_main+padding.top+10})
-               .attr("width", function(d) {return x_bar(parseFloat(d.spend_time_i_1))})
+               .attr("width", function(d) {return d3.min(x_bar(parseFloat(d.spend_time_i_1)),w_site)})
                .attr("height", y_bar.rangeBand())
 			.on("click", function(d,i) {
 				upd(d.cus_code);
