@@ -1138,7 +1138,7 @@ d3.csv(file_name,function(error,d){
 		.style("fill","skyblue");;
 
 	function update_circle(_time){
-		data_circle= alldata.filter(function(element) {return element.cus_code.substr(0,3) == "37A" && element.mon_axis == _time
+		data_circle= alldata.filter(function(element) {return element.cus_code.substr(0,3) == "37A" && element.mon_axis == _time;
 			});
 		//data_cicrle = data_circle.filter(function(element) {return element.mon_axis == _time});
 			
