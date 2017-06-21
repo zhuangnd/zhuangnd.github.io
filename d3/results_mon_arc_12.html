@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>主要指标展示</title>
+<style>
+
+path {
+  fill: #ccc;
+  stroke: #000;
+  stroke-width: .5px;
+}
+path:hover {
+  
+  cursor: pointer;
+}
+
+	#tooltip {
+		position: absolute;
+		width: auto;
+		height:auto;
+		padding: 5px;
+		background-color: rgba(105,105,105,0.8);
+		pointer-events: none;
+	}
+
+	#tooltip p {
+		margin: 0;
+		font-family: 微软雅黑;
+		font-size: 12px;
+		line-height: 18px;
+	}
+	
+	#tooltip.hidden {
+		display: none;
+	}
+table {
+	margin: 0;
+	font-family: 微软雅黑;
+	font-size: 12px;
+	line-height: 14px;
+	color:whitesmoke;
+	text-align: right;
+	}
+.title {
+	margin: 0;
+	font-family: sans-serif;
+	font-size: 10px;
+	line-height: 12px;
+			}
+.perc {
+				margin: 0;
+				font-family: sans-serif;
+				font-size: 10px;
+				fill: steelblue;
+				opacity:0;
+			}
+.perc:hover {
+	opacity:1;
+	}
+	
+</style>
+<body>
+	<div id="tooltip" class="hidden">
+	<table>
+      <thead class="info_title">
+        <tr>
+          <th style="text-align: left">当月指标</th>
+          <th><span id="c37"></span></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class='barclays'>
+          <td style="text-align: left">比全国</td>
+          <td class='sparkline'><span id="c142"></span></td>
+          <td class='sparkline'><span id="c142pct"></span>%</td>
+        </tr>
+        <tr class='barclays'>
+          <td style="text-align: left">比上月</td>
+          <td class='sparkline'><span id="c37_pre"></span></td>
+          <td class='sparkline'><span id="c37_prepct"></span>%</td>
+        </tr>
+      </tbody>
+    </table>
+	</div>
+
+<script src="http://localhost:8080/d3.min.js"></script>
+<script src="tgbar.js"></script>
+
+<script>
+
+
+var categories_num = 1,rows = 3,cols = 8;
+//categories_num 并列的指标,rows svg分成4行,cols svg分成8列（1行展现8个指标）
+
+var width = 1200,//screen.width/2,
+	height =600//width*3/2,
+    radius =50;// width / cols / 2 - 40;
+//arc半径，1/8 svg宽度的一半，40指标图形间隔
+var svg2 = d3.select("body").append("svg")
+    .attr("width", 1200)
+    .attr("height", 150);
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+	
+//并列指标的颜色，1是参照，2是全国，3是厦门
+var color = ["dimgray","orangered","skyblue"];
+var tooltip = d3.select("#tooltip");
+var data= [];
+var category_titles = [];
+var mon = 
+d3.csv("results.csv",function(error,d){
+		alldata=d;
+		data=alldata.filter(function(e){return e.mon_axis == 1705 && 
+			e.mon_type == "m" && (e.cus == "全国" || e.cus == "厦门海关") || 
+			e.mon_axis == 1704 && e.mon_type == "m" && e.cus == "厦门海关"})
+		categories=d3.keys(alldata[0]).slice(5,29);//d3.keys获取data关键字，slice(start,end)数组截取
+		//values=d3.values(alldata[0]).slice(5,29);//d3.keys获取data关键字，slice(start,end)数组截取
+//创建指标标题		
+svg.selectAll("text")
+	.data(categories).enter()
+  .append("text")
+	.attr("class", "title")
+	.text(function(d){return d;})
+	.attr("x", function(d,i){return (i % cols * 2 + 1)*(width / cols / 2) - d.length * 5;})
+	//
+	//6为category_titles字体大小14px的一半，乘以字数
+	.attr("y", function(d,i){return (height * Math.floor(i / cols) / rows + 20);});
+
+var g = svg.selectAll("g")
+    .data(categories)
+  .enter().append("g")
+    .attr("transform", function(d, i) { return "translate(" + (Math.floor(i/categories_num)%cols*2+1)*((width)/cols/2)
+      + "," + (height*(Math.floor(i/cols/categories_num))/rows+40+radius) + ")"; });
+     
+    //console.log确认数组对应的字段 
+	//console.log("0"+ " " +data[0].mon_axis+" "+data[0].cus);      
+	//console.log("1"+ " " +data[1].mon_axis+" "+data[1].cus);      
+	//console.log("2"+ " " +data[2].mon_axis+" "+data[2].cus);
+	
+var arc = d3.svg.arc()
+	.startAngle(-Math.PI / 2)
+	.endAngle(function(d,i){
+		if (data[1][categories[i]]<5) return (data[1][categories[i]]*10/50-1)*Math.PI/2;
+		else return (data[1][categories[i]]/50-1)*Math.PI /2;//data第1组数中第第i个categoriy对应的值
+		})
+    .innerRadius(radius-5)
+    .outerRadius(radius);	
+var path=g.append("path")
+	//.transition()
+	//.duration(1000)
+    .attr("d", arc)
+    .attr("id", function(d, i) { return "arc-" + i; })
+    .style("fill",function(d,i){
+		if (parseFloat(data[1][categories[i]])<parseFloat(data[2][categories[i]]))
+		    return "deepskyblue";
+		else
+		    return "coral";
+		})//
+
+    .style("stroke","none")
+	.on("mouseover", function (d,i) {
+						tooltip_update(d,i);
+			d3.select("#tooltip").classed("hidden", false);
+                })
+    .on("mouseout", function () {
+			d3.select("#tooltip").classed("hidden", true);
+                })
+	//.on("click",function (d,i){tgbar();})
+	;
+
+arc
+	.endAngle(function(d,i){
+		if (data[2][categories[i]]<5) return (data[2][categories[i]]*10/50-1)*Math.PI/2;
+		else return (data[2][categories[i]]/50-1)*Math.PI /2;
+		})
+	.innerRadius(radius-10)
+    .outerRadius(radius-5);	
+var path=g.append("path")
+	//.transition()
+	//.duration(1000)
+    .attr("d", arc)
+    .attr("id", function(d, i) { return "arc-" + i; })
+    .style("fill","steelblue")//
+    .style("opacity",".9")
+    .style("stroke","none")
+	.on("mouseover", function (d,i) {
+						tooltip_update(d,i);
+			d3.select("#tooltip").classed("hidden", false);
+                })
+    .on("mouseout", function () {
+			d3.select("#tooltip").classed("hidden", true);
+                })
+	//.on("click",function (d,i){tgbar();})
+	;
+	
+arc
+	.endAngle(function(d,i){
+		if (data[0][categories[i]]<5) return (data[0][categories[i]]*10/50-1)*Math.PI/2;
+		else return (data[0][categories[i]]/50-1)*Math.PI /2;
+		})
+    .innerRadius(radius-15)
+    .outerRadius(radius-10);	
+var path=g.append("path")
+	//.transition()
+	//.duration(1000)
+    .attr("d", arc)
+    .attr("id", function(d, i) { return "arc-" + i; })
+    .style("fill",function(d,i){
+		if (parseFloat(data[0][categories[i]])<parseFloat(data[2][categories[i]]))
+		    return "lightskyblue";
+		else
+		    return "salmon";
+		})//
+    .style("opacity",".9")
+    .style("stroke","none")
+	.on("mouseover", function (d,i) {
+						tooltip_update(d,i);
+			d3.select("#tooltip").classed("hidden", false);
+                })
+    .on("mouseout", function () {
+			d3.select("#tooltip").classed("hidden", true);
+                })
+	//.on("click",function (d,i){tgbar();})
+	;
+				
+//var title_text=g.append("text")
+//    .attr("dx", 5)
+//    .attr("dy", -5);
+//var path_text=title_text.append("textPath")
+    //.attr("xlink:href", function(d, i) { return "#arc-" + i; });
+	//.attr("text-anchor","middle")
+    //.text(function(d,i) {if (i%categories_num == 2){ return d + "%";};});
+	});
+	
+		function tooltip_update(d,i){
+			d3.select("#tooltip")
+				.transition()
+				.duration(300)
+				.style("left", (d3.event.pageX) + "px")
+				.style("top", (d3.event.pageY)-50 + "px");
+			d3.selectAll("#c37")
+				.text(parseFloat(data[2][categories[i]]).toFixed(1));
+			d3.selectAll("#c142")
+				.text(parseFloat(data[1][categories[i]]).toFixed(1));
+			d3.selectAll("#c142pct")
+				.text(((parseFloat(data[2][categories[i]])/parseFloat(data[1][categories[i]])-1)*100).toFixed(1));
+			d3.selectAll("#c37_pre")
+				.text(parseFloat(data[0][categories[i]]).toFixed(1));
+			d3.selectAll("#c37_prepct")
+				.text(((parseFloat(data[2][categories[i]])/parseFloat(data[0][categories[i]])-1)*100).toFixed(1));
+			}
+					
+
+</script>
