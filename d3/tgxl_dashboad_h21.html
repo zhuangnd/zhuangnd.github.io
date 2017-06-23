@@ -1,0 +1,1154 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+    	<meta name="viewport" content="initial-scale=1,maximum-scale=1"/>
+		<title>厦门关区通关时间月度表</title>
+		<script type="text/javascript" src="http://localhost:8080/d3.v3.js"></script>
+<style type="text/css">
+	body {
+		background-color:white;
+		}
+		
+	.axis path,
+	.axis line,
+	.axis_bar path,
+	.axis_bar line {
+		fill: none;
+		stroke: #ddd;
+		shape-rendering: crispEdges;
+	}
+
+
+	.x_bar path,
+	.x2_bar path,
+	.y_bar path,
+	.y_bar line{
+		display:none;
+		}
+		
+	.axis text,
+	.axis_bar text {
+		font-family: 微软雅黑;
+		font-size: 10px;
+		fill:gray;
+		text-anchor: end;
+		font-weight:200;		
+	}
+	.MyText {
+		fill: white;
+		text-anchor: middle;
+	}
+	
+    .MyRect0 {
+        fill:#c6dbef;
+        }
+    .MyRect1 {
+        fill:#9ecae1;
+        }
+    .MyRect2 {
+        fill:#6baed6;
+        }
+    .MyRect3 {
+        fill:#3182bd;
+        }
+        		
+	.Mycircle {
+		fill: steelblue;
+		opacity:1;
+	}	
+	.Myline {
+		fill:none;
+		stroke:lightsalmon;
+		stroke-width:1;
+	}
+	
+	.rect24 {
+		fill: lightsalmon;
+		opacity:1;
+	}	
+	.circle3 {
+		fill: skyblue;
+		opacity:1;
+	}		
+	.rectbar {
+		fill: skyblue;
+		opacity:1;
+	}	
+	rect:hover {
+		fill: orangered;
+		opacity:0.2;
+		cursor: pointer;
+	}
+	
+	.rect24:hover {
+		fill: l;
+		opacity:0.2;
+		cursor: pointer;
+	}
+	.circle3:hover {
+		fill: orangered;
+		opacity:1;
+		cursor: pointer;
+	}
+	.pagetitle {
+		fill: orange;
+		font-family: 微软雅黑;
+        font-style: italic;
+		font-size: 15px;
+		text-align: center;
+	}
+	
+	.title1:hover {		
+		cursor: pointer;
+	}
+
+	#tooltip {
+		position: absolute;
+		width: auto;
+		height:auto;
+		padding: 5px;
+		background-color: rgba(0,0,0,0.7);
+		pointer-events: none;
+	}
+	#tooltip_fixed {
+		background-color: whitesmoke;
+		position: absolute;
+		width: auto;
+		height:auto;
+		color:dimgray;
+		left:800px;
+		top:80px;
+	}
+	
+	#tooltip.hidden {
+		display: none;
+	}
+				
+	#tooltip_fixed.hidden {
+		display: none;
+	}
+			
+	#tooltip p {
+		margin: 0;
+		font-family: 微软雅黑;
+		font-size: 12px;
+		line-height: 18px;
+	}
+	
+	#tooltip_fixed table {
+		margin: 2px;
+		font-family: 微软雅黑;
+		font-size: 14px;
+		line-height: 18px;
+	}
+	.info_title {
+		font-weight:bold
+		}
+	.cred {
+		color:orangered;
+		}
+	#tooltip_title {
+				position: absolute;
+				margin: 0;
+				font-family: 微软雅黑;
+				font-size: 14px;
+				font-style: italic;
+				line-height: 18px;
+			}
+	
+
+     .play-button {
+          margin-left: 10px;
+          margin-bottom: 15px;
+		  font-family: 微软雅黑;
+          font-style: italic;
+          cursor: pointer;
+     }
+	 
+     .play-button:hover {
+		  fill:orangered;
+		  opacity:0.8;
+     }
+
+     .selected {
+		  fill:orangered;
+		  opacity:0.2;
+          font-weight: 900;
+     }
+	 
+	.x_main.selected {
+		  color:orangered;
+		  opacity:0.9;
+          font-weight: 900;
+     }
+	 
+     .rect24.selected {
+		  fill:orangered;
+		  opacity:0.2;
+          font-weight: 900;
+     }
+     .top-label {
+		font-family: 微软雅黑;
+		font-size: 10px;
+          text-transform: uppercase;
+          float: left;
+		  padding-left:50px;
+		  fill:skyblue
+     }
+    .bottom-label {
+		font-family: 微软雅黑;
+		font-size: 10px;
+          text-transform: uppercase;
+          float: left;
+		  padding-left:50px;
+		  fill:lightsalmon;
+     }
+
+     .clearfix {
+          clear: both;
+     }
+	 
+     .bar {
+          fill: skyblue;
+     }
+	 
+	#guide.hidden {
+		display: none;
+	}
+	
+	#guide {
+		position: absolute;
+		width: auto;
+		height:auto;
+		padding: 5px;
+		background-color: rgba(245,245,245,0.5);
+		pointer-events: none;
+	}
+			
+	#guide p {
+		margin: 0;
+		font-family: 微软雅黑;
+		font-size: 12px;
+		line-height: 18px;
+	}
+
+	#titleguide.hidden {
+		display: none;
+	}
+	
+	#titleguide {
+		position: absolute;
+		width: auto;
+		height:auto;
+		padding: 5px;
+		background-color: rgba(245,245,245,0.5);
+		pointer-events: none;
+	}
+			
+	#titleguide p {
+		margin: 0;
+		font-family: 微软雅黑;
+		font-size: 12px;
+		line-height: 18px;
+	}
+</style>
+</head>
+<body>
+	<div id="tooltip" class="hidden">
+		<p style="color:#c6dbef">通关时间:<span id="ctime"></span>小时</p>
+		<p style="color:#9ecae1">剔除1%:<span id="ctime1"></span>小时</p>
+		<p style="color:#6baed6">剔除5%:<span id="ctime5"></span>小时</p>
+		<p style="color:#3182bd">剔除10%:<span id="ctime10"></span>小时</p>
+		<p style="color:lightsalmon">放行率:<span id="crate"></span>%</p>
+	</div>
+
+	<div id="tooltip_fixed" class="fixed">	
+    <table>
+      <thead class="info_title">
+        <tr>
+          <th><span id="ccus"></span><span id="cmon"></span></th>
+          <th>当月通关效率情况</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class='barclays'>
+          <td>通关时间:</td>
+          <td class='sparkline'><span id="ctime"></span>小时</td>
+        </tr>
+        <tr class='barclays'>
+          <td>剔除1%超长:</td>
+          <td class='sparkline'><span id="ctime1"></span>小时</td>
+        </tr>
+        <tr class='barclays'>
+          <td>剔除5%超长:</td>
+          <td class='sparkline'><span id="ctime5"></span>小时</td>
+        </tr>
+        <tr class='barclays'>
+          <td>剔除10%超长:</td>
+          <td class='sparkline'><span id="ctime10"></span>小时</td>
+        </tr>
+        <tr class='barclays'>
+          <td>放行率:</td>
+          <td class='sparkline'><span id="crate"></span>%</td>
+        </tr>
+        <tr class='barclays'>
+          <td>影响度:</td>
+          <td class='sparkline'><span id="cinf"></span>%</td>
+        </tr>
+        <tr class='barclays '>
+          <td>贡献率:</td>
+          <td class='sparkline'><span id="ccon" class="cred"></span>%</td>
+        </tr>
+      </tbody>
+    </table>
+	</div>
+	
+	<div id="guide" class="hidden">
+		<p style="color:dimgray">影响度：现场报关单通关时间总和（单量X平均时间）占厦门关区整体通关时间总和的比率</p>
+		<p style="color:dimgray">贡献率：现场报关单通关时间总和相对上月的变化占对厦门关区整体通关时间变化的比率。正值为蓝色，负值为橙色。</p>
+	</div>
+		
+	<div id="titleguide" class="hidden">
+		<p style="color:dimgray">点击切换进出口</p>
+	</div>
+	
+	<div >
+    <label>
+        <span id="tooltip_title"></span>
+    </label>
+	</div>
+	<script type="text/javascript">
+
+	//<h3 class="pagetitle">通关效率分析</h3>
+		//画布大小
+	var width = 1280;//screen.width-40;//900;
+	var height = 800;//screen.height/2;//400;
+	var w_main = 800,h_main = 350,w_info = 400,h_info = 300,w_site = 300,h_site = 400;
+	var body = d3.select("body");
+	
+
+	//在 body 里添加一个 SVG 画布	
+	var svg = d3.select("body")
+		.append("svg")
+		.attr("width", width)
+		.attr("height", height);
+
+	//画布周边的空白
+	var padding = {left:50, right:50, top:50, bottom:80};
+
+	//x轴的比例尺
+	var xScale = d3.scale.ordinal()
+		.rangeRoundBands([0, w_main - padding.left - padding.right]);
+
+	//y轴的比例尺
+	var yScale = d3.scale.linear()
+		.range([h_main - padding.top - padding.bottom, 0]);
+
+	//y2轴的比例尺
+	var y2Scale = d3.scale.linear()
+		.range([h_main - padding.top - padding.bottom, 0]);
+
+	//矩形之间的空白
+	var rectPadding = 2;
+		
+	
+	var line=d3.svg.line()
+        //.interpolate("basis")
+    	.interpolate("cardinal")//平滑曲线
+		.x(function(d,i){return xScale(i) + xScale.rangeBand()/2+padding.left;})
+		.y(function(d){return y2Scale(d)+padding.top;});
+			
+	var color_stack = d3.scale.category20c();
+	
+	//定义x轴
+	var xAxis = d3.svg.axis()
+		.scale(xScale)
+		.orient("bottom");
+		
+	//定义y轴
+	var yAxis = d3.svg.axis()
+		.scale(yScale)
+		.ticks(5)
+		.orient("left");
+
+	//定义y2轴	
+	var y2Axis = d3.svg.axis()
+		.scale(y2Scale)
+		.ticks(5)
+		.orient("right");
+    var cc = ["#3182bd", "#6baed6", "#9ecae1", "#c6dbef", "#e6550d", "#fd8d3c", 
+        "#fdae6b", "#fdd0a2", "#31a354", "#74c476", "#a1d99b", "#c7e9c0", 
+        "#756bb1", "#9e9ac8", "#bcbddc", "#dadaeb", "#636363", "#969696", 
+        "#bdbdbd", "#d9d9d9"]
+        
+    var data_map = ["cus","cus_code","mon","cus_simple","mon_axis","influence_i",
+        "contribution_h_i","num_all_i","total_time_i","total_time_change_i",
+        "influence_e","contribution_e","num_all_e","total_time_e",
+        "total_time_change_e","time_i","time_i","time_e",
+        "time_e","rate24_i","rate24_i","rate24_e","rate24_e",
+        "w_rate_ie","w_rate_i","w_rate_e","check_rate_ie","check_rate_i",
+        "check_rate_e","catch_rate_ie","catch_rate_i","catch_rate_e","bill_num_ie",
+        "bill_num_i","bill_num_e","bill_rate_ie","bill_rate_i","bill_rate_e",
+        "kqy_num_ie","kqy_num_i","kqy_num_e","kqy_rate_ie","kqy_rate_i",
+        "kqy_rate_e","kgq_num_ie","kgq_num_i","kgq_num_e","kgq_rate_ie",
+        "kgq_rate_i","kgq_rate_e","time_without_pct1_i","time_without_pct5_i","time_without_pct10_i",
+        "time_pct1_i","time_pct5_i","pct10_i","time_without_pct1_e","time_without_pct5_e","time_without_pct10_e","time_pct1_e",
+        "time_pct5_e","time_pct10_e"]
+    
+    var rectsd = [["time_e","time_without_pct1_e","time_without_pct5_e","time_without_pct10_e","rate24_e","influence_e","contribution_h_e"],
+            ["time_i","time_without_pct1_i","time_without_pct5_i","time_without_pct10_i","rate24_i","influence_i","contribution_h_i"]];
+	var w;
+		var IEflag=1;
+		var cus_flag = "37";
+		var tt=[" 出口 "," 进口 "];
+		var v2=[];
+		var v3=[];
+		var v4=[];
+		var v5=[];
+		var data_time=[];
+		var cus_names = [];
+		var cus_codes = [];
+		var inf = [];
+		var con = [];
+		var data_month=[];
+
+	//d3.selectAll("svg").on("click",function(){upd();});
+
+var file_name = "main.csv";	
+
+d3.csv(file_name,function(error,d){
+		//数据筛选
+		//d=d.filter(function(e){return e.time_i > 12});
+		alldata=d;
+		//d=d.filter(function(e){return e.mon == 201703});
+		//d=d.filter(function(e){return e.mon_axis > 1411});
+		//d=d.filter(function(e){return e.cus_code.substr(0,3) == "37A"});//隶属关办
+		//d=d.filter(function(e){return e.cus_code.substr(2,2) < 99});//现场
+		data_main=alldata.filter(function(e){return e.cus_code == cus_flag;});//关区
+		data_main.forEach(function(d){
+			v2.push(parseFloat(d.time_i));	
+			v3.push(parseFloat(d.rate24_i));
+			v4.push(parseFloat(d.time_e));			
+			v5.push(parseFloat(d.rate24_e));
+			cus_names.push(d.cus);
+			cus_codes.push(d.cus_code);
+			inf.push(d.influence_i);
+			con.push(d.contribution_h_i);
+			data_time.push(d.mon_axis);
+			data_month.push(d.mon);
+		});
+
+	
+
+	 var year_bar = d3.max(data_main, function(element) { return parseFloat(element.mon_axis); });
+	 var tooltip_i = data_main.length-1;//固定tooltip时的i值,初始值为最后一个选择的月份
+	 var chart_title = "通关效率";
+	 
+	//x轴的比例尺
+	xScale.domain(d3.range(data_main.length));
+	yScale.domain([0,d3.max(data_main, function(element) { return parseFloat(element.time_i); })]).nice();
+	y2Scale.domain([d3.min(data_main, function(element) { return parseFloat(element.rate24_i); }),100]).nice();
+	//y2Scale.domain([70,100]);
+
+
+
+
+	//添加图表标题
+
+	var tooltip_title = d3.select("#tooltip_title");
+	svg.append("text")
+		.attr("class", "title1 pagetitle")
+		.text(data_main.map(function(e){return e.cus;})[0] + tt[1] + chart_title)
+		.attr("x", w_main/2-100)
+		//标题x位置，svg宽度的一半减去文本长度的一半，文本长度为字数*像素（9*142px/2）
+		.on("click",function(){
+			if (IEflag==1){IEflag=0;}
+                else {IEflag=1;};
+			upd(cus_flag);
+			update_site(d3.max(data_main, function(element) { return parseFloat(element.mon_axis); }));
+			update_circle(d3.max(data_main, function(element) { return parseFloat(element.mon_axis); }));
+			})
+		.on("mouseover", function () {
+			titleguide();
+			d3.select("#titleguide").classed("hidden", false);
+            })
+		.on("mouseout", function () {
+			d3.select("#titleguide").classed("hidden", true);
+            })
+		.attr("y", 15);		
+
+	//添加矩形元素
+	
+	var rects1 = [0,1,2,3];//4个堆叠
+	var c1 = ["0","1","2","3"];//class
+
+	for (j = 0;j < 4;j++){
+	 rects1[j] = svg.selectAll(".MyRect"+c1[j])
+		.data(data_main)
+		.enter()
+	  .append("rect")
+		//.attr("class","MyRect"+"0")
+        .attr("class", function(d,i) {
+               if(d.mon_axis == year_bar)
+                    return "rect_time MyRect"+c1[j]+"  selected";
+               else
+                    return "rect_time MyRect"+c1[j];
+          })
+		.attr("transform","translate(" + padding.left + "," + padding.top + ")")
+		.attr("x", function(d,i){
+			return xScale(i) + rectPadding;
+		})
+		.attr("width", (xScale.rangeBand() - rectPadding) )
+
+		.attr("y",function(d) {
+                return yScale(d[rectsd[IEflag][j]]);
+            })
+		.attr("height",function(d) {
+                return h_main - padding.top - padding.bottom - yScale(d[rectsd[IEflag][j]]);
+            })
+        .on("mouseover", function(d,i){
+			tooltip_update(d,i);
+			//Show the tooltip
+			d3.select("#tooltip").classed("hidden", false);
+			d3.select("#tooltip_fixed").classed("hidden", false);
+		})
+		.on("mouseout", function() {
+			//Hide the tooltip
+			d3.select("#tooltip").classed("hidden", true);
+			//d3.select("#tooltip_fixed").classed("hidden", true);
+			
+			tooltip_update(d,tooltip_i);
+		})
+		.on("click", function(d,i) {
+			tooltip_i = i;//固定tooltip时的i值
+			update_site(d.mon_axis);
+			update_circle(d.mon_axis);
+            clearInterval(playInterval);
+			d3.select(this).classed("selected",true);
+			d3.select("#tooltip_fixed").classed("hidden", false);
+		});    
+    };
+                
+    		
+		
+	//散点
+	var circle = svg.selectAll(".Mycircle")
+		.data(data_main)
+		.enter()
+	  .append("circle")
+		.attr("class","Mycircle")
+		.attr("transform","translate(" + padding.left + "," + padding.top + ")")
+		.attr("cx", function(d,i){
+			return xScale(i) + xScale.rangeBand()/2 ;
+		})
+		.attr("cy",function(d,i){
+			return y2Scale(d.rate24_i)
+		})
+		.attr("r", 1);
+
+	//折线
+
+		
+	svg.selectAll(".Myline")
+		.data(data_main)
+		.enter()
+	  .append("path")
+		.attr("class","Myline")
+		.attr("d",line(data_main.map(function(element) {return element.rate24_i})));//line后面要跟数组，而不是值。
+
+	
+
+	//添加x轴
+	var x_axis_texts=svg.append("g")
+		.attr("class","x axis")
+		.attr("transform","translate(" + padding.left + "," + (h_main - padding.bottom) + ")")
+		.call(xAxis)
+		.selectAll("text")
+		//微调x轴文字位置
+		.attr("transform","rotate(-45)")
+		.attr("x",-20)
+		.attr("y",5)
+		.text(function(d,i){return data_time[i];})
+		.style("font-size",10)
+		.attr("class", function(d,i) {
+               if(data_time[i] == year_bar)
+                    return "selected x_main";
+               else
+                    return "unselected x_main";
+          }); 
+		
+	//添加y轴
+	svg.append("g")
+		.attr("class","y axis")
+		.attr("transform","translate(" + padding.left + "," + padding.top + ")")
+		.call(yAxis)
+	  .append("text")
+		.attr("x",padding.left/2)
+		.attr("y",-10)
+		.text("时间(小时)")
+		.style("fill","skyblue");
+
+
+	//添加y2轴
+	svg.append("g")
+		.attr("class","y2 axis")
+		.attr("transform","translate(" + (w_main-padding.left) + "," + padding.top + ")")
+		.call(y2Axis)
+	  .append("text")
+		.attr("x",padding.left/2)
+		.attr("y",-10)
+		.text("放行率%")
+		.style("fill","steelblue");	
+	
+//});
+
+
+
+	function upd(updateCus) {
+		//cus_names=[];
+        d3.selectAll(".rectbar")
+            .classed("selected", false);
+        d3.selectAll(".rect24")
+            .classed("selected", false);
+		//bars_bar用d.cus_code，rects用cus_codes[i],两个数据集不同
+        bars_bar
+            .filter(function(d,i) { return d.cus_code == updateCus; })
+            .classed("selected", true);
+        bars_bar24
+            .filter(function(d,i) { return d.cus_code == updateCus; })
+            .classed("selected", true);				
+
+
+		data_main=alldata.filter(function(e){return e.cus_code == updateCus;});//关区
+		//console.log(updateCus);
+		//data_main.forEach(function(d){
+		//	cus_names.push(d.cus);
+		//});
+		
+        //var ie_switch = [["time_e","time_i"],["rate24_e","rate24_i"]];
+        
+		svg.selectAll(".title1")
+			.transition()
+		    .duration(1000)
+			.text(function(d,i){return data_main.map(function(element) {return element.cus})[0] + tt[IEflag] + chart_title;});
+
+			//Update scale domains
+		yScale.domain([0,d3.max(data_main, function(element) { return parseFloat(element[rectsd[IEflag][0]]); })]).nice();
+	    y2Scale.domain([d3.min(data_main, function(element) { return parseFloat(element[rectsd[IEflag][4]]); }),100]).nice();
+
+			//Update all Rects
+		for (j = 0;j < 4;j++){
+	    rects1[j] = svg.selectAll(".MyRect"+c1[j])
+            .data(data_main)
+			.transition()
+			.duration(1000)
+			.attr("y",function(d) {
+                return yScale(d[rectsd[IEflag][j]]);
+            })
+			.attr("height",function(d) {
+                return h_main - padding.top - padding.bottom - yScale(d[rectsd[IEflag][j]]);
+            });};
+            
+				//散点
+			svg.selectAll(".Mycircle").data(data_main)
+				.transition()
+				.duration(1000)
+				.attr("cy",function(d){
+					return y2Scale(d[[rectsd[IEflag][4]]]);
+				});
+
+				//折线
+				svg.selectAll(".Myline").data(data_main)
+				    .transition()
+				    .duration(1000)
+					.attr("d",line(data_main.map(function(element) {return element[[rectsd[IEflag][4]]]})));
+		
+				//Update X axis
+				svg.select(".x.axis")
+				    .transition()
+				    .duration(1000)
+					.call(xAxis)
+					.selectAll("text")
+		.attr("x",-20)
+		.attr("y",5)
+					.text(function(d,i){return data_time[i];});	
+		
+				//Update Y axis
+				svg.select(".y.axis")
+				    .transition()
+				    .duration(1000)
+					.call(yAxis);
+				//Update Y2 axis
+				svg.select(".y2.axis")
+				    .transition()
+				    .duration(1000)
+					.call(y2Axis);
+	};
+
+
+
+	//现场通关时间
+    var margin_bar = {top: 50, right: 50, bottom: 50, left: 100};
+
+    var body_bar = d3.select("body");
+	
+	var x_bar_width = w_site- margin_bar.left;
+    var x_bar = d3.scale.linear()
+          .range([0, x_bar_width]);
+    var x2_bar = d3.scale.linear()
+          .range([0, x_bar_width]);
+
+    var y_bar = d3.scale.ordinal()
+          .rangeBands([0, h_site- margin_bar.top - margin_bar.bottom], 0.2, 0);
+
+    var xAxis_bar = d3.svg.axis()
+          .scale(x_bar)
+          .orient("top")
+          .ticks(10, "%");
+    var x2Axis_bar = d3.svg.axis()
+          .scale(x2_bar)
+          .orient("bottom")
+          .ticks(10, "%");
+
+    var yAxis_bar = d3.svg.axis()
+          .scale(y_bar)
+          .orient("left");
+
+    function keys_bar(d) {
+          return d.cus_code;
+    }
+
+
+
+    var playAll = svg.append("text")
+          .attr("class", "play-button pagetitle")
+		  .attr("x", margin_bar.left/2)
+		  .attr("y", h_main+15)
+          .text("▶ 点击浏览  每月通关效率变化情况");
+
+     svg.append("text")
+          .attr("class", "top-label asix_label")
+		  .attr("x", x_bar_width+margin_bar.left-padding.left)
+		  .attr("y", h_main+35)
+          .text("时间(小时)");
+     svg.append("text")
+          .attr("class", "bottom-label asix_label")
+		  .attr("x", x_bar_width+margin_bar.left-padding.left)
+		  .attr("y", h_main+h_site-10)
+          .text("放行率%");
+
+
+          data_bar = alldata.filter(function(element) {return element.cus_code.substr(0,3) == "37A" 
+			|| element.cus_code == "142"
+			|| element.cus_code == "37";
+			});
+          popData_bar = data_bar.filter(function(element) {return element.mon_axis == d3.max(data_time);});
+
+          x_bar.domain([0, 100]);//d3.max(data, function(element) { return parseFloat(element.time_i); })]);
+          x2_bar.domain([0, 100]);
+          y_bar.domain(popData_bar.map(function(element) {return element.cus}));//和第一个图形的x轴domain表达方式不一样
+
+
+
+         // var barGroup_bar = svg.append("g")
+         //      .attr("class", "bar");
+
+          var bars_bar = svg.selectAll(".rectbar")
+               .data(popData_bar, keys_bar)
+            .enter().append("rect")
+				.attr("class", function(d,i) {
+					if(d.cus_code == cus_flag)
+						return "rectbar selected";
+					else
+						return "rectbar";
+					})	
+               .attr("x", margin_bar.left)
+               .attr("y", function(d) {return y_bar(d.cus)+h_main+padding.top+10})
+               .attr("width", function(d) {return x_bar(d3.min([175,parseFloat(d.time_i)]))})
+               .attr("height", y_bar.rangeBand())
+		.on("click", function(d,i) {
+				upd(d.cus_code);
+				//update_circle(d.cus_code);
+				//clearInterval(playInterval);
+				d3.select(this).classed("selected",true);
+				})
+		.on("mouseover", function(d,i){
+			tooltip_update_site(d,i);
+			//Show the tooltip
+			d3.select("#tooltip").classed("hidden", false);
+			d3.select("#tooltip_fixed").classed("hidden", false);
+		})
+		.on("mouseout", function() {
+            tooltip_update(d,tooltip_i);
+			//Hide the tooltip
+			d3.select("#tooltip").classed("hidden", true);
+			//d3.select("#tooltip_fixed").classed("hidden", true);
+		});
+          //var barGroup_bar24 = svg.append("g")
+           //    .attr("class", "bar24");
+
+          var bars_bar24 = svg.selectAll(".rect24")
+               .data(popData_bar, keys_bar)
+            .enter().append("rect")
+				.attr("class", function(d,i) {
+					if(d.cus_code == cus_flag)
+						return "rect24 selected";
+					else
+						return "rect24";
+					})
+               .attr("x", function(d) {return margin_bar.left + x2_bar(parseFloat(d.rate24_i))})
+               .attr("y", function(d) {return y_bar(d.cus)+h_main+padding.top+10})
+               .attr("width", 5)
+               .attr("height", y_bar.rangeBand())
+		.on("click", function(d,i) {
+				upd(d.cus_code);
+				//clearInterval(playInterval);
+				d3.select(this).classed("selected",true);
+				})
+		.on("mouseover", function(d,i){
+			tooltip_update_site(d,i);
+			//Show the tooltip
+			d3.select("#tooltip").classed("hidden", false);
+			d3.select("#tooltip_fixed").classed("hidden", false);
+		})
+		.on("mouseout", function() {
+            tooltip_update(d,tooltip_i);
+			//Hide the tooltip
+			d3.select("#tooltip").classed("hidden", true);
+			//d3.select("#tooltip_fixed").classed("hidden", true);
+		});
+			   
+          svg.append("g")
+               .call(xAxis_bar)
+               .attr("class", "x_bar axis_bar")
+			   .attr("transform","translate(" + (margin_bar.left) + "," +  (padding.top+h_main+10) + ")")
+
+
+          svg.append("g")
+               .call(x2Axis_bar)
+               .attr("class", "x2_bar axis_bar")
+			   .attr("transform","translate(" + (margin_bar.left) + "," +  (h_main+h_site-padding.bottom+40) + ")")
+			   
+          svg.append("g")
+               .call(yAxis_bar)
+               .attr("class","y_bar axis_bar")
+			   .attr("transform","translate(" + (margin_bar.left) + "," +  (padding.top+h_main+10) + ")")
+
+
+          var playInterval;
+
+          playAll.on("click", function() {
+
+               var i = 0;
+
+               playInterval = setInterval(function() {
+                    update_site(data_time[i]);
+                    update_circle(data_time[i]);
+					
+                    i++;
+
+                    if(i > data_time.length - 1) {
+                         clearInterval(playInterval);
+                    }
+
+               }, 1500);
+          });
+
+          function update_site(updateYear) {
+
+               d3.selectAll(".MyRect0")
+                    .classed("selected", false);
+               d3.selectAll(".MyRect1")
+                    .classed("selected", false);
+               d3.selectAll(".MyRect2")
+                    .classed("selected", false);
+               d3.selectAll(".MyRect3")
+                    .classed("selected", false);
+			
+               d3.selectAll(".x_main")
+                    .classed("selected", false);					
+					
+               d3.selectAll(".rect_time")
+                    .filter(function(d,i) { return d.mon_axis == updateYear; })
+                    .classed("selected", true);
+					
+			   x_axis_texts
+                    .filter(function(d,i) { return d.mon_axis == updateYear; })
+                    .classed("selected", true);
+
+
+               popData_bar = alldata.filter(function(element) {return element.mon_axis == updateYear;});
+
+               bars_bar.data(popData_bar, keys_bar)
+                    .transition()
+                    .duration(1200)
+                    .attr("width", function(d) { 
+                    	if (IEflag==1){
+                    		x_bar.domain([0, 100]);
+							return x_bar(d3.min([175,parseFloat(d.time_i)]));
+							IEflag=0;
+                    		}
+                    	else {
+                    		x_bar.domain([0, 10]);
+							return x_bar(d3.min([17.5,parseFloat(d.time_e)]));
+							IEflag=1;
+                    		}
+                    	}
+                    );
+                //
+                svg.select(".x_bar")
+               		.call(xAxis_bar)
+					
+			bars_bar24.data(popData_bar, keys_bar)
+                    .transition()
+                    .duration(1200)
+                    .attr("x", function(d) { 
+                    	if (IEflag==1){
+                    		//x2_bar.domain([50, 100]);
+							return margin_bar.left + x2_bar(parseFloat(d.rate24_i));
+							IEflag=0;
+                    		}
+                    	else {
+                    		//x2_bar.domain([95, 100]);
+							return margin_bar.left + x2_bar(parseFloat(d.rate24_e));
+							IEflag=1;
+                    		}
+                    	}
+                    );
+                //
+                svg.select(".x2_bar")
+                    //.transition()
+                    //.duration(1000)
+               		.call(x2Axis_bar)
+
+          };
+	//影响度和贡献率散点图
+	//x轴的比例尺
+	var x3Scale = d3.scale.ordinal()		
+          .rangeBands([0, w_site], 0.2, 0);
+		  //.rangeRoundBands([0, w_site - padding.left - padding.right]);
+
+	//y2轴的比例尺
+	var y3Scale = d3.scale.linear()
+		.range([h_site - margin_bar.top - margin_bar.bottom, 0]);
+
+	//定义x轴
+	var x3Axis = d3.svg.axis()
+		.scale(x3Scale)
+		.orient("bottom");
+
+	//定义y3轴	
+	var y3Axis = d3.svg.axis()
+		.scale(y3Scale)
+		.ticks(5)
+		.orient("left");
+		
+	data_circle = alldata.filter(function(element) {return element.cus_code.substr(0,3) == "37A" && element.mon_axis == year_bar;});
+	
+    x3Scale.domain(data_circle.map(function(element) {return element.cus_simple}));//和第一个图形的x轴domain表达方式不一样
+	
+	//x3Scale.domain(d3.range(function(element) { return parseFloat(element.contribution_h_i); }.length));
+	y3Scale.domain([d3.min(data_circle, function(element) { return parseFloat(element[rectsd[IEflag][6]]); }),
+			d3.max(data_circle, function(element) { return parseFloat(element[rectsd[IEflag][6]]); })])
+		.nice();
+	
+	//标题
+	svg.append("text")
+        .attr("class", "title3 pagetitle")
+		.attr("x", w_site + padding.left*2+padding.right)
+		.attr("y", h_main+15)
+        .text("通关时间影响度和贡献率")
+		.on("mouseover", function(d,i){
+			guide();
+			d3.select("#guide").classed("hidden", false);
+		})
+		.on("mouseout", function() {
+			d3.select("#guide").classed("hidden", true);
+		});
+	
+	//散点
+	var circle3 = svg.selectAll(".circle3")
+		.data(data_circle)
+		.enter()
+	  .append("circle")
+		.attr("class","circle3")
+		.attr("transform","translate(" + (w_site+padding.left*2+padding.right) + "," + (h_main+padding.top) + ")")
+		.attr("cx", function(d,i){
+			return x3Scale(d.cus_simple) + x3Scale.rangeBand()/2 ;
+		})
+		.attr("cy",function(d,i){
+			return y3Scale(d[rectsd[IEflag][6]])
+		})
+		.attr("r", function(d) {
+			   		return Math.sqrt(d[rectsd[IEflag][5]])*2;
+			   })
+		.style("stroke",function(d){if (d[rectsd[IEflag][6]] > 0) return "deepskyblue"; else return "orangered";})
+		.style("fill",function(d){if (d[rectsd[IEflag][6]] > 0) return "skyblue"; else return "orange";})
+		.style("opacity",0.8)
+		.on("click", function(d,i) {
+				upd(d.cus_code);
+				//clearInterval(playInterval);
+				d3.select(this).classed("selected",true);
+				})
+		.on("mouseover", function(d,i){
+			tooltip_update_site(d,i);
+			//Show the tooltip
+			d3.select("#tooltip").classed("hidden", false);
+			d3.select("#tooltip_fixed").classed("hidden", false);
+		})
+		.on("mouseout", function() {
+            tooltip_update(d,tooltip_i);
+			//Hide the tooltip
+			d3.select("#tooltip").classed("hidden", true);
+			//d3.select("#tooltip_fixed").classed("hidden", true);
+		});
+		//.style("opacity",function(d){return d.contribution_h_i/100;});
+	//添加x3轴
+	svg.append("g")
+		.call(x3Axis)
+		.attr("class","x3 axis")
+		.attr("transform","translate(" + (w_site+padding.left*2+margin_bar.right) + "," + (h_main +h_site- margin_bar.bottom) + ")")
+		.selectAll("text")
+		//微调x轴文字位置
+		.attr("transform","rotate(-45)")
+		.attr("x",-15)
+		.attr("y",10);		
+
+	//添加y3轴
+	svg.append("g")
+		.attr("class","y3 axis")
+		.attr("transform","translate(" + (w_site+padding.left*2+margin_bar.right) + "," + (h_main +margin_bar.top) + ")")
+		.call(y3Axis)
+	  .append("text")
+		.attr("x",10)
+		.attr("y",-10)
+		.text("贡献率%")
+		.style("fill","skyblue");;
+
+	function update_circle(_time){
+		data_circle= alldata.filter(function(element) {return element.cus_code.substr(0,3) == "37A" && element.mon_axis == _time;
+			});
+		//data_cicrle = data_circle.filter(function(element) {return element.mon_axis == _time});
+
+		//Update scale domains			
+		y3Scale.domain([d3.min(data_circle, function(element) { return parseFloat(element[rectsd[IEflag][6]]); }), 
+				d3.max(data_circle, function(element) { return parseFloat(element[rectsd[IEflag][6]]); })])
+			.nice();
+		
+		circle3.data(data_circle)
+            .transition()
+            .duration(1200)
+			.attr("cy",function(d){
+				return y3Scale(d[rectsd[IEflag][6]]);
+                    })
+			.attr("r", function(d) {
+				return Math.sqrt(d[rectsd[IEflag][5]])*2;
+                    })
+			.style("stroke",function(d){if (d[rectsd[IEflag][6]] > 0) return "deepskyblue"; else return "orangered";})
+			.style("fill",function(d){if (d[rectsd[IEflag][6]] > 0) return "skyblue"; else return "orange";})
+			.style("opacity",0.8);
+
+		//添加y3轴
+		svg.selectAll(".y3")
+            .transition()
+            .duration(1200)
+			.call(y3Axis);
+		//	.attr("transform","translate(" + (w_site+padding.left*2+padding.right) + "," + (h_main +padding.top) + ")");
+		};
+
+	//超长时间堆积图
+
+	var pct = ["time_without_pct1_i","time_without_pct5_i","time_without_pct10_i"];
+    var data_stack = d3.layout.stack()(pct.map(function(c) {
+      return data_main.map(function(d) {
+        return {x: d.mon_axis, y: d[c]};
+      });
+    }));
+    //console.log(data_stack);
+    
+
+	function tooltip_update(d,i){
+	//Update the tooltip position and value
+			d3.select("#tooltip")
+				.transition()
+				.duration(300)
+				.style("left", (d3.event.pageX) + "px")
+				.style("top", (d3.event.pageY)-50 + "px");
+			d3.selectAll("#cmon")
+				.text(data_main[i].mon);
+			d3.selectAll("#ctime")
+				.text(data_main[i][rectsd[IEflag][0]]);
+			d3.selectAll("#ctime1")
+				.text(data_main[i][rectsd[IEflag][1]]);
+			d3.selectAll("#ctime5")
+				.text(data_main[i][rectsd[IEflag][2]]);
+			d3.selectAll("#ctime10")
+				.text(data_main[i][rectsd[IEflag][3]]);
+			d3.selectAll("#crate")
+				.text(data_main[i][rectsd[IEflag][4]]);
+			d3.selectAll("#ccus")
+				.text(data_main[i].cus);
+			d3.selectAll("#cinf")
+				.text(data_main[i][rectsd[IEflag][5]]);
+			d3.selectAll("#ccon")
+				.text(data_main[i][rectsd[IEflag][6]])
+				.classed("cred", function(){
+					if (data_main[i][rectsd[IEflag][6]]<0) return true;
+					else return false;
+					});}
+	function tooltip_update_site(d,i){
+	//Update the tooltip position and value
+			d3.select("#tooltip")
+				.transition()
+				.duration(300)
+				.style("left", (d3.event.pageX) + "px")
+				.style("top", (d3.event.pageY)-50 + "px");
+			d3.selectAll("#cmon")
+				.text(d.mon);
+			d3.selectAll("#ctime")
+				.text(d[rectsd[IEflag][0]]);
+			d3.selectAll("#ctime1")
+				.text(d[rectsd[IEflag][1]]);
+			d3.selectAll("#ctime5")
+				.text(d[rectsd[IEflag][2]]);
+			d3.selectAll("#ctime10")
+				.text(d[rectsd[IEflag][3]]);
+			d3.selectAll("#crate")
+				.text(d[rectsd[IEflag][4]]);
+			d3.selectAll("#ccus")
+				.text(d.cus);
+			d3.selectAll("#cinf")
+				.text(d[rectsd[IEflag][5]]);
+			d3.selectAll("#ccon")
+				.text(d[rectsd[IEflag][6]])
+				.classed("cred", function(){
+					if (d[rectsd[IEflag][6]]<0) return true;
+					else return false;
+					});}
+	
+    function titleguide(){
+		d3.select("#titleguide")
+			.transition()
+			.duration(300)
+			.style("left", (d3.event.pageX) + "px")
+			.style("top", (d3.event.pageY)+25 + "px");
+		}
+						
+	function guide(){
+			d3.select("#guide")
+				.transition()
+				.duration(300)
+				.style("left", (d3.event.pageX) + "px")
+				.style("top", (d3.event.pageY)-50 + "px");
+				}
+				
+});  
+//the d3.csv end  
+
+
+
+	</script>
+</body>
+</html>
+
