@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>主要指标展示</title>
+<style>
+
+
+path:hover {
+  
+  cursor: pointer;
+}
+
+	#tooltip {
+		position: absolute;
+		width: auto;
+		height:auto;
+		padding: 5px;
+		pointer-events: none;
+	}
+
+	#tooltip p {
+		margin: 0;
+		font-family: 微软雅黑;
+		font-size: 12px;
+		line-height: 18px;
+	}
+	
+	#tooltip.hidden {
+		display: none;
+	}
+table {
+	margin: 0;
+	font-family: 微软雅黑;
+	font-size: 14px;
+	line-height: 13px;
+	color:dimgray;
+	text-align: right;
+	}
+
+.title  {
+		font-family: 微软雅黑;
+		font-size: 12px;
+		fill:dimgray;
+	}
+.title.hidden {
+		font-size: 12px;
+		fill:#ddd;
+	}
+	
+.title:hover {
+		fill:dimgray;
+	}
+
+	}
+</style>
+<body>
+	<div id="tooltip" class="hidden">
+	<table>
+      <thead class="info_title">
+        <tr>
+          <th style="text-align: left">当月指标</th>
+          <th><span id="c37" style="color:steelblue"></span></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class='barclays'>
+          <td style="text-align: left">比全国</td>
+          <td class='sparkline'><span id="c142"></span></td>
+          <td class='sparkline'><span id="c142pct"></span>%</td>
+        </tr>
+        <tr class='barclays'>
+          <td style="text-align: left">比上月</td>
+          <td class='sparkline'><span id="c37_pre"></span></td>
+          <td class='sparkline'><span id="c37_prepct"></span>%</td>
+        </tr>
+      </tbody>
+    </table>
+	</div>
+
+<script src="http://localhost:8080/d3.min.js"></script>
+<script src="tgbar.js"></script>
+
+<script>
+
+
+var categories_num = 1,rows = 5,cols = 8;
+//categories_num 并列的指标,rows svg分成4行,cols svg分成8列（1行展现8个指标）
+
+var width = 1200,//screen.width/2,
+	height =1000//width*3/2,
+    radius =50;// width / cols / 2 - 40;
+//arc半径，1/8 svg宽度的一半，40指标图形间隔
+var svg2 = d3.select("body").append("svg")
+    .attr("width", 1200)
+    .attr("height", 150);
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+	
+//并列指标的颜色，1是参照，2是全国，3是厦门
+var color = ["dimgray","orangered","skyblue"];
+var tooltip = d3.select("#tooltip");
+var data= [];
+var category_titles = [];
+var mon,xPst,yPst;
+d3.csv("results33.csv",function(error,d){
+		alldata=d;
+		data=alldata.filter(function(e){return e.mon_axis == 1705 && 
+			e.mon_type == "m" && (e.cus == "全国" || e.cus == "厦门海关") || 
+			e.mon_axis == 1704 && e.mon_type == "m" && e.cus == "厦门海关"})
+		categories=d3.keys(alldata[0]).slice(5,38);//d3.keys获取data关键字，slice(start,end)数组截取
+		//values=d3.values(alldata[0]).slice(5,29);//d3.keys获取data关键字，slice(start,end)数组截取
+	
+
+
+var g = svg.selectAll("g")
+    .data(categories)
+  .enter().append("g")
+	.attr("class",function (d,i){return "g g" + i;})
+    .attr("transform", function(d, i) { return "translate(" + (Math.floor(i/categories_num)%cols*2+1)*((width)/cols/2)
+      + "," + (height*(Math.floor(i/cols/categories_num))/rows+40+radius) + ")";
+		 xPst=(Math.floor(i/categories_num)%cols*2+1)*((width)/cols/2);
+		 yPst=height*(Math.floor(i/cols/categories_num))/rows+40+radius;})
+	.on("mouseover", function (d,i) {
+			tooltip_update(d,i,(Math.floor(i/categories_num)%cols*2+1)*((width)/cols/2)-radius-10,height*(Math.floor(i/cols/categories_num))/rows+2*radius+10);
+			d3.select("#tooltip").classed("hidden", false);
+			d3.select("#category_title-"+i).classed("hidden", false);
+			d3.selectAll("#inner_text-"+i).classed("hidden", false);
+			})
+    .on("mouseout", function (d,i) {
+			d3.select("#tooltip").classed("hidden", true);
+			d3.select("#category_title-"+i).classed("hidden", true);
+			d3.selectAll("#inner_text-"+i).classed("hidden", true);
+                });
+     
+    //console.log确认数组对应的字段 
+	console.log("0"+ " " +data[0].mon_axis+" "+data[0].cus);      
+	console.log("1"+ " " +data[1].mon_axis+" "+data[1].cus);      
+	console.log("2"+ " " +data[2].mon_axis+" "+data[2].cus);
+
+//为标题文字创建的路径
+var arc = d3.svg.arc()
+	.startAngle(-Math.PI / 2)
+	.endAngle(0.9999*Math.PI*3/2)
+    .innerRadius(radius)
+    .outerRadius(radius+1);	
+var path=g.append("path")
+    .attr("d", arc)
+    .attr("id", function(d, i) { return "arc-" + i; })
+    .style("fill","none")
+    .style("stroke","none");
+    //.attr("fill", "#ffffff")
+    //.attr("stroke", "#dfe5e6")
+    //.attr("stroke-width", 1);
+//创建指标标题		
+	var title_text=g.append("text")
+		.attr("dx", function(d,i){
+			return Math.PI*radius/2-(categories[i]).length/2*11;//调整标题文字位置，Math.PI*radius/2四分之一周长，(categories[i]).length/2*11标题文字长度一半
+			})
+		.attr("dy", -12);
+	var path_text=title_text.append("textPath")
+		.attr("id", function(d, i) { return "category_title-" + i; })
+		.attr("class", "title hidden")
+		.text(function(d,i){return categories[i];})
+		.attr("xlink:href", function(d, i) { return "#arc-" + i; })
+		.attr("text-anchor", "start");
+	
+	
+//全国指标值
+var arc = d3.svg.arc()
+	.startAngle(-Math.PI / 2)
+	.endAngle(function(d,i){
+		if (data[0][categories[i]]<5) return (data[0][categories[i]]*10/50-1)*Math.PI/2;
+		else return (data[0][categories[i]]/50-1)*Math.PI /2;//data第1组数中第第i个categoriy对应的值
+		})
+    .innerRadius(radius-5)
+    .outerRadius(radius);	
+var path=g.append("path")
+	//.transition()
+	//.duration(1000)
+    .attr("d", arc)
+    //.attr("id", function(d, i) { return "arc-" + i; })
+    .style("fill",function(d,i){
+		if (parseFloat(data[0][categories[i]])<parseFloat(data[2][categories[i]]))
+		    return "deepskyblue";
+		else
+		    return "coral";
+		})//
+
+    .style("stroke","none");
+	
+//厦门
+arc
+	.endAngle(function(d,i){
+		if (data[2][categories[i]]<5) return (data[2][categories[i]]*10/50-1)*Math.PI/2;
+		else return (data[2][categories[i]]/50-1)*Math.PI /2;
+		})
+	.innerRadius(radius-15)
+    .outerRadius(radius-5);	
+var path=g.append("path")
+	//.transition()
+	//.duration(1000)
+    .attr("d", arc)
+    //.attr("id", function(d, i) { return "arc-" + i; })
+    .style("fill","steelblue")//
+    .style("opacity",".9")
+    .style("stroke","none");
+	
+//厦门上期
+arc
+	.endAngle(function(d,i){
+		if (data[1][categories[i]]<5) return (data[1][categories[i]]*10/50-1)*Math.PI/2;
+		else return (data[1][categories[i]]/50-1)*Math.PI /2;
+		})
+    .innerRadius(radius-20)
+    .outerRadius(radius-15);	
+var path=g.append("path")
+	//.transition()
+	//.duration(1000)
+    .attr("d", arc)
+    //.attr("id", function(d, i) { return "arc-" + i; })
+    .style("fill",function(d,i){
+		if (parseFloat(data[1][categories[i]])<parseFloat(data[2][categories[i]]))
+		    return "lightskyblue";
+		else
+		    return "salmon";
+		})//
+    .style("opacity",".9")
+    .style("stroke","none");	
+		
+	
+	});	
+	
+function tooltip_update(d,i,xP,yP){
+			d3.select("#tooltip")
+				.style("left", xP + "px")
+				.style("top", yP + "px")
+				.style("opacity",0)
+				.transition()
+				.duration(800)
+				.style("opacity",1);
+			d3.selectAll("#c37")
+				.text(parseFloat(data[2][categories[i]]).toFixed(2));
+			d3.selectAll("#c142")
+				.text(parseFloat(data[0][categories[i]]).toFixed(2));
+			d3.selectAll("#c142pct")
+				.text(((parseFloat(data[2][categories[i]])/parseFloat(data[0][categories[i]])-1)*100).toFixed(2))
+				.style("color",function(){
+					if (parseFloat(data[0][categories[i]])<parseFloat(data[2][categories[i]]))
+						return "deepskyblue";
+					else
+						return "coral";
+					});
+			d3.selectAll("#c37_pre")
+				.text(parseFloat(data[1][categories[i]]).toFixed(2));
+			d3.selectAll("#c37_prepct")
+				.text(((parseFloat(data[2][categories[i]])/parseFloat(data[1][categories[i]])-1)*100).toFixed(2))
+				.style("color",function(){
+					if (parseFloat(data[1][categories[i]])<parseFloat(data[2][categories[i]]))
+						return "lightskyblue";
+					else
+						return "salmon";
+					});
+			}
+					
+
+</script>
