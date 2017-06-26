@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>主要指标展示</title>
+<style>
+
+
+path:hover {
+  
+  cursor: pointer;
+}
+
+	#tooltip {
+		position: absolute;
+		width: auto;
+		height:auto;
+		padding: 5px;
+		pointer-events: none;
+	}
+
+	#tooltip p {
+		margin: 0;
+		font-family: 微软雅黑;
+		font-size: 12px;
+		line-height: 18px;
+	}
+	
+	#tooltip.hidden {
+		display: none;
+	}
+table {
+	margin: 0;
+	font-family: 微软雅黑;
+	font-size: 14px;
+	line-height: 13px;
+	color:dimgray;
+	text-align: right;
+	}
+
+.title  {
+		font-family: 微软雅黑;
+		font-size: 12px;
+		fill:dimgray;
+	}
+.title.hidden {
+		font-size: 12px;
+		fill:#ddd;
+	}
+	
+.title:hover {
+		fill:dimgray;
+	}
+
+	}
+</style>
+<body>
+	<div id="tooltip" class="hidden">
+	<table>
+      <thead class="info_title">
+        <tr>
+          <th style="text-align: left">指标属性</th>
+          <th><span id="ind_attr"></span></th>
+          <th><span id="ind_intro"></span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class='barclays'>
+          <td style="text-align: left">本期指标</td>
+          <td class='sparkline'><span id="c37"></span></td>
+          <td class='sparkline'><span id="eval"></span>,<span id="trend"></span></td>
+          <td class='sparkline'></td>
+        </tr>
+        <tr class='barclays'>
+          <td style="text-align: left">比全国</td>
+          <td class='sparkline'><span id="c142"></span></td>
+          <td class='sparkline'><span id="c142pct"></span>%</td>
+        </tr>
+        <tr class='barclays'>
+          <td style="text-align: left">比上期</td>
+          <td class='sparkline'><span id="c37_pre"></span></td>
+          <td class='sparkline'><span id="c37_prepct"></span>%</td>
+        </tr>
+      </tbody>
+    </table>
+	</div>
+
+<script src="http://localhost:8080/d3.min.js"></script>
+<script src="tgbar.js"></script>
+
+<script>
+
+
+var categories_num = 1,rows = 5,cols = 8;
+//categories_num 并列的指标,rows svg分成4行,cols svg分成8列（1行展现8个指标）
+var data_map0 = ["cus","cus_code","date","mc_type","mon_axis","税收增长率","一般贸易空间价格指数-进口",
+	"一般贸易空间价格指数-出口","料件进口空间价格指数-进口","成品料件内销空间价格指数-进口","偏低价格记录比重-进口",
+	"偏高价格记录比重-出口","保税物流空间价格指数-进口","保税物流空间价格指数-出口","报核及时率","结案及时率",
+	"加工贸易企业增值率指数","加工贸易企业物化率指数","加工贸易企业生产平稳度-进口","加工贸易企业生产平稳度-出口",
+	"单耗水平(数量)","单耗水平(重量)","报关单查验率","报关单查验率-进口","报关单查验率-出口","报关单查验率-特殊",
+	"报关单查验率-口岸","重点查验企业有效率","重点查验企业有效率-进口","重点查验企业有效率-出口","一般信用企业查验率离散度",
+	"一般信用企业查验率离散度-进口","一般信用企业查验率离散度-出口","主动查验有效性-进口","主动查验有效性-出口",
+	"分类通关参数有效性-进口","分类通关参数有效性-出口","24小时通关率-进口","24小时通关率-出口","无纸化报关单比重",
+	"一体化企业占比","一体化单量占比","通关一体化.业务量规模.企业数-申报地海关-进出口A-T.合计",
+	"通关一体化.业务量规模.企业数-申报地海关-进出口A-C.转关","通关一体化.业务量规模.企业数-申报地海关-进出口A-E.区域通关一体化",
+	"通关一体化.业务量规模.企业数-申报地海关-进出口A-F.口岸清关","通关一体化.业务量规模.报关单量-申报地海关-进出口A-T.合计",
+	"通关一体化.业务量规模.报关单量-申报地海关-进出口A-C.转关","通关一体化.业务量规模.报关单量-申报地海关-进出口A-E.区域通关一体化",
+	"通关一体化.业务量规模.报关单量-申报地海关-进出口A-F.口岸清关",
+	"一体化归类集中度-进口","报关单查获率","报关单查获率-进口","报关单查获率-出口"];
+var data_map = ["一般贸易空间价格指数-进口","一般贸易空间价格指数-出口","料件进口空间价格指数-进口","成品料件内销空间价格指数-进口",
+	"偏低价格记录比重-进口","偏高价格记录比重-出口","保税物流空间价格指数-进口","保税物流空间价格指数-出口",
+	"报核及时率","结案及时率","加工贸易企业增值率指数","加工贸易企业物化率指数",
+	"加工贸易企业生产平稳度-进口","加工贸易企业生产平稳度-出口","单耗水平(数量)","单耗水平(重量)",
+	"报关单查验率-进口","报关单查验率-出口","报关单查验率-口岸","报关单查验率-特殊",
+	"重点查验企业有效率","一般信用企业查验率离散度","主动查验有效性-进口","主动查验有效性-出口",
+	"分类通关参数有效性-进口","分类通关参数有效性-出口","24小时通关率-进口","24小时通关率-出口",
+	"无纸化报关单比重","一体化企业占比","一体化单量占比","一体化归类集中度-进口",
+	"税收增长率","报关单查验率","报关单查获率-进口","报关单查获率-出口",
+	"重点查验企业有效率-进口","重点查验企业有效率-出口","一般信用企业查验率离散度-进口","一般信用企业查验率离散度-出口",
+	"报关单查获率","通关一体化.业务量规模.企业数-申报地海关-进出口A-T.合计",
+	"通关一体化.业务量规模.企业数-申报地海关-进出口A-C.转关","通关一体化.业务量规模.企业数-申报地海关-进出口A-E.区域通关一体化",
+	"通关一体化.业务量规模.企业数-申报地海关-进出口A-F.口岸清关","通关一体化.业务量规模.报关单量-申报地海关-进出口A-T.合计",
+	"通关一体化.业务量规模.报关单量-申报地海关-进出口A-C.转关","通关一体化.业务量规模.报关单量-申报地海关-进出口A-E.区域通关一体化",
+	"通关一体化.业务量规模.报关单量-申报地海关-进出口A-F.口岸清关"];
+var evaluations = ["优","较好","较差","参考"];
+var trends = ["向好","向弱","稳定","参考"];
+
+var width = 1200,//screen.width/2,
+	height =1000//width*3/2,
+    radius =50;// width / cols / 2 - 40;
+//arc半径，1/8 svg宽度的一半，40指标图形间隔
+var svg2 = d3.select("body").append("svg")
+    .attr("width", 1200)
+    .attr("height", 150);
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+	
+var Scale = d3.scale.linear()
+		.range([0, Math.PI*2])
+		.domain([0,100]);	
+		
+//并列指标的颜色，1是参照，2是全国，3是厦门
+var color = ["dimgray","orangered","skyblue"];
+var tooltip = d3.select("#tooltip");
+var data= [];
+var category_titles = [];
+var mon,xPst,yPst;
+d3.csv("results47.csv",function(error,d){
+		alldata=d;
+		data=alldata.filter(function(e){return e.mon_axis == 1705 && 
+			e.mc_type == "m" && (e.cus == "全国" || e.cus == "厦门海关") || 
+			e.mon_axis == 1704 && e.mc_type == "m" && e.cus == "厦门海关" ||
+			e.cus == "指标类型" ||
+			e.cus == "指标评价60L" ||
+			e.cus == "指标评价100L" ||
+			e.cus == "指标评价100H" ||
+			e.cus == "指标评价60H"})
+		categories=data_map.slice(0,40);//d3.keys获取data关键字，slice(start,end)数组截取
+		//categories=d3.values(alldata[0]).slice(5,38);//d3.keys获取data关键字，slice(start,end)数组截取
+	
+
+
+var g = svg.selectAll("g")
+    .data(categories)
+  .enter().append("g")
+	.attr("class",function (d,i){return "g g" + i;})
+    .attr("transform", function(d, i) { return "translate(" + (Math.floor(i/categories_num)%cols*2+1)*((width)/cols/2)
+      + "," + (height*(Math.floor(i/cols/categories_num))/rows+40+radius) + ")";
+		 xPst=(Math.floor(i/categories_num)%cols*2+1)*((width)/cols/2);
+		 yPst=height*(Math.floor(i/cols/categories_num))/rows+40+radius;})
+	.on("mouseover", function (d,i) {
+			tooltip_update(d,i,(Math.floor(i/categories_num)%cols*2+1)*((width)/cols/2)-radius-30,height*(Math.floor(i/cols/categories_num))/rows+5*radius);
+			d3.select("#tooltip").classed("hidden", false);
+			d3.select("#category_title-"+i).classed("hidden", false);
+			d3.selectAll("#inner_text-"+i).classed("hidden", false);
+			})
+    .on("mouseout", function (d,i) {
+			d3.select("#tooltip").classed("hidden", true);
+			d3.select("#category_title-"+i).classed("hidden", true);
+			d3.selectAll("#inner_text-"+i).classed("hidden", true);
+                });
+     
+    //console.log确认数组对应的字段 
+    console.log(data);
+	//console.log("0"+ " " +data[0].mon_axis+" "+data[0].cus);      
+	//console.log("1"+ " " +data[1].mon_axis+" "+data[1].cus);      
+	//console.log("2"+ " " +data[2].mon_axis+" "+data[2].cus);
+
+//为标题文字创建的路径
+var arc = d3.svg.arc()
+	.startAngle(-Math.PI / 2)
+	.endAngle(0.9999*Math.PI*3/2)
+    .innerRadius(radius)
+    .outerRadius(radius+1);	
+var path=g.append("path")
+    .attr("d", arc)
+    .attr("id", function(d, i) { return "arc-" + i; })
+    .style("fill","none")
+    .style("stroke","none");
+    //.attr("fill", "#ffffff")
+    //.attr("stroke", "#dfe5e6")
+    //.attr("stroke-width", 1);
+//创建指标标题		
+	var title_text=g.append("text")
+		.attr("dx", function(d,i){
+			return Math.PI*radius/2-(categories[i]).length/2*11;//调整标题文字位置，Math.PI*radius/2四分之一周长，(categories[i]).length/2*11标题文字长度一半
+			})
+		.attr("dy", -12);
+	var path_text=title_text.append("textPath")
+		.attr("id", function(d, i) { return "category_title-" + i; })
+		.attr("class", "title hidden")
+		.text(function(d,i){return categories[i];})
+		.attr("xlink:href", function(d, i) { return "#arc-" + i; })
+		.attr("text-anchor", "start");
+		
+//全国指标值
+var arc = d3.svg.arc()
+	.startAngle(-Math.PI / 2)
+	.endAngle(function(d,i){
+		if (data[5][categories[i]]<15) return ((data[5][categories[i]]*5+25)/50-1)*Math.PI/2;
+		else return (data[5][categories[i]]/50-1)*Math.PI /2;//data第1组数中第第i个categoriy对应的值
+		//return (data[5][categories[i]]/50-1)*Math.PI /2;
+		})
+    .innerRadius(radius-5)
+    .outerRadius(radius);	
+var path=g.append("path")
+    .attr("d", arc)
+    //.attr("id", function(d, i) { return "arc-" + i; })
+    //.style("fill",function(d,i){
+    //	return color_display(i,5);})
+    .style("fill",function(d,i){
+    	return opacity_display_142(i,7,5);})//"steelblue")
+    //.style("opacity",function(d,i){
+    //	return opacity_display_142(i,7,5);})
+    .style("stroke","none");
+	
+//厦门
+arc
+	.endAngle(function(d,i){
+		if (data[7][categories[i]]<15) return ((data[7][categories[i]]*5+25)/50-1)*Math.PI/2;
+		else return (data[7][categories[i]]/50-1)*Math.PI /2;
+		//return (data[7][categories[i]]/50-1)*Math.PI /2;
+		})
+	.innerRadius(radius-15)
+    .outerRadius(radius-5);	
+var path=g.append("path")
+    .attr("d", arc)
+    //.attr("id", function(d, i) { return "arc-" + i; })
+    .style("fill",function(d,i){
+    	return color_display(i,7);})//
+    //.style("opacity","0.7")
+    .style("stroke","none");	
+
+	
+//厦门上期
+arc
+	.endAngle(function(d,i){
+		if (data[6][categories[i]]<15) return ((data[6][categories[i]]*5+25)/50-1)*Math.PI/2;
+		else return (data[6][categories[i]]/50-1)*Math.PI /2;
+		//return (data[6][categories[i]]/50-1)*Math.PI /2;
+		})
+    .innerRadius(radius-20)
+    .outerRadius(radius-15);	
+var path=g.append("path")
+    .attr("d", arc)
+    //.attr("id", function(d, i) { return "arc-" + i; })
+    //.style("fill",function(d,i){
+    //	return color_display(i,6);})
+    .style("fill",function(d,i){
+    	return opacity_display_pre(i,7,6);})//"steelblue")
+    //.style("opacity",function(d,i){
+    //	return opacity_display_pre(i,7,6);})
+    .style("stroke","none");	
+		
+	
+	});	
+	
+function tooltip_update(d,i,xP,yP){
+			d3.select("#tooltip")
+				.style("left", xP + "px")
+				.style("top", yP + "px")
+				.style("opacity",0)
+				.transition()
+				.duration(800)
+				.style("opacity",1);
+			d3.selectAll("#ind_attr")
+				.text(data[0][categories[i]]);
+			d3.selectAll("#c37")
+				.style("color",color_display(i,7))
+				.text(parseFloat(data[7][categories[i]]).toFixed(2));
+			d3.selectAll("#eval")
+				.text(function(){if (color_display(i,7) == "steelblue")
+						{return evaluations[0];}
+					else if (color_display(i,7) == "red")
+						{return evaluations[2];}
+					else if (color_display(i,7) == "rgba(255,99,71,0.7)")
+						{return evaluations[1];}
+					else 
+						{return evaluations[3];}
+					});
+			d3.selectAll("#trend")
+				.text(function(){if (opacity_display_pre(i,7,6) == "rgba(255,160,122,0.5)")
+						{return trends[1];}
+					else if (opacity_display_pre(i,7,6) == "lightskyblue")
+						{return trends[0];}
+					else 
+						{return trends[3];}
+					});
+			d3.selectAll("#c142")
+				.text(parseFloat(data[5][categories[i]]).toFixed(2))
+				//.style("color",color_display(i,5));
+			d3.selectAll("#c142pct")
+				.text(((parseFloat(data[7][categories[i]])/parseFloat(data[5][categories[i]])-1)*100).toFixed(2))
+				.style("color",opacity_display_142(i,7,5));
+			d3.selectAll("#c37_pre")
+				.text(parseFloat(data[6][categories[i]]).toFixed(2))
+				//.style("color",color_display(i,6));
+			d3.selectAll("#c37_prepct")
+				.text(((parseFloat(data[7][categories[i]])/parseFloat(data[6][categories[i]])-1)*100).toFixed(2))
+				.style("color",opacity_display_pre(i,7,6));
+				
+			}
+					
+function color_display(i,n37){//n为数据类别，5全国，6厦门上期，7厦门本期
+	if (data[0][categories[i]] == "逆向" && parseFloat(data[n37][categories[i]])>parseFloat(data[4][categories[i]]) ||
+		data[0][categories[i]] == "正向" && parseFloat(data[n37][categories[i]])<parseFloat(data[1][categories[i]]) ||
+		data[0][categories[i]] == "趋中" && parseFloat(data[n37][categories[i]])<parseFloat(data[1][categories[i]]) ||
+		data[0][categories[i]] == "趋中" && parseFloat(data[n37][categories[i]])>parseFloat(data[4][categories[i]])){
+		return "red";
+		}
+	else if (data[0][categories[i]] == "逆向" && parseFloat(data[n37][categories[i]])>parseFloat(data[3][categories[i]]) ||
+		data[0][categories[i]] == "正向" && parseFloat(data[n37][categories[i]])<parseFloat(data[2][categories[i]]) ||
+		data[0][categories[i]] == "趋中" && parseFloat(data[n37][categories[i]])<parseFloat(data[2][categories[i]]) ||
+		data[0][categories[i]] == "趋中" && parseFloat(data[n37][categories[i]])>parseFloat(data[3][categories[i]])){
+		return "rgba(255,99,71,0.7)";
+		}
+	else if (data[0][categories[i]] == ""){
+		return "dimgray";
+		}
+	else {
+		return "steelblue";
+		}
+	}
+function opacity_display_142(i,n37,n142){//n为数据类别，5全国，6厦门上期，7厦门本期
+	if (data[0][categories[i]] == "逆向" && parseFloat(data[n37][categories[i]])>=parseFloat(data[n142][categories[i]]) ||
+		data[0][categories[i]] == "正向" && parseFloat(data[n37][categories[i]])<=parseFloat(data[n142][categories[i]])){
+		return "rgba(255,160,122,0.5)";
+		}
+	else if (data[0][categories[i]] == ""){
+		return "silver";
+		}
+	else {
+		return "lightskyblue";
+		}
+	}
+function opacity_display_pre(i,n37,n37p){//n为数据类别，5全国，6厦门上期，7厦门本期
+	if (data[0][categories[i]] == "逆向" && parseFloat(data[n37][categories[i]])>=parseFloat(data[n37p][categories[i]]) ||
+		data[0][categories[i]] == "正向" && parseFloat(data[n37][categories[i]])<=parseFloat(data[n37p][categories[i]]) ||
+		data[0][categories[i]] == "趋中" && Math.abs(parseFloat(data[n37][categories[i]])-100)>Math.abs(parseFloat(data[n37p][categories[i]])-100)){
+		return "rgba(255,160,122,0.5)";
+		}
+	else if (data[0][categories[i]] == ""){
+		return "silver";
+		}
+	else {
+		return "lightskyblue";
+		}
+	}
+</script>
