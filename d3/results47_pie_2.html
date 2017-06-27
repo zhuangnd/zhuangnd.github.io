@@ -167,7 +167,7 @@ var g = svg.selectAll("g")
 	.attr("class",function (d,i){return "g g" + i;})
     .attr("transform", "translate(" + 400 + "," + 400 + ")")
 	.on("mouseover", function (d,i) {
-			tooltip_update(d,i,800,200);
+			tooltip_update(d,i,750,200);
 			d3.select("#tooltip").classed("hidden", false);
 			d3.select("#category_title-"+i).classed("hidden", false);
 			})
