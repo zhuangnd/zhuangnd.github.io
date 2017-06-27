@@ -174,8 +174,7 @@ var g = svg.selectAll("g")
     .on("mouseout", function (d,i) {
 			d3.select("#tooltip").classed("hidden", true);
 			d3.selectAll(".title").classed("hidden", true);
-                })
-	.on("click",function(){open("http://10.61.67.69:8080/pinggu/tongguanxiaolv/tgxl_dashboad_h21.html");});
+                });
 	
 var title_text = g.append("text")
 		.attr("id", function(d, i) { return "category_title-" + i; })
