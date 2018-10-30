@@ -78,7 +78,7 @@
 
 
         var margin = {top: 20, right: 20, bottom: 20, left: 20},
-            width = 1200 - margin.left - margin.right,
+            width = 1000 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
 
 
@@ -99,7 +99,7 @@
         d3.select("input[type=checkbox]").on("change", function() {toggle();});
 
         var proj = d3.geo
-			.mercator().center([105,38]).scale(300).translate([width / 2, height / 2]);
+			.mercator().center([105,38]).scale(350).translate([width / 2, height / 2]);
 			
 			//.albers().rotate([96, 0]).center([-.6, 38.7]).parallels([29.5, 45.5]).scale(300).translate([width / 2, height / 2]).precision(.1);
 
@@ -252,7 +252,7 @@
 					//.style("stroke","steelblue")
 					.transition()
 					   .ease("bounce")
-					.delay(function(d,i){return 50*i
+					.delay(function(d,i){return 40*i
 						//if (fpType[i]=="hike") {return 5*i}
 						//	else {return 20*i}
 						//因为数据顺序问题，延后时间不一致会导致hike延后时间短的先出现，比如第1个hike数据排在100位，延迟100*5，第26个数据非hike，延迟26*20，反而更慢出现，出现顺序被打乱
