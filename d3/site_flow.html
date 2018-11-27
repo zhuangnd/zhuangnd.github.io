@@ -115,7 +115,7 @@
 			.attr("transform", function(d,i){return "translate(" + (500+rect_width) + "," + (50 + i * rect_padding) + ")"});
 			
 		var circle = svg.selectAll("circle")
-			.data(data.slice(0,2000))
+			.data(data.slice(0,1000))
 			.enter()
 			.append("circle")
 			.attr("class",function(d){return "mycircle mycircle_" + d.I_E_FLAG + " mycircle_" + d.I_E_PORT_s})
