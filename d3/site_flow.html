@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1"/>
+    <title>site_flow</title>
+    <script type="text/javascript" src="http://localhost:8080/d3.min.js"></script>
+
+    <style>
+		.declport_rect {
+			fill:#eee;
+			opacity:0.3;
+			}
+		.total_rect {
+			fill:#eee;
+			opacity:0.2;
+			}
+		.ieport_rect {
+			fill:#eee;
+			opacity:0.2;
+			}
+		.mycircle_I {
+			fill:salmon;
+			opacity:0.9;
+			stroke:salmon;
+            stroke-width: 0.5px;	
+			}
+		.mycircle_E {
+			fill:steelblue;
+			opacity:0.9;
+			stroke:steelblue;
+            stroke-width: 0.5px;
+			}
+		.mycircle_24 {
+			fill:none;
+			opacity:1;
+			}
+			
+    </style>
+</head>
+
+<body>
+	<div id="tooltip_fixed" class="fixed">	
+
+	</div>
+	
+	<div id="svg_div" class="svg_div">	
+
+	</div>
+	<script type="text/javascript">
+		var width = 800,
+		height = 800,
+		rect_width = 50,
+		rect_height = (height-100) / 24 - 10,
+		rect_padding = 30,
+		mydelay = 150
+		;
+		var sitesi = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24],
+		sitesd = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24],
+		DECL_PORT = [],
+		I_E_PORT = [],
+		DECL_PORT_s = [],
+		I_E_PORT_s = [];
+		
+		d3.csv("3700d.csv",function(data){
+		
+		data.forEach(function(d){
+			DECL_PORT.push(d.DECL_PORT);
+			I_E_PORT.push(d.I_E_PORT);
+			DECL_PORT_s.push(d.DECL_PORT_s);
+			I_E_PORT_s.push(d.I_E_PORT_s);
+			});
+			
+		var svg = d3.select(".svg_div").append("svg")
+            .attr("width", width)
+            .attr("height", height)
+			.attr("class","mysvg");
+			
+		var total_g = svg.append("g")
+			.attr("class","total_g")
+			.on("click",move);
+			
+		var total_rect = total_g
+			.append("rect")
+			.attr("class","total_rect")
+			.attr("id","total_rect")
+			.attr("width",rect_width*2)
+			.attr("height",rect_height * 2)
+			.attr("transform", function(d,i){return "translate(" + 0 + "," + (height - rect_height - rect_padding) / 2 + ")"});
+						
+		var ieport_g = svg.append("g")
+			.attr("class","ieport_g");
+			
+		var ieport_rect = ieport_g.selectAll("rect")
+			.data(sitesi)
+			.enter()
+			.append("rect")
+			.attr("class","ieport_rect")
+			.attr("id",function(d,i){return "ieport_rect_" + i})
+			.attr("width",rect_width)
+			.attr("height",rect_height)
+			.attr("transform", function(d,i){return "translate(" + (250+rect_width) + "," + (50 + i * rect_padding) + ")"});
+			
+		var declport_g = svg.append("g")
+			.attr("class","declport_g");
+			
+		var declport_rect = declport_g.selectAll("rect")
+			.data(sitesd)
+			.enter()
+			.append("rect")
+			.attr("class","declport_rect")
+			.attr("id",function(d,i){return "declport_rect_" + i})
+			.attr("width",rect_width)
+			.attr("height",rect_height)
+			.attr("transform", function(d,i){return "translate(" + (500+rect_width) + "," + (50 + i * rect_padding) + ")"});
+			
+		var circle = svg.selectAll("circle")
+			.data(data)
+			.enter()
+			.append("circle")
+			.attr("class",function(d){return "mycircle mycircle_" + d.I_E_FLAG + " mycircle_" + d.I_E_PORT_s})
+			.attr("cx",0)
+			.attr("cy",0)
+			.attr("transform", function(d,i){return "translate(" + (-rect_width*2 + I_E_PORT_s[i]*5) + "," + ((height - rect_height - rect_padding) / 2 + Math.random()*rect_height * 2) + ")"})
+			.attr("r",2);
+		
+		function move(){
+		
+			d3.selectAll("circle")
+				.transition()
+				.delay(function(d,i){return i*10})
+				.duration(1500)
+				.ease("linear")
+				.attr("transform", function(d,i){return "translate(" + (rect_width*3) + "," + ((height - rect_height - rect_padding) / 2  + Math.random()*rect_height * 2) + ")"})//第1次平移
+				.transition()
+				.delay(function(d,i){return (mydelay+i)*10})
+				.duration(1500)
+				.ease("linear")
+				.attr("transform", function(d,i){return "translate(" + (rect_width*4) + "," + (50 + (I_E_PORT_s[i]-1) * rect_padding  + Math.random()*rect_height) + ")"})//第2次分散
+				.transition()
+				.delay(function(d,i){return (mydelay*2+i)*10})
+				.duration(1500)
+				.ease("linear")
+				.attr("transform", function(d,i){return "translate(" + (rect_width*6) + "," + (50 + (I_E_PORT_s[i]-1) * rect_padding  + Math.random()*rect_height) + ")"})//第3次平移归位
+				.transition()
+				.delay(function(d,i){return (mydelay*3+i)*10})
+				.duration(1500)
+				.ease("linear")
+				.attr("transform", function(d,i){return "translate(" + (rect_width*8.5) + "," + (50 + (I_E_PORT_s[i]-1) * rect_padding  + Math.random()*rect_height) + ")"})//第4次平移
+				.transition()
+				.delay(function(d,i){return (mydelay*4+i)*10})
+				.duration(1500)
+				.ease("linear")
+				.attr("transform", function(d,i){return "translate(" + (rect_width*9.5) + "," + (50 + (DECL_PORT_s[i]-1) * rect_padding  + Math.random()*rect_height) + ")"})//第5次分散
+				.transition()
+				.delay(function(d,i){return (mydelay*5+i)*10})
+				.duration(1500)
+				.ease("linear")
+				.attr("transform", function(d,i){return "translate(" + (rect_width*12) + "," + (50 + (DECL_PORT_s[i]-1) * rect_padding  + Math.random()*rect_height) + ")"})//第6次平移归位
+				.transition()
+				.delay(function(d,i){return (mydelay*6+i)*10})
+				.style("opacity", 0)
+				;
+				};
+				
+		});		
+    </script>
+</body>
+</html>
