@@ -79,7 +79,7 @@
 			
 		var total_g = svg.append("g")
 			.attr("class","total_g")
-			.on("click",m;i);
+			;
 			
 		var total_rect = total_g
 			.append("rect")
@@ -146,7 +146,7 @@
 			.attr("transform", function(d,i){return "translate(" + (-rect_width*2 + I_E_PORT_s[i]*5) + "," + ((height - rect_height - rect_padding) / 2 + Math.random()*rect_height * 2) + ")"})
 			.attr("r",2);
 		
-		function move(){
+		//function move(){
 		
 			d3.selectAll("circle")
 				.transition()
@@ -181,15 +181,15 @@
 				.attr("transform", function(d,i){return "translate(" + (rect_width*12) + "," + (50 + (DECL_PORT_s[i]-1) * rect_padding  + Math.random()*rect_height) + ")"})//第6次平移归位
 				.remove()
 				;
-				};
+		//		};
 			
-		function i(){
+		//function i(){
 			d3.selectALL(".ieport_rect_i")
 			    .transition()
 			    .duration(1500)
 			    .attr("width",Math.random()*rect_width/2)
 			    .attr("x",250+rect_width*2-Math.random()*rect_width/2);
-		};
+		//};
 				
 		});		
     </script>
