@@ -79,7 +79,7 @@
 			
 		var total_g = svg.append("g")
 			.attr("class","total_g")
-			.on("click",i);
+			.on("click",m;i);
 			
 		var total_rect = total_g
 			.append("rect")
@@ -118,9 +118,9 @@
 			.append("rect")
 			.attr("class","ieport_rect_e")
 			.attr("id",function(d,i){return "ieport_rect_" + i})
-			.attr("width",15)
+			.attr("width",10)
 			.attr("height",rect_height/2)
-			.attr("transform", function(d,i){return "translate(" + (250+rect_width+rect_width-15) + "," + (50 + i * rect_padding+rect_height/2) + ")"});
+			.attr("transform", function(d,i){return "translate(" + (250+rect_width+rect_width-10) + "," + (50 + i * rect_padding+rect_height/2) + ")"});
 			
 			
 		var declport_g = svg.append("g")
@@ -188,7 +188,7 @@
 			    .transition()
 			    .duration(1500)
 			    .attr("width",Math.random()*rect_width/2)
-			    .attr("x",function(d){return -d3.select(this).width+250+rect_width*2});
+			    .attr("x",250+rect_width*2-Math.random()*rect_width/2);
 		};
 				
 		});		
