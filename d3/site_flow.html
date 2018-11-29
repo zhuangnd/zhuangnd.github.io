@@ -188,7 +188,9 @@
 			    .transition()
 			    .duration(1500)
 			    .attr("width",Math.random()*rect_width/2)
-			    .attr("x",250+rect_width*2-Math.random()*rect_width/2);
+			  //  .attr("x",250+rect_width*2-Math.random()*rect_width/2);
+			.attr("transform", function(d,i){return "translate(" + (250+rect_width+rect_width-Math.random()*rect_width/2) + "," + (50 + i * rect_padding) + ")"});
+			
 		//};
 				
 		});		
