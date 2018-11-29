@@ -110,7 +110,7 @@
 			.attr("id",function(d,i){return "ieport_rect_" + i})
 			.attr("width",5)
 			.attr("height",rect_height/2)
-			.attr("transform", function(d,i){return "translate(" + (250+rect_width+rect_height-5) + "," + (50 + i * rect_padding) + ")"});
+			.attr("transform", function(d,i){return "translate(" + (250+rect_width+rect_width-5) + "," + (50 + i * rect_padding) + ")"});
 			
 		var ieport_rect_e = ieport_g.selectAll(".ieport_rect_e")
 			.data(sitesi)
@@ -120,7 +120,7 @@
 			.attr("id",function(d,i){return "ieport_rect_" + i})
 			.attr("width",15)
 			.attr("height",rect_height/2)
-			.attr("transform", function(d,i){return "translate(" + (250+rect_width+rect_height-15) + "," + (50 + i * rect_padding+rect_height/2) + ")"});
+			.attr("transform", function(d,i){return "translate(" + (250+rect_width+rect_width-15) + "," + (50 + i * rect_padding+rect_height/2) + ")"});
 			
 			
 		var declport_g = svg.append("g")
@@ -179,9 +179,7 @@
 				.duration(1500)
 				.ease("linear")
 				.attr("transform", function(d,i){return "translate(" + (rect_width*12) + "," + (50 + (DECL_PORT_s[i]-1) * rect_padding  + Math.random()*rect_height) + ")"})//第6次平移归位
-				.transition()
-				.delay(function(d,i){return (mydelay*6+i)*10})
-				.style("opacity", 0)
+				.remove()
 				;
 				};
 				
