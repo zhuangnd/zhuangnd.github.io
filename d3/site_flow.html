@@ -19,7 +19,8 @@
 			fill:#eee;
 			opacity:0.4;
 			}
-		.mycircle_I {
+	    
+		.mycircle_I,.ieport_rect_i {
 			fill:salmon;
 			opacity:0.9;
 			stroke:salmon;
@@ -91,7 +92,7 @@
 		var ieport_g = svg.append("g")
 			.attr("class","ieport_g");
 			
-		var ieport_rect = ieport_g.selectAll("rect")
+		var ieport_rect = ieport_g.selectAll(".ieport_rect")
 			.data(sitesi)
 			.enter()
 			.append("rect")
@@ -100,6 +101,19 @@
 			.attr("width",rect_width)
 			.attr("height",rect_height)
 			.attr("transform", function(d,i){return "translate(" + (250+rect_width) + "," + (50 + i * rect_padding) + ")"});
+		
+		var ieport_rect = ieport_g.selectAll(".ieport_rect_i")
+			.data(sitesi)
+			.enter()
+			.append("rect")
+			.attr("class","ieport_rect_i")
+			.attr("id",function(d,i){return "ieport_rect_" + i})
+			.attr("width",5)
+			.attr("height",rect_height/2)
+			.attr("transform", function(d,i){return "translate(" + (250+rect_width) + "," + (50 + i * rect_padding) + ")"});
+			
+	
+			
 			
 		var declport_g = svg.append("g")
 			.attr("class","declport_g");
