@@ -299,31 +299,25 @@
 				//DelayC.push(d.DELAY);
 				});
 
-		for (h=0;h<7;h++){
-			doDataSet(h);
-			doScaledTimeout(h);
-			};
-			
-		var doDataSet=function(h){
+		for (j=0;j<7;j++){
+		(function(h){
 			var mydata=data.filter(function(e){
 				var dd=new Date(e.END_DATE);
 				//DelayC[h]=dd.getFullYear()+"年"+(dd.getMonth()+1)+"月"+dd.getDate()+"日 ";
 				return dd.getDay()==h;});
 			DelayW[h]=d3.min(mydata, function(e) { return e.DELAY;});
-			setTimeout(d3.select("#cmon").text(DelayW[h]),2000);
 			//console.log(mydata.length);
 			//console.log(h);
 			//console.log(DelayC);
-			};	
 			
-		var doScaledTimeout=function(h){
 			setTimeout(function(){
 			var mydata=data.filter(function(e){var dd=new Date(e.END_DATE);return dd.getDay()==h;});
 			var DELAY0=d3.min(mydata, function(e) { return e.DELAY;});
 			//console.log(mydata.length);
 			d3.select("#Time_Start_3700").text(DelayC[0] + " " + wk[0]);
 			d3.select("#Decl_Time_3700").text(DelayC[h] + " " + wk[h]);},DelayW[h]);
-			};
+		})(j)
+		};
 			
 			//console.log(mydata.length);
 			//console.log(i_length);
