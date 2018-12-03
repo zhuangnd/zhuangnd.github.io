@@ -304,7 +304,7 @@
 			doScaledTimeout(h);
 			};
 			
-		function doDataSet(h){
+		var doDataSet=function(h){
 			var mydata=data.filter(function(e){
 				var dd=new Date(e.END_DATE);
 				//DelayC[h]=dd.getFullYear()+"年"+(dd.getMonth()+1)+"月"+dd.getDate()+"日 ";
@@ -316,13 +316,13 @@
 			//console.log(DelayC);
 			};	
 			
-		function doScaledTimeout(h){
+		var doScaledTimeout=function(h){
 			setTimeout(function(){
 			var mydata=data.filter(function(e){var dd=new Date(e.END_DATE);return dd.getDay()==h;});
 			var DELAY0=d3.min(mydata, function(e) { return e.DELAY;});
 			//console.log(mydata.length);
 			d3.select("#Time_Start_3700").text(DelayC[0] + " " + wk[0]);
-			d3.select("#Decl_Time_3700").text(DelayC[5] + " " + wk[5]);},DelayW[h]);
+			d3.select("#Decl_Time_3700").text(DelayC[h] + " " + wk[h]);},DelayW[h]);
 			};
 			
 			//console.log(mydata.length);
