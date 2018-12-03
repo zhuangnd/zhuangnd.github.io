@@ -250,8 +250,8 @@
 			//console.log(mydata);
 		var myslice = 2000;
 		var circle = svg.selectAll(".mycircle")
-			//.data(mydata)
-			.data(data.slice(0,myslice))
+			.data(mydata)
+			//.data(data.slice(0,myslice))
 			.enter()
 			.append("circle")
 			.attr("class",function(d,i){return "mycircle mycircle_" + d.I_E_FLAG + " mycircle_" + (sitese.lastIndexOf(d.I_E_PORT)==-1?24:sitese.lastIndexOf(d.I_E_PORT))})
