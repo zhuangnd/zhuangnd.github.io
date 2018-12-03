@@ -289,12 +289,12 @@
 			
 			//var myslice = 10000;
 			//var mydata = data.slice(0,myslice);
-			var mydata = data;
+			//var mydata = data;
 			
 			//var mydata = data.filter(function(e){return e.END_DATE >'2018-11-3' && e.END_DATE <'2018-11-4'}) ;
 			//var mydata = data.filter(function(e){return e.I_E_PORT.slice(0,2) !== "37"}) ;////从索引号0到索引号1
 			//var mydata = data.filter(function(e){return e.I_E_PORT.substr(0,2) == "37"}) ;//从索引号0开始截取2位
-			//var mydata = data.filter(function(e){return e.COUNTRY == "113"});
+			var mydata = data.filter(function(e){return e.COUNTRY !== "142"});
 			
 			var i_length = mydata.filter(function(e){return e.I_E_FLAG == "I"}),
 				e_length = mydata.filter(function(e){return e.I_E_FLAG == "E"});
