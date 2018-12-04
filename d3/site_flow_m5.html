@@ -299,7 +299,7 @@
 				END_DATE.push(d.END_DATE);
 				DelayT.push(parseFloat(d.DELAY));
 				var dd=new Date(d.END_DATE);
-				DataWeekday.push(dd.getDay());
+				DataWeekday.push(parseFloat(dd.getDay()));
 				});
 			
 
