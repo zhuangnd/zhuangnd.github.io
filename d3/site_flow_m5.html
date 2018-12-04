@@ -282,7 +282,7 @@
 		d3.csv("3700d-142.csv",function(data){
 		
 			var END_DATE = [];
-			var DataWeekday = [];
+			//var DataWeekday = [];
 			var DelayT = [];
 			
 						
@@ -300,8 +300,8 @@
 			mydata.forEach(function(d){
 				END_DATE.push(d.END_DATE);
 				DelayT.push(parseFloat(d.DELAY));
-				var dd=new Date(d.END_DATE);
-				DataWeekday.push(parseFloat(dd.getDay()));
+				//var dd=new Date(d.END_DATE);
+				//DataWeekday.push(parseFloat(dd.getDay()));
 				});
 			
 
