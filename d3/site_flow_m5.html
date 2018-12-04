@@ -96,8 +96,8 @@
 
 	</div>
 	<script type="text/javascript">
-		var width = screen.width>screen.height?screen.height:screen.width,
-		height = screen.height,
+		var width = Math.max(screen.width>screen.height?screen.height:screen.width,400),
+		height = Math.max(screen.height,800),
 		rect_width = width/9,
 		rect_height = (height-200) / 48,
 		rect_padding_h = (height-200) / 48,
