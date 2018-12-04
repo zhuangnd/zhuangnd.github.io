@@ -113,7 +113,8 @@
 		var wk = ["周日","周一","周二","周三","周四","周五","周六"];
 		
 		d3.select("#tooltip_1")
-			.style("top",(height  -200 - rect_height - rect_padding_h) / 2 - 54 + "px");
+			.style("top",(height  -200 - rect_height - rect_padding_h) / 2 - 70 + "px")
+		        .style("width",rect_width + "px");
 		
 		var svg = d3.select(".svg_div").append("svg")
             .attr("width", width)
