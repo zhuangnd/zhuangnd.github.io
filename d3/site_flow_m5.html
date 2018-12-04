@@ -359,7 +359,7 @@
 				.duration(mydrt)
 				.ease("linear")
 				.attr("cx",rect_width*2.5)
-				.attr("cy",function(d,i){return (50 + (sitese.lastIndexOf(d.I_E_PORT)==-1?23:sitese.lastIndexOf(d.I_E_PORT)) * (rect_height+rect_padding_h) + 5 +Math.random()*(rect_height-10))})//lastIndexOf根据值查找索引号
+				.attr("cy",function(d,i){return (50 + (sitese.lastIndexOf(d.I_E_PORT)==-1?23:sitese.lastIndexOf(d.I_E_PORT)) * (rect_height+rect_padding_h) + Math.random()*rect_height)})//lastIndexOf根据值查找索引号
 				.transition()
 				.duration(mydrt)
 				.ease("linear")
@@ -368,7 +368,7 @@
 				.duration(mydrt)
 				.ease("linear")
 				.attr("cx",rect_width*5.5)
-				.attr("cy",function(d,i){return (50 + (sitese.lastIndexOf(d.DECL_PORT)==-1?23:sitese.lastIndexOf(d.DECL_PORT)) * (rect_height+rect_padding_h) + 5 +Math.random()*(rect_height-10))})//lastIndexOf根据值查找索引号.transition()
+				.attr("cy",function(d,i){return (50 + (sitese.lastIndexOf(d.DECL_PORT)==-1?23:sitese.lastIndexOf(d.DECL_PORT)) * (rect_height+rect_padding_h) + Math.random()*rect_height)})//lastIndexOf根据值查找索引号.transition()
 				.transition()
 				.duration(mydrt)
 				.ease("linear")
