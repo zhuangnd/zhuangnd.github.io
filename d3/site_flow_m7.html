@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=0.8,maximum-scale=1"/>
+    <meta name="viewport" content="width=device-width,initial-scale=0.9,maximum-scale=1"/>
     <title>site_flow</title>
     <script type="text/javascript" src="d3.min.js"></script>
 
@@ -81,10 +81,10 @@
       </thead>
       <tbody>
         <tr class='Decl_Time'>
-          <td><span id="Decl_Time_3700"> </span></td>
+          <td><span id="Decl_Time_3700"></span></td>
         </tr>
         <tr class='Decl_Time_2'>
-          <td><span id="Decl_Time_2_3700"> </span></td>
+          <td><span id="Decl_Time_2_3700"></span> 票</td>
         </tr>
         <tr class='Decl_Quality'>
           <td><span id="Decl_Quality_3700"></span></td>
@@ -385,7 +385,7 @@
 				.duration(function(d,i){return d.DELAY-Delay_sl[sl]})//修改延迟时间
 				//.attr("cx",-5)
 				.attr("cx",function(d,i){
-					update_Tip(i,wk[new Date(d.END_DATE).getDate()],d.END_DATE,d.DECL_PORT,d.I_E_PORT,sl);//更新时间和票数
+					update_Tip(i,wk[sl],d.END_DATE,d.DECL_PORT,d.I_E_PORT,sl);//更新时间和票数
 					//console.log(mydata.filter(function(e){return e.DECL_PORT == "3708"}).length);
 					return -5})
 				.transition()
