@@ -27,7 +27,7 @@
 			position: absolute;
 			width: auto;
 			height:auto;
-			color:#bbb;
+			color:#ccc;
 			font-family: sans-serif;
 			font-size: 12px;
 			}	
@@ -67,7 +67,7 @@
 			font-family: sans-serif;
 			font-size: 12px;
 			line-height: 12px;
-			fill: #bbb;	
+			fill: #ccc;	
 	                }
     </style>
 </head>
@@ -279,7 +279,7 @@
 			.enter()
 			.append("text")
 			.attr("class","mytext declport_text")
-			.attr("transform", function(d,i){return "translate(" + (rect_width+5) + "," + (i*2 * rect_padding_h+6) + ")"})
+			.attr("transform", function(d,i){return "translate(" + (rect_width+5) + "," + (i*2 * rect_padding_h+10) + ")"})
 			.text(function(d){return d});
 			
 		var declport_tooltip = d3.select("body").selectAll(".Decl_Quality_Sites")
@@ -369,7 +369,7 @@
 					d3.select("#Decl_Time_3700").text(b);//wk[new Date(END_DATE[h]).getDay()]
 					d3.select("#Decl_Time_2_3700").text(a + " " +(h+1));		//END_DATE[h]			
 					//d3.select("#Decl_Quality_3700").text(h);
-					d3.select("#Decl_Quality_Sites_" + c).text(d);//DECL_PORT[h],d.I_E_PORT
+					//d3.select("#Decl_Quality_Sites_" + c).text(d);//DECL_PORT[h],d.I_E_PORT
 					},mydata1[sl][h].DELAY-Delay_sl[sl])};
 				
 		
