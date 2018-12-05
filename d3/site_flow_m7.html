@@ -385,7 +385,7 @@
 				.duration(function(d,i){return d.DELAY-Delay_sl[sl]})//修改延迟时间
 				//.attr("cx",-5)
 				.attr("cx",function(d,i){
-					update_Tip(i,wk[new Date(d.END_DATE).getDay()],d.END_DATE,d.DECL_PORT,d.I_E_PORT,sl);//更新时间和票数
+					update_Tip(i,wk[new Date(d.END_DATE).getDate()],d.END_DATE,d.DECL_PORT,d.I_E_PORT,sl);//更新时间和票数
 					//console.log(mydata.filter(function(e){return e.DECL_PORT == "3708"}).length);
 					return -5})
 				.transition()
