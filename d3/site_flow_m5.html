@@ -308,7 +308,7 @@
 			function update_Tip(h){
 				setTimeout(function(){
 					//d3.select("#Decl_Time_3700").text(wk[DataWeekday[h]]);
-					//d3.select("#Decl_Time_3700").text((new Date(END_DATE[h])).getDay());
+					d3.select("#Decl_Time_3700").text(wk[new Date(END_DATE[h]).getDay()]);
 					d3.select("#Decl_Time_2_3700").text(END_DATE[h]);					
 					d3.select("#Decl_Quality_3700").text(h);
 					},DelayT[h])};
