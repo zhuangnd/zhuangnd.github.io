@@ -142,7 +142,7 @@
 		var myLegend = svg.append("g")
 			.attr("class","myLegend_g");
 		var LegendX=10,
-			LegendY=50,
+			LegendY=30,
 			LegendPadding=15
 			;
 		myLegend.append("circle")
@@ -154,7 +154,7 @@
 			.attr("class","Legendtext")
 			.attr("x",LegendX+10)
 			.attr("y",LegendY+5)
-			.text("关区进口");
+			.text("本关区进口");
 		myLegend.append("circle")
 			.attr("class","myLegend mycircle_E")
 			.attr("cx",LegendX)
@@ -164,7 +164,7 @@
 			.attr("class","Legendtext")
 			.attr("x",LegendX+10)
 			.attr("y",LegendY+LegendPadding+5)
-			.text("关区出口");		
+			.text("本关区出口");		
 		myLegend.append("circle")
 			.attr("class","myLegend mycircle_I mycircle_24")
 			.attr("cx",LegendX)
@@ -206,7 +206,7 @@
 		ieport_g.append("text")
 			.attr("class","ieport_label")
 			.text("进出口岸")
-			.attr("x",0)
+			.attr("x",10)
 			.attr("y",-20);
 		
 		var ieport_rect = ieport_g.selectAll("rect")
@@ -250,7 +250,7 @@
 		declport_g.append("text")
 			.attr("class","mytext declport_label")
 			.text("申报口岸")
-			.attr("x",0)
+			.attr("x",10)
 			.attr("y",-20);
 		
 		var declport_rect = declport_g.selectAll("rect")
@@ -291,7 +291,7 @@
 			.enter()
 			.append("text")
 			.attr("class","mytext declport_text")
-			.attr("transform", function(d,i){return "translate(" + (rect_width*2-24) + "," + (i*2 * rect_padding_h+10) + ")"})
+			.attr("transform", function(d,i){return "translate(" + (rect_width*2-20) + "," + (i*2 * rect_padding_h+10) + ")"})
 			.text(function(d){return d});
 			
 		var declport_tooltip_i = d3.select("body").selectAll(".Decl_Quality_Sites_I")
