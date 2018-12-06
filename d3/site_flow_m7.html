@@ -339,8 +339,8 @@
 			var DECL_I=[];
 			var DECL_E=[];
 			for (i=0;i<24;i++){
-				DECL_I[i]=(mydata.filter(function(e){return e.I_E_FLAG == "I" && sitese.lastIndexOf(e.I_E_PORT)== i })).length;
-				DECL_E[i]=(mydata.filter(function(e){return e.I_E_FLAG == "E" && sitese.lastIndexOf(e.I_E_PORT)== i })).length;
+				DECL_I[i]=(mydata.filter(function(e){return e.I_E_FLAG == "I" && sitese.lastIndexOf(e.DECL_PORT)== i })).length;
+				DECL_E[i]=(mydata.filter(function(e){return e.I_E_FLAG == "E" && sitese.lastIndexOf(e.DECL_PORT)== i })).length;
 				//console.log(DECL_I[i]);
 			};
 			
