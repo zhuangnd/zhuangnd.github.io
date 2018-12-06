@@ -292,7 +292,7 @@
 			.attr("id",function(d,i){return "Decl_Quality_Sites_" + sitese[i]})
 			.style("font-size","12px")
 			.style("left",function(d,i){return rect_width*7 + 12 + "px"})
-			.style("top",function(d,i){return 65 + i*2 * rect_padding_h + "px"})
+			.style("top",function(d,i){return 75 + i*2 * rect_padding_h + "px"})
 			.text("");		
 			
 		d3.csv("3700d-142.csv",function(data){
@@ -389,7 +389,7 @@
 				.duration(function(d,i){return d.DELAY-Delay_sl[sl]})//修改延迟时间
 				//.attr("cx",-5)
 				.attr("cx",function(d,i){
-					update_Tip(i,wk[sl],d.END_DATE,d.DECL_PORT,(DECL_I[sitese.lastIndexOf(d.DECL_PORT)]/i_length).toFixed(1)+"%",sl);//更新时间和票数
+					update_Tip(i,wk[sl],d.END_DATE,d.DECL_PORT,(DECL_I[sitese.lastIndexOf(d.DECL_PORT)]*100/i_length).toFixed(1)+"%",sl);//更新时间和票数
 					//console.log(mydata.filter(function(e){return e.DECL_PORT == "3708"}).length);
 					return -5})
 				.transition()
