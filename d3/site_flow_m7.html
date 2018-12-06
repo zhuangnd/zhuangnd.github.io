@@ -315,7 +315,7 @@
 						data.filter(function(e){return e.END_DATE >'2018-11-01' && e.END_DATE <'2018-11-02'}),
 						data.filter(function(e){return e.END_DATE >'2018-11-02' && e.END_DATE <'2018-11-03'}),
 						data.filter(function(e){return e.END_DATE >'2018-11-03'})];
-			console.log(mydata1);
+			//console.log(mydata1);
 			//var mydata = data.filter(function(e){return e.COUNTRY !== "142"});
 			//var mydata = data.filter(function(e){return e.END_DATE >'2018-11-3' && e.END_DATE <'2018-11-4'}) ;
 			//var mydata = data.filter(function(e){return e.I_E_PORT.slice(0,2) !== "37"}) ;////从索引号0到索引号1
@@ -371,7 +371,7 @@
 					d3.select("#Decl_Time_3700").text(b);//wk[new Date(END_DATE[h]).getDay()]
 					d3.select("#Decl_Time_2_3700").text(a + " " +(h+1));		//END_DATE[h]			
 					//d3.select("#Decl_Quality_3700").text(h);
-					//d3.select("#Decl_Quality_Sites_" + c).text(d);//DECL_PORT[h],d.I_E_PORT
+					d3.select("#Decl_Quality_Sites_" + c).text(d);//DECL_PORT[h],d.I_E_PORT
 					},mydata1[sl][h].DELAY-Delay_sl[sl])};
 				
 		
@@ -389,7 +389,7 @@
 				.duration(function(d,i){return d.DELAY-Delay_sl[sl]})//修改延迟时间
 				//.attr("cx",-5)
 				.attr("cx",function(d,i){
-					update_Tip(i,wk[sl],d.END_DATE,d.DECL_PORT,d.I_E_PORT,sl);//更新时间和票数
+					update_Tip(i,wk[sl],d.END_DATE,d.DECL_PORT,Math.toFixed(DECL_I[sitese.lastIndexOf(d.DECL_PORT)]/i_length,1)+"%",sl);//更新时间和票数
 					//console.log(mydata.filter(function(e){return e.DECL_PORT == "3708"}).length);
 					return -5})
 				.transition()
