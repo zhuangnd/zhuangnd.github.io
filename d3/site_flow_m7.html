@@ -286,12 +286,12 @@
 			.attr("x",rect_width)
 			.attr("y", function(d,i){return i*2 * rect_padding_h+rect_height/2});
 		
-		var declport_text = declport_g.selectAll(".declport_text")
+		var declport_text = ieport_g.selectAll(".declport_text")
 			.data(sitese)
 			.enter()
 			.append("text")
 			.attr("class","mytext declport_text")
-			.attr("transform", function(d,i){return "translate(" + (rect_width+65) + "," + (i*2 * rect_padding_h+10) + ")"})
+			.attr("transform", function(d,i){return "translate(" + (rect_width/2) + "," + (i*2 * rect_padding_h+10) + ")"})
 			.text(function(d){return d});
 			
 		var declport_tooltip_i = d3.select("body").selectAll(".Decl_Quality_Sites_I")
