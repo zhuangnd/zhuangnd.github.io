@@ -71,11 +71,15 @@
 			fill: #ccc;	
 			color:#ccc;
 	                }
-	        .Decl_Quality_Sites {
+	        .Decl_Quality_Sites_I {
 			font-size:11px;
 	                fill:salmon;
 			color:salmon;
 	    }
+	       .Decl_Quality_Sites_E {
+			font-size:11px;
+	                fill:steelblue;
+			color:steelblue;
 	    
     </style>
 </head>
@@ -287,19 +291,30 @@
 			.enter()
 			.append("text")
 			.attr("class","mytext declport_text")
-			.attr("transform", function(d,i){return "translate(" + (rect_width+5) + "," + (i*2 * rect_padding_h+10) + ")"})
+			.attr("transform", function(d,i){return "translate(" + (rect_width+65) + "," + (i*2 * rect_padding_h+15) + ")"})
 			.text(function(d){return d});
 			
-		var declport_tooltip = d3.select("body").selectAll(".Decl_Quality_Sites")
+		var declport_tooltip_i = d3.select("body").selectAll(".Decl_Quality_Sites_I")
 			.data(sitesc)
 			.enter()
 			.append("div")
-			.attr("class","mytext Decl_Quality_Sites")
-			.attr("id",function(d,i){return "Decl_Quality_Sites_" + sitese[i]})
+			.attr("class","mytext Decl_Quality_Sites_I")
+			.attr("id",function(d,i){return "Decl_Quality_Sites_I" + sitese[i]})
 			.style("font-size","12px")
 			.style("left",function(d,i){return rect_width*7 + 12 + "px"})
-			.style("top",function(d,i){return 70 + i*2 * rect_padding_h + "px"})
-			.text("");		
+			.style("top",function(d,i){return 50 + i*2 * rect_padding_h + "px"})
+			.text("");
+		var declport_tooltip_e = d3.select("body").selectAll(".Decl_Quality_Sites_E")
+			.data(sitesc)
+			.enter()
+			.append("div")
+			.attr("class","mytext Decl_Quality_Sites_E")
+			.attr("id",function(d,i){return "Decl_Quality_Sites_E" + sitese[i]})
+			.style("font-size","12px")
+			.style("left",function(d,i){return rect_width*7 + 12 + "px"})
+			.style("top",function(d,i){return 65 + i*2 * rect_padding_h + "px"})
+		        .text("");
+
 			
 		d3.csv("3700d-142.csv",function(data){
 		
@@ -377,7 +392,8 @@
 					d3.select("#Decl_Time_3700").text(b);//wk[new Date(END_DATE[h]).getDay()]
 					d3.select("#Decl_Time_2_3700").text(a + " " +(h+1));		//END_DATE[h]			
 					//d3.select("#Decl_Quality_3700").text(h);
-					d3.select("#Decl_Quality_Sites_" + c).text(d);//DECL_PORT[h],d.I_E_PORT
+					d3.select("#Decl_Quality_Sites_I" + c).text(d);//DECL_PORT[h],d.I_E_PORT
+					d3.select("#Decl_Quality_Sites_E" + c).text(e);
 					},mydata1[sl][h].DELAY-Delay_sl[sl])};
 				
 		
