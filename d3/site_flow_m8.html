@@ -6,12 +6,12 @@
     <title>site_flow</title>
     <script type="text/javascript" src="d3.min.js"></script>
     <style>
-	    body {background-color:dimgray;}
+	    body {background-color:#ccc;}
 		#tooltip_1 {
 			position: absolute;
 			width: auto;
 			height:auto;
-			color:#ccc;
+			color:#555;
 			left:px;
 			top:110px;
 			}	
@@ -76,7 +76,7 @@
 			font-family: sans-serif;
 			font-size: 12px;
 			line-height: 12px;
-			fill: #ccc;
+			fill: dimgray;
 			}
 
 	    .Decl_Quality_Sites_I {
@@ -265,13 +265,13 @@
 			.attr("y", function(d,i){return i*2 * rect_padding_h})
 			.on("mouseover",function(d,i){
 				d3.select(this).style("opacity",1);
-				d3.select("#declport_text_" + i).style("fill","#999");
+				d3.select("#declport_text_" + i).style("fill","#555");
 				d3.select("#Decl_Quality_Sites_I" + sitese[i]).style("display","inline");
 				d3.select("#Decl_Quality_Sites_E" + sitese[i]).style("display","inline");
 				})			
 			.on("mouseout",function(d,i){
 				d3.select(this).style("opacity",0.5);
-				d3.select("#declport_text_" + i).style("fill","#ccc");
+				d3.select("#declport_text_" + i).style("fill","#555");
 				d3.select("#Decl_Quality_Sites_I" + sitese[i]).style("display","none");
 				d3.select("#Decl_Quality_Sites_E" + sitese[i]).style("display","none");
 				});
