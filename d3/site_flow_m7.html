@@ -291,7 +291,7 @@
 			.enter()
 			.append("text")
 			.attr("class","mytext declport_text")
-			.attr("transform", function(d,i){return "translate(" + (rect_width/2) + "," + (i*2 * rect_padding_h+10) + ")"})
+			.attr("transform", function(d,i){return "translate(" + (rect_width*3/2) + "," + (i*2 * rect_padding_h+10) + ")"})
 			.text(function(d){return d});
 			
 		var declport_tooltip_i = d3.select("body").selectAll(".Decl_Quality_Sites_I")
