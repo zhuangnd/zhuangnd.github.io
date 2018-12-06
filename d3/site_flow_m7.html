@@ -386,7 +386,7 @@
 					})(j)	
 				};
 
-			function update_Tip(h,a,b,c,d,sl){		//i,wk[new Date(d.END_DATE).getDay()],d.END_DATE,d.DECL_PORT,d.I_E_PORT
+			function update_Tip(h,a,b,c,d,e,sl){		//i,wk[new Date(d.END_DATE).getDay()],d.END_DATE,d.DECL_PORT,d.I_E_PORT
 				setTimeout(function(){
 					//d3.select("#Decl_Time_3700").text(wk[DataWeekday[h]]);
 					d3.select("#Decl_Time_3700").text(b);//wk[new Date(END_DATE[h]).getDay()]
@@ -411,7 +411,7 @@
 				.duration(function(d,i){return d.DELAY-Delay_sl[sl]})//修改延迟时间
 				//.attr("cx",-5)
 				.attr("cx",function(d,i){
-					update_Tip(i,wk[sl],d.END_DATE,d.DECL_PORT,(DECL_I[sitese.lastIndexOf(d.DECL_PORT)]*100/i_length).toFixed(1)+"%",sl);//更新时间和票数
+					update_Tip(i,wk[sl],d.END_DATE,d.DECL_PORT,(DECL_I[sitese.lastIndexOf(d.DECL_PORT)]*100/i_length).toFixed(1)+"%",(DECL_E[sitese.lastIndexOf(d.DECL_PORT)]*100/e_length).toFixed(1)+"%",sl);//更新时间和票数
 					//console.log(mydata.filter(function(e){return e.DECL_PORT == "3708"}).length);
 					return -5})
 				.transition()
