@@ -87,6 +87,7 @@ d3.json("rnew2018.json", function(error, root) {
     circle.transition()
         .duration(1000)
         .style("fill", function(d) { return d.children ? color(d.depth) : null; });
+        });
         
   var node = g.selectAll("circle,text");
   svg
