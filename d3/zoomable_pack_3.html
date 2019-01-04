@@ -40,12 +40,12 @@ var svg = d3.select("svg"),
 var color = d3.scaleLinear()
     .domain([0, 6])
     //.domain([-1, 5])
-    //.range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
+    .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
     //.range(["rgba(240,20,20,0.2)", "rgba(240,20,20,0.8)"])
     //.range(["rgba(18,107,174,0.2)", "rgba(18,107,174,0.8)"])
-    .range(["rgba(15,149,176,0.2)", "rgba(18,107,174,0.8)"])
-    //.interpolate(d3.interpolateHcl);
-    .interpolate(d3.interpolateRgbBasis);
+    //.range(["rgba(15,149,176,0.2)", "rgba(18,107,174,0.8)"])
+    .interpolate(d3.interpolateHcl);
+    //.interpolate(d3.interpolateRgbBasis);
 
 var parange(["rgba(240,20,20,0.2)", "rgba(240,20,20,0.8)"])ck = d3.pack()
     .size([diameter - margin, diameter - margin])
