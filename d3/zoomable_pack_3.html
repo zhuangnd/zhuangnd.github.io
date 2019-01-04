@@ -44,7 +44,8 @@ var color = d3.scaleLinear()
     //.range(["rgba(240,20,20,0.2)", "rgba(240,20,20,0.8)"])
     //.range(["rgba(18,107,174,0.2)", "rgba(18,107,174,0.8)"])
     .range(["rgba(15,149,176,0.2)", "rgba(18,107,174,0.8)"])
-    .interpolate(d3.interpolateHcl);
+    //.interpolate(d3.interpolateHcl);
+    .interpolate(d3.interpolateRgbBasis);
 
 var parange(["rgba(240,20,20,0.2)", "rgba(240,20,20,0.8)"])ck = d3.pack()
     .size([diameter - margin, diameter - margin])
