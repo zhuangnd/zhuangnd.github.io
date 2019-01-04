@@ -33,8 +33,8 @@
 <script>
 
 var svg = d3.select("svg"),
-    margin = 100,
-    diameter = +svg.attr("width"),
+    margin = 20,
+    diameter = Math.min(+svg.attr("width"),+svg.attr("height")),
     g = svg.append("g").attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
 
 var color = d3.scaleLinear()
@@ -43,7 +43,7 @@ var color = d3.scaleLinear()
     //.range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
     //.range(["rgba(240,20,20,0.2)", "rgba(240,20,20,0.8)"])
     //.range(["rgba(18,107,174,0.2)", "rgba(18,107,174,0.8)"])
-    .range(["rgba(210,217,122,0.2)", "rgba(18,107,174,0.8)"])
+    .range(["rgba(32,137,77,0.3)", "rgba(18,107,174,0.9)"])
     .interpolate(d3.interpolateHcl);
     //.interpolate(d3.interpolateRgbBasis);
 
