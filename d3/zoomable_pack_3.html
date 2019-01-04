@@ -48,7 +48,7 @@ var pack = d3.pack()
     .size([diameter - margin, diameter - margin])
     .padding(2);
 
-d3.json("rnew2011.json", function(error, root) {
+d3.json("rnew2018.json", function(error, root) {
   if (error) throw error;
 
   root = d3.hierarchy(root)
@@ -74,7 +74,7 @@ d3.json("rnew2011.json", function(error, root) {
       .attr("class", "label")
       .style("fill-opacity", function(d) { return d.parent === root ? 1 : 0; })
       .style("display", function(d) { return d.parent === root ? "inline" : "none"; })
-      .style("opacity",0)
+      //.style("opacity",0)
       .text(function(d) { return d.data.name; });
 
   var node = g.selectAll("circle,text");
