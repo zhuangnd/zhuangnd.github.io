@@ -40,11 +40,12 @@ var color = d3.scaleLinear()
     .domain([0, 5])
     //.domain([-1, 5])
     //.range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
-    .range(["hsl(100,70%,90%)", "hsl(200,30%,40%)"])
+    //.range(["hsl(100,70%,90%)", "hsl(200,30%,40%)"])
     //.range(["rgba(240,20,20,0.2)", "rgba(240,20,20,0.8)"])
     //.range(["rgba(18,107,174,0.2)", "rgba(18,107,174,0.8)"])
     //.range(["rgba(210,217,122,0.2)", "rgba(18,107,174,0.9)"])
     //.range(["rgba(65,174,60,0.2)", "rgba(36,134,185,0.8)"])
+    .rang(c2)
     .interpolate(d3.interpolateHcl);
     //.interpolate(d3.interpolateRgbBasis);
 var pack = d3.pack()
@@ -76,18 +77,18 @@ d3.json("rnew2018.json", function(error, root) {
       //.style("opacity",0)
       .text(function(d) { return d.data.name; });
       
-  var cp = svg.append("text")
-        .attr("transform", "translate(" + diameter / 2 + "," + (diameter - 10) + ")")
-        .text("CC")
-        .on("click",function(){
-            var color = d3.scaleLinear()
-    .domain([0, 5]
-    .range(c2)
-    .interpolate(d3.interpolateHcl);
-    circle.transition()
-        .duration(1000)
-        .style("fill", function(d) { return d.children ? color(d.depth) : null; });
-        });
+ // var cp = svg.append("text")
+//        .attr("transform", "translate(" + diameter / 2 + "," + (diameter - 10) + ")")
+//        .text("CC")
+//        .on("click",function(){
+//            var color = d3.scaleLinear()
+//    .domain([0, 5]
+//    .range(c2)
+//    .interpolate(d3.interpolateHcl);
+//    circle.transition()
+//        .duration(1000)
+//        .style("fill", function(d) { return d.children ? color(d.depth) : null; });
+//        });
         
   var node = g.selectAll("circle,text");
   svg
