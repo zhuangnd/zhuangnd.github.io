@@ -43,10 +43,6 @@ label {
   display: block;
 }
 
-div {
-  display: inline;
-}
-
 #ds {
 	float: left;
 	}
@@ -87,12 +83,13 @@ div {
   <label><input type="radio" name="mode" value="cluster" checked> Dendrogram</label>
   <label><input type="radio" name="mode" value="tree"> Tree</label>
 </form>
-	<div id="guide" class="hidden" >
-		<p id="guideText">指标说明</p>
-	</div>
-        <div id="ds">
+     <div id="ds">
             <svg width="600" height="2300"></svg>
         </div>
+<div id="guide" class="hidden" >
+		<p id="guideText">指标说明</p>
+	</div>
+   
 <script src="d3.v4.js"></script>
 <script>
 
