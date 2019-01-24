@@ -130,14 +130,16 @@ console.log(root);
 
   node.append("text")
       .attr("dy", 3)
-      .attr("x", function(d) { return d.children ? 20 : 20; })
-      .style("text-anchor", function(d) { return d.children ? "end" : "start"; })
-      .text(function(d) { return d.depth==2 ?d.id.substring(d.id.lastIndexOf(".") + 1):d.id.substring(d.id.lastIndexOf(".") + 1) + d.data.value; })
-		.on("click", function(d){
-			guide(d);
-			//d3.select("#guide").classed("hidden", false);
-		});
-
+      .attr("class","zbtext")      
+      .attr("x", function(d) { return d.children ? 20 : 20; })       
+      .style("text-anchor", function(d) { return d.children ? "end" : "start"; })       
+	  .text(function(d) { return d.depth==2 ?d.id.substring(d.id.lastIndexOf(".") + 1):d.id.substring(d.id.lastIndexOf(".") + 1) + d.data.value; })         
+	  .on("click", function(d){  
+	      d3.selectAll(".zbtext").style("fill","#999"); 
+	      d3.select(this).style("fill","coral"); 
+	      guide(d); 
+  });
+	
   d3.selectAll("input")
       .on("change", changed);
 
