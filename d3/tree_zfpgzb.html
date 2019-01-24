@@ -43,8 +43,15 @@ label {
   display: block;
 }
 
+div {
+  display: inline;
+}
+
+#ds {
+	float: left;
+	}
 	
-	#guide {
+#guide {
 		float：left；
 		position: fixed;
 		top:5%;
@@ -83,7 +90,9 @@ label {
 	<div id="guide" class="hidden" >
 		<p id="guideText">指标说明</p>
 	</div>
-<svg width="600" height="2300"></svg>
+        <div id="ds">
+            <svg width="600" height="2300"></svg>
+        </div>
 <script src="d3.v4.js"></script>
 <script>
 
