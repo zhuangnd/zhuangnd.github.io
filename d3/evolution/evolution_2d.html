@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
     	<meta name='viewport' content='width=device-width'>
 		<title>evolution</title>
-		<script type="text/javascript" src="d3.v3.js"></script>
+		<script type="text/javascript" src="../d3.v3.js"></script>
 <style type="text/css">
 
 	.axis path,
@@ -110,7 +110,7 @@
 		  
 	var rows=90;  
 	//var adjust=[150,60,25,-590];
-	var adjust=25;
+	var adjust=-590;
 	var yearScale=["全尺度","2亿年","2000万年","500万年"];
 	var years=[4561,201,21,5];
 	var hef=["evolution_2a.html","evolution_2b.html",
@@ -118,7 +118,7 @@
 
 d3.csv("evolution2.csv",function(error,d){
 	alldata=d;
-	data=alldata.filter(function(e){return e.to < years[2];});	
+	data=alldata.filter(function(e){return e.to < years[3];});	
 	//data=alldata;
 	
     x.domain([d3.max(data, function(element) { return parseFloat(element.to); }),0]);
