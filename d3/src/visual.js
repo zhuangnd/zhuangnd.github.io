@@ -9,20 +9,9 @@
 // import * as d3 from 'd3';
 // require("./stylesheet.css");
 
-$("#inputfile").change(function () {
-  $("#inputfile").attr("hidden", true);
-  var r = new FileReader();
-  r.readAsText(this.files[0], config.encoding);
-  r.onload = function () {
-    //读取完成后，数据保存在对象的result属性中
-    var data = d3.csvParse(this.result);
-    try {
-      draw(data);
-    } catch (error) {
-      alert(error);
-    }
-  };
-});
+
+
+d3.csv("export.csv").then(function(data){draw(data);});
 
 function draw(data) {
   var date = [];
