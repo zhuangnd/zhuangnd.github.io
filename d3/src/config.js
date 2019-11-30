@@ -17,7 +17,7 @@
   showMessage: true,//false,
 
   //标题
-  top_lable:'货物贸易出口值排名',
+  //top_lable:'货物贸易出口值排名',
   
   // 时间自动排序。
   // !!!请确保打开此项时，使用的是标准日期格式！(即：YYYY-MM-DD HH:MM)
