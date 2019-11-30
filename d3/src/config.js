@@ -6,7 +6,7 @@
   // Encoding is not recommended to be modified.
   // Instead, it is recommended to copy the contents of the CSV file produced by yourself to example.csv.
   // The encoding format of example.csv is supported by all languages.
-  encoding: "GBK",//"UTF-8",
+  encoding: "UTF-8",//"GBK",
 
   // 每个时间节点最多显示的条目数。
   max_number: 15,
