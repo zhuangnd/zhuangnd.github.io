@@ -11,7 +11,7 @@
 
 
 
-d3.csv(datafile).then(function(data){draw(data);});
+d3.csv("export.csv").then(function(data){draw(data);});
 
 function draw(data) {
   var date = [];
