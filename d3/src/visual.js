@@ -11,7 +11,7 @@
 
 
 
-d3.csv("export.csv").then(function(data){draw(data);});
+d3.csv(datafile).then(function(data){draw(data);});
 
 function draw(data) {
   var date = [];
@@ -69,7 +69,7 @@ function draw(data) {
     }
   }
 
-  var top_lable = config.top_lable;//znd标题
+  //var top_lable = config.top_lable;//znd标题
   var showMessage = config.showMessage;
   var allow_up = config.allow_up;
   var always_up = config.always_up;
