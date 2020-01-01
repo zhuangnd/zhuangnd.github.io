@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1"/>
+    <title></title>
+    <script type="text/javascript" src="http://localhost:8080/d3.min.js"></script>
+
+    <style>
+		path {
+			fill:#ddd;
+			stroke: #ffffff;
+        }
+		
+		
+		.path_fill {
+			fill:navajowhite;
+        }
+		
+		path:hover {
+			opacity:0.5;
+        }
+		
+		.circle {	
+			fill:coral;
+			fill-opacity:0;
+			stroke:red;
+			stroke-opacity:0;
+            stroke-width: 0.15px;	
+			position:absolute;
+        }
+
+		
+		.selected {	
+			fill:coral;
+			fill-opacity:0;
+			stroke:red;
+			stroke-opacity:0.8;
+            stroke-width: 0.15px;	
+			position:absolute;
+        } 
+               
+        .y2019 {	
+			fill:steelblue;
+			fill-opacity:0;
+			stroke:steelblue;
+			stroke-opacity:0.7;
+            stroke-width: 0.15px;	
+			position:absolute;
+        }
+		
+		.circle:hover {
+			opacity:1;
+        }
+		
+        .map_text:hover {
+            fill: lightsalmon;
+        }
+		
+		.map_text {
+			font-family: sans-serif;
+			font-size: 10px;
+			line-height: 12px;
+			fill: steelblue;
+			
+		}
+		
+		.tip {
+			color: steelblue;
+			font-family: sans-serif;
+			font-size: 14px;
+			padding:5px;
+		}
+		
+		.tip:hover {		
+			color: red;
+			}
+			
+		.MapTextHidden {
+			opacity:0.2;
+		}	
+		
+		#tooltip_fixed {
+		background-color: whitesmoke;
+		position: absolute;
+		width: auto;
+		height:auto;
+		color:dimgray;
+		left:10px;
+		top:120px;
+	}
+	
+	#tooltip.hidden {
+		display: none;
+	}
+				
+	#tooltip_fixed.hidden {
+		display: none;
+	}
+			
+	#tooltip p {
+		margin: 0;
+		font-family: 微软雅黑;
+		font-size: 12px;
+		line-height: 18px;
+	}
+	
+	#tooltip_fixed table {
+		margin: 2px;
+		font-family: 微软雅黑;
+		font-size: 14px;
+		line-height: 25px;
+	}
+	
+	.info_title {
+		font-weight:bold
+		}
+		
+     .play-button {
+          margin-left: 10px;
+          margin-bottom: 15px;
+		  font-family: 微软雅黑;
+          cursor: pointer;
+     }
+	 
+     .play-button:hover {
+		  fill:coral;
+		  opacity:0.8;
+     }
+	 
+	 
+    </style>
+</head>
+
+<body>
+	<div id="tooltip_fixed" class="fixed">	
+    <table>
+      <thead class="info_title">
+        <tr>
+          <th><span id="ccus"></span><span id="cmon"></span></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class='barclays'>
+          <td class='sparkline'><span id="pictime"></span></td>
+        </tr>
+        <tr class='barclays'>
+          <td class='sparkline'><span id="piclocation"></span></td>
+        </tr>
+		<!--
+        <tr class='barclays'>
+          <td class='sparkline'><img src="" id="pic"></img></td>
+        </tr>
+		-->
+      </tbody>
+    </table>
+	</div>
+
+<script type="text/javascript">
+
+
+ 			// Define the dimensions of the visualization.
+        var margin = {top: 100, right: 20, bottom: 20, left: 20},
+            width = 1800 - margin.left - margin.right,
+            height = 900 - margin.top - margin.bottom; 
+
+//此处根据不同地图修改.	
+		d3.select("title").text("Travel China");
+		//var mapfile = "usa_id.json";
+		var mapfile = "china.json";
+		//var mapfile = "world_id.json";
+		//var mapfile = "fujian_couties.json";
+		//var mapfile = "350200.json";
+		
+		//var datafile = "travel_usa_sp.csv";
+		var datafile = "mygpsdata_20191231.csv";
+		
+        var pjn = d3.geo
+			//.mercator().center([0, 40]).scale(300).translate([width / 2, height / 2]);//world_id.json
+			.mercator().center([105,38]).scale(1000).translate([width / 2, height / 2]);//china.json
+			//.mercator().center([119, 26]).scale(9000).translate([width / 2, height / 2]);//fujian_couties.json
+			//.mercator().center([118.125, 24.5]).scale(200000).translate([width / 2, height / 2]);//xiamen 350200.json
+			//.albers().rotate([96, 0]).center([-.6, 38.7]).parallels([29.5, 45.5]).scale(1800).translate([width / 2, height / 2]).precision(.1);//usa_id.json
+			
+		//另需修改csv数据筛选
+//此处根据不同地图修改.
+
+
+        // Create the SVG container for the visualization and
+        // define its dimensions.
+        var svg = d3.select("body").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom);
+
+        // Within the main SVG container, add a group
+        // element (`<g>`) that can be transformed via
+        // a translation to account for the margins.
+        var g = svg.append("g")
+            .attr("transform", "translate(" + margin.left +
+            "," + margin.top + ")");
+		
+        // Define a variable that tracks which state is
+        // currently zoomed (if any) and a variable that
+        // indicates if the Voronoi diagram is visible.
+        var active = d3.select(null);
+
+        // Define a function that returns the SVG
+        // path based on the projection. This
+        // function accepts, as input, a selection
+        // with an associated array of longitude
+        // and latitude values.
+        var path = d3.geo.path()
+            .projection(pjn);
+
+		var filename = [];
+		var data_time = [];
+		var data_Longitude = [];
+		var data_Latitude = [];
+		var data_Address = [];
+		
+	    var playAll = svg.append("text")
+          .attr("class", "play-button")
+		  .attr("x", 20)
+		  .attr("y", 90)
+          .text("▶ 点击浏览");
+		  
+		//var scale = 1;
+        // Retrieve the GeoJSON information for the US.
+        d3.json(mapfile, function(map) {
+
+            // Draw the map within the SVG container.
+            // Each state is a separate SVG path.
+            var paths=g.selectAll("path")
+                .data(map.features)
+              .enter()
+			  
+			  paths.append("path")
+                .attr("id", function(d) {
+                    return d.properties.id;
+                })
+                .attr("d", path)
+				.attr("class","path")
+				.on("mouseover",function(d){d3.select(this).attr("class","path path_fill");
+					d3.selectAll("#map_text_" + d.properties.id).classed("MapTextHidden",false);//style("opacity","1");
+					})
+				.on("mouseout",function(d){d3.select(this).attr("class","path");
+					d3.selectAll(".map_text").classed("MapTextHidden",true);//style("opacity","0");
+					})
+                .on("click", clicked);
+				
+			//显示地图文字
+			var texts=paths.append("text")
+				.text(function(d){return d.properties.name;})
+				.attr("class","map_text MapTextHidden")
+				.attr("id",function(d){return "map_text_" + d.properties.id})
+				//.style("opacity","0")
+				.attr("transform",function(d){
+					var centroid=path.centroid(d),
+					x=centroid[0],
+					y=centroid[1];
+					return "translate(" + (x-5) +","+ y +")";
+					});
+					
+            // Now retrieve the data to add to the map.
+            d3.csv(datafile, function(data) {
+				//data = data.filter(function(e){return e.Country == "china" && e.PicDate>"2018-1-1"});
+				data = data.filter(function(e){return e.Country == "china"});
+				data.forEach(function(d){
+					data_time.push(d.PicDate);
+					filename.push(d.FileName);
+					data_Longitude.push(d.Longitude);
+					data_Latitude.push(d.Latitude);
+					data_Address.push(d.Address);
+					});
+
+                // Draw circles on the map for each
+                // data point.
+                g.selectAll("circle")
+                    .data(data)
+                  .enter().append("circle")
+					.attr("class",function(d,i){return "circle selected y" + new Date(d.PicDate).getFullYear()})
+					.attr("id",function(d,i){return "circle" + i})
+                    .attr("cx", function(d) { return pjn([d.Longitude, d.Latitude])[0]; })
+                    .attr("cy", function(d) { return pjn([d.Longitude, d.Latitude])[1]; })
+					//.attr("r", 10)
+					//.style("opacity",0)
+					//.style("stroke","red")
+					//.transition()
+					//.delay(function(d,i){return 20*i})
+					//.duration(1000)//若要增加消失效果，此处延迟改为600，效果更生动
+					.attr("r", 3)
+					//.style("opacity",0.8)
+					//.style("stroke","red")//若要增加消失效果，此处改为skyblue，效果更生动
+					.on("mouseover",function(d,i){d3.select(this).transition().duration(750).attr("r",5).style("fill-opacity",0.8);update_tooltip(i)})
+					.on("mouseout",function(){d3.select(this).transition().duration(350).attr("r",2).style("fill-opacity",0)})	
+					
+					//增加以下代码圆点消失
+					//.transition()
+					//.duration(1200)
+					//.attr("r", 15)
+					//.style("stroke","coral")
+					//.style("opacity",0)
+					;
+					
+				update_tooltip(data_time.length - 1);
+				
+				
+//drag	
+
+	
+var data1 = [{
+cx: 600,
+cy: -20,
+r: 5
+}];
+
+var playlong = 500;
+
+var play_g=svg.append("g")
+            .attr("transform", "translate(" + margin.left +
+            "," + margin.top + ")");
+
+play_g.selectAll(".aline")
+.data(data1)
+.enter()
+.append("line")
+.attr("class","aline")
+.attr("x1", function(d, i) {return d.cx;})
+.attr("y1", function(d, i) {return d.cy;})
+.attr("x2", function(d, i) {return d.cx + playlong;})
+.attr("y2", function(d, i) {return d.cy;})
+.attr("stroke", "#ddd");
+
+var drag = d3.behavior.drag()
+	.on("drag", dragmove)
+	//.on("dragstart",d3.selectAll(".circle").classed("selected", false))
+	;
+
+play_g.selectAll(".point")
+.data(data1)
+.enter()
+.append("circle")
+.attr("class","point")
+.attr("cx", function(d, i) {return d.cx;})
+.attr("cy", function(d, i) {return d.cy;})
+.attr("r", function(d, i) {return d.r;})
+.attr("fill", "#ccc")
+.call(drag);
+
+
+function dragmove(d) {
+var cxtime;
+
+d3.select(this)
+//.attr("cx", d.cx = d3.event.x)
+.attr("cx", d.cx = function(){
+	if (d3.event.x > 600 + playlong) {return 600 + playlong}
+		else {if (d3.event.x < 600) {return 600}
+			else {return cxtime = d3.event.x};
+		};
+	});
+
+var datapoint = parseInt(d3.max([1,((cxtime - 600) * data_time.length-1) / playlong]));
+
+d3.select("#circle" + datapoint)
+	.classed("selected", true)
+	.transition()
+	.duration(200)//若要增加消失效果，此处延迟改为600，效果更生动
+	.attr("r", 8)
+	.transition()
+	.duration(550)
+	.attr("r", 2)
+	;
+	
+update_tooltip(datapoint);
+
+console.log(datapoint);
+
+}				
+
+            });
+        });
+
+        // Event handlers.
+
+        // Click on a state.
+        var clicked = function(d) {
+
+            // If clicked on state is already active,
+            // reset the map to its initial condition.
+            if (active.node() === this) return reset();
+			
+            // Otherwise, remove the highlighting from
+            // the currently active state.
+            active.attr("class","path");
+
+            // And add highlighting to the newly
+            // active state.
+            active = d3.select(this)
+                .attr("class","path path_fill");
+
+            // Calculate the bounds for the map that
+            // will contain the newly active state.
+            var bounds = path.bounds(d),
+                dx = bounds[1][0] - bounds[0][0],
+                dy = bounds[1][1] - bounds[0][1],
+                x = (bounds[0][0] + bounds[1][0]) / 2,
+                y = (bounds[0][1] + bounds[1][1]) / 2,
+                scale = .9 / Math.max(dx / width, dy / height),
+                translate = [width / 2 - scale * x, height / 2 - scale * y];
+
+            // Transition to the newly active state
+            // by translation and scaling.
+            g.transition()
+                .duration(1500)
+                .style("stroke-width", 1.5 / scale + "px")
+                .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
+
+            // To keep the circles from changing
+            // size, also transition their radii.
+            
+			g.selectAll("circle")
+                .transition()
+                .duration(3000)
+                .attr("r", 2 / scale)
+				;
+				
+			g.selectAll("text")
+                .transition()
+                .duration(1500)
+                .style("font-size",20 / scale)
+				;	
+				
+        };
+
+        // Reset to initial condition.
+        var reset = function() {
+
+            // Remove highlighting from active state
+            // and note that no state is now active.
+            active.attr("class","path path_fill");
+            active = d3.select(null);
+
+            // Remove the translation and scale
+            // transform with a transition.
+            g.transition()
+                .duration(750)
+                .style("stroke-width", "1px")
+				//.attr("transform", "")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")")//此处修改源代码
+				;
+
+            // Also keep the circles the same
+            // size by transitioning their
+            // radii at the same time.
+            g.selectAll("circle")
+				.classed("selected", true)
+                .transition()
+                .duration(750)
+                .attr("r", 2)
+				.style("fill-opacity",0)
+				.style("stroke-opacity",0.8);				
+
+			
+			g.selectAll("text")
+                .transition()
+                .duration(750)
+                .style("font-size",10);	
+
+					
+			d3.select(".play-button").text("▶ 点击浏览");
+			update_tooltip(data_time.length - 1);
+			d3.select(".point")
+				.transition()
+				.duration(750)
+				.ease("linear")
+				.attr("cx", 600);
+        };
+
+		
+		var playInterval;
+		var flag=true;
+		playAll.on("click", function() {
+			if (flag==true){
+				d3.selectAll(".circle")
+                    .classed("selected", false);					
+				var i = 0;
+				playInterval = setInterval(function() {
+					update_tooltip(i)
+					d3.select("#circle" + i)
+						.classed("selected", true)
+						.transition()
+						.duration(200)//若要增加消失效果，此处延迟改为600，效果更生动
+						.attr("r", 8)
+						.transition()
+						.duration(550)
+						.attr("r", 2);
+					
+					//更新播放轴圆点位置
+					d3.select(".point")
+						.attr("cx", function(){return 600 + i * 500/data_time.length});
+
+						i++;
+						if(i > data_time.length - 1) {
+							clearInterval(playInterval);		
+							d3.select(".play-button").text("▶ 点击浏览");
+							flag=true;
+							d3.select(".point")
+								.attr("cx", 600);
+						}
+				}, 20);			   
+			    flag=false;
+			    d3.select(".play-button").text("■ 点击停止");
+			}
+			else {
+				clearInterval(playInterval);
+			   flag=true;
+			   reset();
+			}
+        });  
+		
+		function update_tooltip(n) {
+			d3.selectAll("#pictime")
+				.text(data_time[n]);
+			d3.selectAll("#piclocation")
+				.text(data_Address[n]);
+			//d3.selectAll("#pic")				
+			//	.attr("src","images/" + filename[n]);
+		};		
+		
+    </script>
+</body>
+</html>
