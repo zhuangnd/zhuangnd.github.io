@@ -122,8 +122,6 @@ function draw(mydata) {
                 .style("opacity",0.9); 
                 
                 d3.select("#c_lable" + i)
-                .text(mydata[i].Zone_name)
-                .style("opacity",0)
 				.transition()
 				.duration(800)            
                 .style("opacity",0.7);
@@ -137,8 +135,8 @@ function draw(mydata) {
 				.style("opacity",0.7);
 				d3.selectAll(".c_lable")
 				.transition()
-				.duration(800)
-                .text("")
+				.duration(800)            
+                .style("opacity",0)
 				});
   
   const circle_lable = cg
@@ -150,8 +148,8 @@ function draw(mydata) {
       .attr("id",(d,i) => "c_lable" + i)
       .attr("x",(d, i) =>10 + x(parseDate(d.Date)))
       .attr("y",d=>y(d.Value)-10)
-      //.text(d => d.Zone_name.replace("综合保税区",""))
-      .attr("style","font-size:10;fill:black;opacity:0.7")
+      .text(d => d.Zone_name.replace("综合保税区",""))
+      .attr("style","font-size:10;fill:black;opacity:0")
       //.style("font-size",8)
       //.style("fill","darkgrey")
       //.style("opacity",0.5)
