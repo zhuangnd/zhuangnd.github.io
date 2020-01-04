@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <script src="../d3.v5.min.js"></script>
+    <title>综合保税区</title>
+    <!--
+    <script src="https://zhuangnd.github.io/d3//d3.v5.min.js"></script>
+-->
+</head>
+
+<body>
+    <center>
+        <!--<input type="file" id="inputfile" name="fileContent">-->
+        <!-- <svg width="1900" height="1020"></svg> -->
+
+    </center>
+    <script>
+    mywidth = 2000;
+    height = 800;
+    margin = ({top: 100, right: 100, bottom: 100, left: 100});
+    
+
+    
+    mytext = []//["Circle","Bar","Pie","Color","Text"];
+    //mydata = d3.csvParse(await "SpZone20191227@1.csv").text();
+    d3.csv("SpZone20191227.csv").then(function(mydata){draw(mydata);});
+
+    
+function draw(mydata) {
+     parseDate = d3.utcParse("%Y/%m/%d");
+     
+    const svg = d3.select("body").append("svg")
+    
+      //.attr("hight", height)
+      //.attr("width", mywidth)
+      .attr("viewBox", [0, 0, mywidth, height])
+      //3a6073.attr('style', 'background: -webkit-radial-gradient(#3af0f0, #3a0a3a 100%)')
+      //.attr('style', 'background: -webkit-radial-gradient(#3a6073 , #16222a 80%)')
+ ;
+ 
+      x = d3.scaleUtc()
+    //.domain(d3.extent(mydata, d => parseDate(d.Date)))
+    .domain([parseDate("2006/11/1"),parseDate("2020/1/1")])
+    .rangeRound([margin.left, mywidth - margin.right]);
+    
+    y = d3.scaleLinear()
+    //.domain(d3.extent(mydata, d => parseFloat(d.Value))).nice()
+    .domain(d3.extent(mydata, d => parseFloat(d.Value))).nice()
+    .rangeRound([height - margin.bottom, margin.top]);
+    
+    z = d3.scaleLinear()
+    .domain(d3.extent(mydata, d => parseFloat(d.Area))).nice()
+    .rangeRound([2, 10]);
+    
+    xAxis = g => g
+    .attr("transform", `translate(0,${height - margin.bottom + 20})`)
+    .call(d3.axisBottom(x).ticks(mywidth / 80).tickSizeOuter(0))
+    .call(g => g.select(".domain").remove());
+    
+    yAxis = g => g
+    .attr("transform", `translate(${margin.left},0)`)
+    .call(d3.axisLeft(y))
+    .call(g => g.select(".domain").remove())
+    .call(g => g.select(".tick:last-of-type text").append("tspan").text("亿元"));
+    
+
+    //color2 = d3.scaleSequentialSqrt([0, 10], t => d3.interpolateReds(t));
+    
+  svg.append("g")
+      .call(xAxis);
+
+  svg.append("g")
+      .call(yAxis);
+
+  //svg.append("g")
+  //    .call(grid);
+  
+  const cg = svg.append("g")
+      .attr("transform", d => `translate(0,0)`);
+  
+  const bg = svg.append("g")
+      .attr("transform", d => `translate(10,210)`);  
+  
+  const pg = svg.append("g")
+      .attr("transform", d => `translate(150,500)`);
+ 
+  const ng = svg.append("g")
+      .attr("transform", d => `translate(400,450)`)
+      //.style("stroke","steelblue")
+  ;
+  
+  const note = ng.selectAll("text")
+      .data(mytext)
+      .enter()
+      .append("text")
+      .text(d => d)
+      .attr("y",(d,i)=>30*i)
+      .style("fill","darkgrey")
+      .style("font-size",20);
+  
+  const circle = cg
+      .selectAll("circle")
+      .data(mydata)
+      .enter()
+      .append("circle")
+      .attr("cx",d => x(parseDate(d.Date)))
+      .attr("cy",d=>y(d.Value))
+      .attr("r",d => z(d.Area))
+      .style("fill","coral")
+             //d => color2(parseFloat(d.Area))
+             //mycolor[i]
+      .style("stroke","red")
+      .style("opacity",0.7)
+      .on("mouseover",function(d,i){d3.selectAll("circle")
+                .transition()
+				.duration(800)
+                .style("opacity",0.1);
+                
+                d3.select(this)
+				.transition()
+				.duration(500)
+                .style("fill","orangered")
+                .style("opacity",0.9); 
+                
+                d3.select("#c_lable" + i)
+				.transition()
+				.duration(500)            
+                .style("opacity",0.7)            
+                .style("font-size",10);
+                
+                })
+				//d => circle_lable.text(d.Zone_name.replace("综合保税区",""))); 
+      .on("mouseout",function(){d3.selectAll("circle")
+				.transition()
+				.duration(800)
+                .style("fill","coral")
+				.style("opacity",0.7);
+				d3.selectAll(".c_lable")
+				.transition()
+				.duration(800)            
+                .style("opacity",0)            
+                .style("font-size",1)
+				});
+  
+  const circle_lable = cg
+      .selectAll("text")
+      .data(mydata)
+      .enter()
+      .append("text")
+      .attr("class","c_lable")
+      .attr("id",(d,i) => "c_lable" + i)
+      .attr("x",(d, i) =>10 + x(parseDate(d.Date)))
+      .attr("y",d=>y(d.Value)-10)
+      .text(d => d.Zone_name + " " + d.Value + "亿元 " + d.Co_total + "家企业")
+      .attr("style","font-size:1;fill:black;opacity:0")
+      //.style("font-size",8)
+      //.style("fill","darkgrey")
+      //.style("opacity",0.5)
+  ;
+ }   
+    </script>
+    
+</body>
+
+</html>
