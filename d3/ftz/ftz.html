@@ -148,7 +148,7 @@ function draw(mydata) {
       .attr("id",(d,i) => "c_lable" + i)
       .attr("x",(d, i) =>10 + x(parseDate(d.Date)))
       .attr("y",d=>y(d.Value)-10)
-      .text(d => d.Zone_name.replace("综合保税区",""))
+      .text(d => d.Zone_name)
       .attr("style","font-size:10;fill:black;opacity:0")
       //.style("font-size",8)
       //.style("fill","darkgrey")
