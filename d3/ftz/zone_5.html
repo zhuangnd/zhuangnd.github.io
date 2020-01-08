@@ -181,7 +181,10 @@ function diagonal(d) {
        .attr("id",(d,i) => "map_circle" + i)
        .attr("cx",d => proj([d.Longitude, d.Latitude])[0])
        .attr("cy",d => proj([d.Longitude, d.Latitude])[1])
-			 .attr("r", 3)
+       .transition()
+       .delay(3000)
+       .duration(2000)
+	   .attr("r", 3)
        .attr("fill","coral")
        .style("opacity",0.7);
 
@@ -195,8 +198,11 @@ function diagonal(d) {
 	   //贝塞尔曲线函数function
 	   //.attr("d",d => diagonal([{x:x(parseDate(d.Date)),y: y(d.Value)}, {x: proj([d.Longitude, d.Latitude])[0], y: y(d.Value)}, {x: proj([d.Longitude, d.Latitude])[0], y: proj([d.Longitude, d.Latitude])[1]}]))
        .attr("d",d => line([{x:x(parseDate(d.Date))<proj([d.Longitude, d.Latitude])[0]?x(parseDate(d.Date))+z(d.Area):x(parseDate(d.Date))-z(d.Area),y: y(d.Value)}, {x: proj([d.Longitude, d.Latitude])[0], y: y(d.Value)}, {x: proj([d.Longitude, d.Latitude])[0], y: proj([d.Longitude, d.Latitude])[1]}]))
-  
- .attr("style","fill:none;stroke:steelblue;stroke-width:0.5;opacity:0.3")
+   	   .attr("style","fill:none;stroke:steelblue;stroke-width:0.5;opacity:0")
+       .transition()
+       .delay(3000)
+       .duration(2000)
+       .attr("style","fill:none;stroke:steelblue;stroke-width:0.5;opacity:0.4")
        //.attr("style",(d,i) => "fill:none;stroke:" + color1(i) + ";stroke-width:0.5;opacity:0.5")
        //.attr("stroke-width",0.5)
        //.style("opacity",0.3)
@@ -211,7 +217,10 @@ function diagonal(d) {
        .attr("id",(d,i) => "line_circle" + i)
        .attr("cx",d => proj([d.Longitude, d.Latitude])[0])
        .attr("cy",d => y(d.Value))
-			 .attr("r", 1.5)
+       .transition()
+       .delay(3000)
+       .duration(2000)
+       .attr("r", 1.5)
        .attr("fill","steelblue")
        .style("opacity",0.5);
    
@@ -241,9 +250,9 @@ function diagonal(d) {
       .append("circle")
       .attr("class",d => "circle circle" + d.Pro_code)
       .attr("id",(d,i) => "circle" + i)
-      .attr("cx",d => x(parseDate(d.Date)))
-      .attr("cy",d=> y(d.Value))
-      .attr("r",d => z(d.Area))
+       .attr("cx",d => proj([d.Longitude, d.Latitude])[0])
+       .attr("cy",d => proj([d.Longitude, d.Latitude])[1])
+      .attr("r",3)
       .style("fill","coral"//"steelblue"
              //d => color2(parseFloat(d.Area))
              //mycolor[i]
@@ -281,6 +290,11 @@ function diagonal(d) {
          d3.selectAll(".circle_lable")
            .attr("style","font-size:1;fill:black;opacity:0");
          ;})
+      .transition()
+      .duration(3000)
+      .attr("cx",d => x(parseDate(d.Date)))
+      .attr("cy",d=> y(d.Value))
+      .attr("r",d => z(d.Area))
  
   ; 
  
