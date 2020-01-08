@@ -280,7 +280,7 @@ function diagonal(d) {
        })
       .on("mouseout",function(d,i){
          d3.selectAll("circle")
-           .attr("style","opacity:0.5;stroke:none;stroke-width:0");
+           .attr("style","opacity:0.5;fill:coral;stroke:none;stroke-width:0");
          d3.selectAll(".c_to_c_line")
            .style("opacity",0.3);
          d3.selectAll(".line_circle")
@@ -331,7 +331,7 @@ function diagonal(d) {
          d3.select("#map_path" + d.properties.id)
            .attr("style","fill:#ddd;opacity:1");
          d3.selectAll("circle")
-           .attr("style","opacity:0.5;stroke:none;stroke-width:0");
+           .attr("style","opacity:0.5;fill:coral;stroke:none;stroke-width:0");
          d3.selectAll(".c_to_c_line")
            .style("opacity",0.3);
          d3.selectAll(".line_circle")
