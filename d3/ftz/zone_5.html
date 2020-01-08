@@ -47,11 +47,7 @@
 	//mydata_0.then(function(data1){console.log(data1[0].Zone_name);}); 经测试代码正确
     
 function draw(mydata_0,china) {
-	
-    var year = Scrubber(d3.map(mydata, d => d.Date).keys(),
-                       {delay: 200, autoplay: true,
-                        format: d => d.toLocaleString("cn", {month: "numeric", day: "numeric"}), 
-                        loop: false});
+
                         
 	var mydata = mydata_0.sort((a,b) => parseDate(a.Date) - parseDate(b.Date));
 	//console.log(parseDate(mydata[0].Date));
@@ -61,6 +57,8 @@ function draw(mydata_0,china) {
       //.attr('style', 'background: -webkit-radial-gradient(#3af0f0, #3a0a3a 100%)')
       //.attr('style', 'background: -webkit-radial-gradient(#3a6073 , #16222a 80%)')
  ;
+ 	
+    //var year = Scrubber(d3.map(mydata, d => d.Date).keys(),{delay: 200, autoplay: true,format: d => d.toLocaleString("cn", {month: "numeric", day: "numeric"}), loop: false});
 var year = "2020/1/1";
   
 var currentData = dataAt(year);
@@ -419,56 +417,6 @@ function diagonal(d) {
 	
  }   
  
- 
- 	function Scrubber(values, {
-  format = value => value,
-  delay = null,
-  autoplay = true,
-  loop = true,
-  alternate = false
-} = {}) {
-  values = Array.from(values);
-  const form = "<form style='font: 12px var(--sans-serif); display: flex; height: 33px; align-items: center;'><button name=b type=button style='margin-right: 0.4em; width: 5em;'></button><label style='display: flex; align-items: center;'><input name=i type=range min=0 max=${values.length - 1} value=0 step=1 style='width: 180px;'><output name=o style='margin-left: 0.4em;></output></label></form>";
-  let timer = null;
-  let direction = 1;
-  function start() {
-    form.b.textContent = "Pause";
-    timer = delay === null
-      ? requestAnimationFrame(tick)
-      : setInterval(tick, delay);
-  }
-  function stop() {
-    form.b.textContent = "Play";
-    if (delay === null) cancelAnimationFrame(timer);
-    else clearInterval(timer);
-    timer = null;
-  }
-  function tick() {
-    if (delay === null) timer = requestAnimationFrame(tick);
-    if (form.i.valueAsNumber === (direction > 0 ? values.length - 1 : direction < 0 ? 0 : NaN)) {
-      if (!loop) return stop();
-      if (alternate) direction = -direction;
-    }
-    form.i.valueAsNumber = (form.i.valueAsNumber + direction + values.length) % values.length;
-    form.i.dispatchEvent(new CustomEvent("input", {bubbles: true}));
-  }
-  form.i.oninput = event => {
-    if (event && event.isTrusted && timer) form.b.onclick();
-    form.value = values[form.i.valueAsNumber];
-    form.o.value = format(form.value, form.i.valueAsNumber, values);
-  };
-  form.b.onclick = () => {
-    if (timer) return stop();
-    direction = alternate && form.i.valueAsNumber === values.length - 1 ? -1 : 1;
-    form.i.valueAsNumber = (form.i.valueAsNumber + direction) % values.length;
-    form.i.dispatchEvent(new CustomEvent("input", {bubbles: true}));
-    start();
-  };
-  form.i.oninput();
-  if (autoplay) start();
-  else stop();
-  return Generators.disposable(form, stop);
-}
 
     </script>
     
