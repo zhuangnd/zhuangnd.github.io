@@ -202,7 +202,7 @@ function diagonal(d) {
        .transition()
        .delay(3000)
        .duration(2000)
-       .attr("style","fill:none;stroke:steelblue;stroke-width:0.5;opacity:0.4")
+       .attr("style","fill:none;stroke:steelblue;stroke-width:0.5;opacity:0.3")
        //.attr("style",(d,i) => "fill:none;stroke:" + color1(i) + ";stroke-width:0.5;opacity:0.5")
        //.attr("stroke-width",0.5)
        //.style("opacity",0.3)
@@ -268,7 +268,7 @@ function diagonal(d) {
          d3.selectAll(".line_circle")
            .style("opacity",0);
          d3.select(this)
-           .style("opacity",1);
+           .attr("style","opacity:1,stroke:steelblue,stroke-width:0.5");
          d3.select("#c_to_c_line" + i)
            .style("opacity",1);
          d3.select("#map_circle" + i)
@@ -280,7 +280,7 @@ function diagonal(d) {
        })
       .on("mouseout",function(d,i){
          d3.selectAll("circle")
-           .style("opacity",0.5)
+           .attr("style","opacity:0.5,stroke:none,stroke-width:0");
          d3.selectAll(".c_to_c_line")
            .style("opacity",0.3);
          d3.selectAll(".line_circle")
