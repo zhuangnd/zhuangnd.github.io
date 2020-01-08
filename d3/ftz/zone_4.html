@@ -7,7 +7,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1,maximum-scale=3"/>
-    <script src="http://localhost:8080/d3.v5.min.js"></script>
+    <script src="../d3.v5.min.js"></script>
     <title>综合保税区</title>
     <!--
     <script src="./d3.v5.min.js"></script>
@@ -35,7 +35,7 @@
 		function(mydata_0){
 		mydata_0.forEach(function(d){zone_names.push(d.Zone_name);zone_values.push(d.Value);zone_pro.push(d.Pro_code);});
 		//console.log(zone_values);
-		d3.json("china.json").then(function(china){draw(mydata_0,china);});
+		d3.json("../mapjson/china.json").then(function(china){draw(mydata_0,china);});
 		}
 		);
 
