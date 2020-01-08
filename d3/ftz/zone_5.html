@@ -172,22 +172,6 @@ function diagonal(d) {
          })
 		 ;
   
-  const map_cicle = pg
-       .selectAll("circle")
-       .data(currentData)         
-       .enter()
-       .append("circle")
-       .attr("class",d => "map_circle map_circle" + d.Pro_code)
-       .attr("id",(d,i) => "map_circle" + i)
-       .attr("cx",d => proj([d.Longitude, d.Latitude])[0])
-       .attr("cy",d => proj([d.Longitude, d.Latitude])[1])
-       .transition()
-       .delay(3000)
-       .duration(2000)
-	   .attr("r", 3)
-       .attr("fill","coral")
-       .style("opacity",0.7);
-
   const c_to_c_line = svg
        .selectAll(".c_to_c_line")
        .data(currentData)
@@ -208,6 +192,23 @@ function diagonal(d) {
        //.style("opacity",0.3)
   ;
   
+  const map_cicle = pg
+       .selectAll("circle")
+       .data(currentData)         
+       .enter()
+       .append("circle")
+       .attr("class",d => "map_circle map_circle" + d.Pro_code)
+       .attr("id",(d,i) => "map_circle" + i)
+       .attr("cx",d => proj([d.Longitude, d.Latitude])[0])
+       .attr("cy",d => proj([d.Longitude, d.Latitude])[1])
+       .transition()
+       .delay(3000)
+       .duration(2000)
+	   .attr("r", 3)
+       .attr("fill","coral")
+       .style("opacity",0.7);
+
+  
     const line_turn_cicle = svg
        .selectAll(".line_circle")
        .data(currentData)         
@@ -221,8 +222,8 @@ function diagonal(d) {
        .delay(3000)
        .duration(2000)
        .attr("r", 1.5)
-       .attr("fill","steelblue")
-       .style("opacity",0.5);
+       .attr("style","fill:none;stroke:steelblue;stroke-width:0.5;opacity:0.3")
+       ;
    
   const circle_lable = cg
       .selectAll("text")
@@ -284,7 +285,7 @@ function diagonal(d) {
          d3.selectAll(".c_to_c_line")
            .style("opacity",0.3);
          d3.selectAll(".line_circle")
-           .style("opacity",0.5);
+           .style("opacity",0.3);
          d3.selectAll(".map_circle")
            .style("opacity",0.5);
          d3.selectAll(".circle_lable")
@@ -335,7 +336,7 @@ function diagonal(d) {
          d3.selectAll(".c_to_c_line")
            .style("opacity",0.3);
          d3.selectAll(".line_circle")
-           .style("opacity",0.5);
+           .style("opacity",0.3);
          d3.selectAll(".map_circle")
            .style("opacity",0.5);
          d3.selectAll(".circle_lable")
