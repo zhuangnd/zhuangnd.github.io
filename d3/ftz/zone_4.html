@@ -206,7 +206,25 @@ function diagonal(d) {
 			 .attr("r", 1.5)
        .attr("fill","steelblue")
        .style("opacity",0.5);
-  
+   
+  const circle_lable = cg
+      .selectAll("text")
+      .data(currentData)
+      .enter()
+      .append("text")
+       .attr("class",d => "circle_lable circle_lable" + d.Pro_code)
+       .attr("id",(d,i) => "circle_lable" + i)
+      .attr("x",(d, i) =>z(d.Area) + 5 + x(parseDate(d.Date)))
+      .attr("y",d=>y(d.Value))
+      .text(d => d.Zone_name + " " + d.Value + "亿元 " + d.Co_total + "家企业")
+      //.text(d => d.Zone_name.replace("综合保税区",""))
+      .attr("style","font-size:1;fill:black;opacity:0")
+      //.attr("style",d=>d.Value>500? "font-size:14;fill:black;opacity:0.8":"font-size:10;fill:black;opacity:0")
+      //.style("font-size",8)
+      //.style("fill","darkgrey")
+      //.style("opacity",0.5)
+  ; 
+
      
   const circle = cg
       .selectAll("circle")
@@ -257,25 +275,7 @@ function diagonal(d) {
          ;})
  
   ; 
-  
-  const circle_lable = cg
-      .selectAll("text")
-      .data(currentData)
-      .enter()
-      .append("text")
-       .attr("class",d => "circle_lable circle_lable" + d.Pro_code)
-       .attr("id",(d,i) => "circle_lable" + i)
-      .attr("x",(d, i) =>z(d.Area) + 5 + x(parseDate(d.Date)))
-      .attr("y",d=>y(d.Value))
-      .text(d => d.Zone_name + " " + d.Value + "亿元 " + d.Co_total + "家企业")
-      //.text(d => d.Zone_name.replace("综合保税区",""))
-      .attr("style","font-size:1;fill:black;opacity:0")
-      //.attr("style",d=>d.Value>500? "font-size:14;fill:black;opacity:0.8":"font-size:10;fill:black;opacity:0")
-      //.style("font-size",8)
-      //.style("fill","darkgrey")
-      //.style("opacity",0.5)
-  ; 
-
+ 
 
   function map_mouseover_update(d){
 		//y.domain(d => d3.extent(mydata.filter(e => e.Pro_code == d.properties.id),t => parseFloat(t.Value)));
