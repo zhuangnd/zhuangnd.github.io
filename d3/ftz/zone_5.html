@@ -268,7 +268,7 @@ function diagonal(d) {
          d3.selectAll(".line_circle")
            .style("opacity",0);
          d3.select(this)
-           .attr("style","opacity:1;fill:coral;stroke:steelblue;stroke-width:0.5");
+           .style("opacity",1);
          d3.select("#c_to_c_line" + i)
            .style("opacity",1);
          d3.select("#map_circle" + i)
@@ -280,7 +280,7 @@ function diagonal(d) {
        })
       .on("mouseout",function(d,i){
          d3.selectAll("circle")
-           .attr("style","opacity:0.5;fill:coral;stroke:none;stroke-width:0");
+           .style("opacity",0.5);
          d3.selectAll(".c_to_c_line")
            .style("opacity",0.3);
          d3.selectAll(".line_circle")
@@ -317,7 +317,7 @@ function diagonal(d) {
          d3.select("#map_path" + d.properties.id)
            .attr("style","fill:coral;opacity:0.8");
          d3.selectAll(".circle" + d.properties.id)
-           .attr("style","opacity:1;fill:coral;stroke:steelblue;stroke-width:0.5");
+           .style("opacity",1);
          d3.selectAll(".c_to_c_line" + d.properties.id)
            .style("opacity",1);
          d3.selectAll(".map_circle" + d.properties.id)
@@ -331,7 +331,7 @@ function diagonal(d) {
          d3.select("#map_path" + d.properties.id)
            .attr("style","fill:#ddd;opacity:1");
          d3.selectAll("circle")
-           .attr("style","opacity:0.5;fill:coral;stroke:none;stroke-width:0");
+           .style("opacity",0.5);
          d3.selectAll(".c_to_c_line")
            .style("opacity",0.3);
          d3.selectAll(".line_circle")
