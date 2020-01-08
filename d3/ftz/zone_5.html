@@ -47,7 +47,7 @@
     
 function draw(mydata_0,china) {
 	
-    viewof year = Scrubber(d3.map(mydata, d => d.Date).keys(),
+    var year = Scrubber(d3.map(mydata, d => d.Date).keys(),
                        {delay: 200, autoplay: true,
                         format: d => d.toLocaleString("cn", {month: "numeric", day: "numeric"}), 
                         loop: false});
