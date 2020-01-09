@@ -27,17 +27,19 @@
     mywidth = 1600;
     height = 900;
     margin = ({top: 100, right: 100, bottom: 100, left: 100});
-	var zone_names=[];
-	var zone_values=[];
-	var zone_pro=[];
+    
+	var zone_null = ["54","63","71","81","82"];
+	
     const parseDate = d3.utcParse("%Y/%m/%d");
 	
     //d3.csv("SpZone20191227.csv").then(function(mydata_0){draw(mydata_0);});
 	
     d3.csv("SpZone20191227.csv").then(
 		function(mydata_0){
-		mydata_0.forEach(function(d){zone_names.push(d.Zone_name);zone_values.push(d.Value);zone_pro.push(d.Pro_code);});
+		
+		//mydata_0.forEach(function(d){zone_names.push(d.Zone_name);zone_values.push(d.Value);zone_pro.push(d.Pro_code);});
 		//console.log(zone_values);
+		
 		d3.json("../mapjson/china.json").then(function(china){draw(mydata_0,china);});
 		}
 		);
@@ -136,12 +138,12 @@ function diagonal(d) {
   const china_map_paths =china_map.append("path")
        .attr("id", d => "map_path" + d.properties.id)
        .attr("d", path)
-       .attr("fill", (d,i) => ["54","63","71","81","82"].indexOf(d.properties.id) < 0 ? "#ddd" : "#eee")
+       .attr("fill", (d,i) => zone_null.indexOf(d.properties.id) < 0 ? "#ddd" : "#eee")
        .attr("stroke", "#ffffff")
        .on("mouseover",function(d,i){
 			map_mouseover_update(d);
 			//console.log(["54","63","71","81","82"].indexOf(d.properties.id) < 0);
-			["54","63","71","81","82"].indexOf(d.properties.id) < 0 ? upd_over(d,i) : map_mouseout_update(d);
+			zone_null.indexOf(d.properties.id) < 0 ? upd_over(d,i) : map_mouseout_update(d);
 	     //if (d.properties.id != "54" && d.properties.id != "63" && d.properties.id != "71" && d.properties.id != "81" && d.properties.id != "82"){upd_over(d,i);};
 	     })
        .on("mouseout",function(d,i){
@@ -164,7 +166,7 @@ function diagonal(d) {
 					})
        .on("mouseover",function(d,i){
 			map_mouseover_update(d);
-			["54","63","71","81","82"].indexOf(d.properties.id) < 0 ? upd_over(d,i) : map_mouseout_update(d);
+			zone_null.indexOf(d.properties.id) < 0 ? upd_over(d,i) : map_mouseout_update(d);
 	     //if (d.properties.id != "54" && d.properties.id != "63" && d.properties.id != "71" && d.properties.id != "81" && d.properties.id != "82"){upd_over(d,i);};
 	     })
        .on("mouseout",function(d,i){
@@ -316,7 +318,7 @@ function diagonal(d) {
          d3.selectAll(".line_circle")
            .style("opacity",0);
          d3.select("#map_path" + d.properties.id)
-           .attr("style","stroke:coral;opacity:0.8");
+           .attr("style","fill:coral;opacity:0.8");
          d3.selectAll(".circle" + d.properties.id)
            .style("opacity",1);
          d3.selectAll(".c_to_c_line" + d.properties.id)
@@ -330,7 +332,7 @@ function diagonal(d) {
          };
     function map_mouseout_update(d){       
          d3.select("#map_path" + d.properties.id)
-           .attr("style","stroke::#ffffff;opacity:1");
+           .attr("style",(d,i) => zone_null.indexOf(d.properties.id) < 0 ? "fill:#ddd;opacity:1" : "fill:#eee;opacity:1");
          d3.selectAll("circle")
            .style("opacity",0.5);
          d3.selectAll(".c_to_c_line")
