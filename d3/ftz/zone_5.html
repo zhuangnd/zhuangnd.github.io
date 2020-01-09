@@ -140,9 +140,9 @@ function diagonal(d) {
        .attr("stroke", "#ffffff")
        .on("mouseover",function(d,i){
 			map_mouseover_update(d);
-			["54","63","71","81","82"].indexOf(d.properties.id)?upd_out():upd_over(d,i);
-	     //if (d.properties.id != "54" && d.properties.id != "63" && d.properties.id != "71" && d.properties.id != "81" && d.properties.id != "82"){upd_over(d,i);};
-	     })
+	     if (d.properties.id != "54" && d.properties.id != "63" && d.properties.id != "71" && d.properties.id != "81" && d.properties.id != "82"){
+			upd_over(d,i);};
+         })
        .on("mouseout",function(d,i){
 			map_mouseout_update(d);
 			upd_out();
@@ -163,9 +163,9 @@ function diagonal(d) {
 					})
        .on("mouseover",function(d,i){
 			map_mouseover_update(d);
-			["54","63","71","81","82"].indexOf(d.properties.id)?upd_out():upd_over(d,i);
-	     //if (d.properties.id != "54" && d.properties.id != "63" && d.properties.id != "71" && d.properties.id != "81" && d.properties.id != "82"){upd_over(d,i);};
-	     })
+	     if (d.properties.id != "54" && d.properties.id != "63" && d.properties.id != "71" && d.properties.id != "81" && d.properties.id != "82"){
+			upd_over(d,i);};
+         })
        .on("mouseout",function(d,i){
 			map_mouseout_update(d);
 			upd_out();
