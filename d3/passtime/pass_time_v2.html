@@ -55,7 +55,7 @@
 	
     //d3.csv("SpZone20191227.csv").then(function(myData_0){draw(myData_0);});
 	
-    d3.csv("passTime20200121a.csv").then(
+    d3.csv("passTime20200121.csv").then(
 		function(myData_0){		
 			myData_0.forEach(function(d){zone_names.push(d.name);zone_values.push(d.passTime);zone_pro.push(d.code1);});
 			draw(myData_0);
