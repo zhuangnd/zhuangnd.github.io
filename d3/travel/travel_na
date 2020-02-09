@@ -167,8 +167,8 @@
 
 //此处根据不同地图修改.	
 		d3.select("title").text("Travel China");
-		//var mapfile = "usa_id.json";
-		var mapfile = "../mapjson/china.json";
+		var mapfile = "../mapjson/usa_id.json";
+		//var mapfile = "../mapjson/china.json";
 		//var mapfile = "world_id.json";
 		//var mapfile = "fujian_couties.json";
 		//var mapfile = "350200.json";
@@ -178,10 +178,10 @@
 		
         var pjn = d3.geo
 			//.mercator().center([0, 40]).scale(300).translate([width / 2, height / 2]);//world_id.json
-			.mercator().center([105,38]).scale(1000).translate([width / 2, height / 2]);//china.json
+			//.mercator().center([105,38]).scale(1000).translate([width / 2, height / 2]);//china.json
 			//.mercator().center([119, 26]).scale(9000).translate([width / 2, height / 2]);//fujian_couties.json
 			//.mercator().center([118.125, 24.5]).scale(200000).translate([width / 2, height / 2]);//xiamen 350200.json
-			//.albers().rotate([96, 0]).center([-.6, 38.7]).parallels([29.5, 45.5]).scale(1800).translate([width / 2, height / 2]).precision(.1);//usa_id.json
+			.albers().rotate([96, 0]).center([-.6, 38.7]).parallels([29.5, 45.5]).scale(1800).translate([width / 2, height / 2]).precision(.1);//usa_id.json
 			
 		//另需修改csv数据筛选
 //此处根据不同地图修改.
@@ -265,7 +265,7 @@
             // Now retrieve the data to add to the map.
             d3.csv(datafile, function(data) {
 				//data = data.filter(function(e){return e.Country == "china" && e.PicDate>"2018-1-1"});
-				data = data.filter(function(e){return e.Country == "china"});
+				data = data.filter(function(e){return e.Country == "usa" || e.Country == "canada"});
 				data.forEach(function(d){
 					data_time.push(d.PicDate);
 					filename.push(d.FileName);

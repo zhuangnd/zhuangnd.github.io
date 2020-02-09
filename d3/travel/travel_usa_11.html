@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1,maximum-scale=1"/>
     <title></title>
-    <script type="text/javascript" src="../d3.min.js"></script>
+    <script type="text/javascript" src="http://localhost:8080/d3.min.js"></script>
 
     <style>
 		path {
@@ -22,39 +22,26 @@
         }
 		
 		.circle {	
-			fill:coral;
+			fill:steelblue;
 			fill-opacity:0;
 			stroke:red;
 			stroke-opacity:0;
             stroke-width: 0.15px;	
 			position:absolute;
         }
-
 		
-		.selected {	
-			fill:coral;
-			fill-opacity:0;
-			stroke:red;
+		.selected {
 			stroke-opacity:0.8;
-            stroke-width: 0.15px;	
-			position:absolute;
-        } 
-               
-        .y2019 {	
-			fill:steelblue;
-			fill-opacity:0;
-			stroke:steelblue;
-			stroke-opacity:0.7;
-            stroke-width: 0.15px;	
-			position:absolute;
         }
+
 		
 		.circle:hover {
 			opacity:1;
         }
 		
-        .map_text:hover {
-            fill: lightsalmon;
+        .map_text:hover {            
+			opacity:1;
+			fill:coral;
         }
 		
 		.map_text {
@@ -86,8 +73,8 @@
 		width: auto;
 		height:auto;
 		color:dimgray;
-		left:10px;
-		top:120px;
+		left:580px;
+		top:100px;
 	}
 	
 	#tooltip.hidden {
@@ -166,9 +153,9 @@
             height = 900 - margin.top - margin.bottom; 
 
 //此处根据不同地图修改.	
-		d3.select("title").text("Travel China");
-		//var mapfile = "usa_id.json";
-		var mapfile = "../mapjson/china.json";
+		d3.select("title").text("Travel Usa");
+		var mapfile = "../mapjson/usa_id.json";
+		//var mapfile = "china.json";
 		//var mapfile = "world_id.json";
 		//var mapfile = "fujian_couties.json";
 		//var mapfile = "350200.json";
@@ -178,15 +165,14 @@
 		
         var pjn = d3.geo
 			//.mercator().center([0, 40]).scale(300).translate([width / 2, height / 2]);//world_id.json
-			.mercator().center([105,38]).scale(1000).translate([width / 2, height / 2]);//china.json
+			//.mercator().center([105,38]).scale(1000).translate([width / 2, height / 2]);//china.json
 			//.mercator().center([119, 26]).scale(9000).translate([width / 2, height / 2]);//fujian_couties.json
 			//.mercator().center([118.125, 24.5]).scale(200000).translate([width / 2, height / 2]);//xiamen 350200.json
-			//.albers().rotate([96, 0]).center([-.6, 38.7]).parallels([29.5, 45.5]).scale(1800).translate([width / 2, height / 2]).precision(.1);//usa_id.json
-			
-		//另需修改csv数据筛选
+			.albers().rotate([96, 0]).center([-.6, 38.7]).parallels([29.5, 45.5]).scale(1800).translate([width / 2, height / 2]).precision(.1);//usa_id.json
 //此处根据不同地图修改.
 
 
+				
         // Create the SVG container for the visualization and
         // define its dimensions.
         var svg = d3.select("body").append("svg")
@@ -221,8 +207,8 @@
 		
 	    var playAll = svg.append("text")
           .attr("class", "play-button")
-		  .attr("x", 20)
-		  .attr("y", 90)
+		  .attr("x", 530)
+		  .attr("y", 85)
           .text("▶ 点击浏览");
 		  
 		//var scale = 1;
@@ -264,8 +250,7 @@
 					
             // Now retrieve the data to add to the map.
             d3.csv(datafile, function(data) {
-				//data = data.filter(function(e){return e.Country == "china" && e.PicDate>"2018-1-1"});
-				data = data.filter(function(e){return e.Country == "china"});
+				data = data.filter(function(e){return e.Country == "usa"});
 				data.forEach(function(d){
 					data_time.push(d.PicDate);
 					filename.push(d.FileName);
@@ -279,7 +264,7 @@
                 g.selectAll("circle")
                     .data(data)
                   .enter().append("circle")
-					.attr("class",function(d,i){return "circle selected y" + new Date(d.PicDate).getFullYear()})
+					.attr("class","circle selected")
 					.attr("id",function(d,i){return "circle" + i})
                     .attr("cx", function(d) { return pjn([d.Longitude, d.Latitude])[0]; })
                     .attr("cy", function(d) { return pjn([d.Longitude, d.Latitude])[1]; })
@@ -289,7 +274,7 @@
 					//.transition()
 					//.delay(function(d,i){return 20*i})
 					//.duration(1000)//若要增加消失效果，此处延迟改为600，效果更生动
-					.attr("r", 3)
+					.attr("r", 2)
 					//.style("opacity",0.8)
 					//.style("stroke","red")//若要增加消失效果，此处改为skyblue，效果更生动
 					.on("mouseover",function(d,i){d3.select(this).transition().duration(750).attr("r",5).style("fill-opacity",0.8);update_tooltip(i)})
@@ -333,8 +318,10 @@ play_g.selectAll(".aline")
 .attr("stroke", "#ddd");
 
 var drag = d3.behavior.drag()
+	.on("dragstart", function(){d3.select(this).attr("r",8);})
 	.on("drag", dragmove)
-	//.on("dragstart",d3.selectAll(".circle").classed("selected", false))
+	.on("dragend", function(){d3.select(this).attr("r",5);})
+	.on("dragstart",function(){d3.selectAll(".circle").classed("selected", false)})
 	;
 
 play_g.selectAll(".point")
@@ -363,19 +350,10 @@ d3.select(this)
 
 var datapoint = parseInt(d3.max([1,((cxtime - 600) * data_time.length-1) / playlong]));
 
-d3.select("#circle" + datapoint)
-	.classed("selected", true)
-	.transition()
-	.duration(200)//若要增加消失效果，此处延迟改为600，效果更生动
-	.attr("r", 8)
-	.transition()
-	.duration(550)
-	.attr("r", 2)
-	;
-	
+update_circle(datapoint);	
 update_tooltip(datapoint);
 
-console.log(datapoint);
+//console.log(datapoint);
 
 }				
 
@@ -471,6 +449,9 @@ console.log(datapoint);
 					
 			d3.select(".play-button").text("▶ 点击浏览");
 			update_tooltip(data_time.length - 1);
+			d3.selectAll("#tooltip_fixed")
+				.style("left","580px");
+			
 			d3.select(".point")
 				.transition()
 				.duration(750)
@@ -487,15 +468,8 @@ console.log(datapoint);
                     .classed("selected", false);					
 				var i = 0;
 				playInterval = setInterval(function() {
+					update_circle(i)
 					update_tooltip(i)
-					d3.select("#circle" + i)
-						.classed("selected", true)
-						.transition()
-						.duration(200)//若要增加消失效果，此处延迟改为600，效果更生动
-						.attr("r", 8)
-						.transition()
-						.duration(550)
-						.attr("r", 2);
 					
 					//更新播放轴圆点位置
 					d3.select(".point")
@@ -512,6 +486,8 @@ console.log(datapoint);
 				}, 20);			   
 			    flag=false;
 			    d3.select(".play-button").text("■ 点击停止");
+			d3.selectAll("#tooltip_fixed")
+				.style("left","580px");
 			}
 			else {
 				clearInterval(playInterval);
@@ -520,7 +496,20 @@ console.log(datapoint);
 			}
         });  
 		
+		function update_circle(n) {		
+			d3.select("#circle" + n)//怎么实现选择所有小于n的id？？
+				.classed("selected", true)
+				.transition()
+				.duration(200)//若要增加消失效果，此处延迟改为600，效果更生动
+				.attr("r", 8)
+				.transition()
+				.duration(550)
+				.attr("r", 2);
+		}
+		
 		function update_tooltip(n) {
+			d3.selectAll("#tooltip_fixed")
+				.style("left",(580 + n * 500/data_time.length) + "px");
 			d3.selectAll("#pictime")
 				.text(data_time[n]);
 			d3.selectAll("#piclocation")

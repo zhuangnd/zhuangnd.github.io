@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1,maximum-scale=1"/>
     <title></title>
-    <script type="text/javascript" src="../d3.min.js"></script>
+    <script type="text/javascript" src="http://localhost:8080/d3.min.js"></script>
 
     <style>
 		path {
@@ -29,22 +29,12 @@
             stroke-width: 0.15px;	
 			position:absolute;
         }
-
 		
 		.selected {	
 			fill:coral;
 			fill-opacity:0;
 			stroke:red;
 			stroke-opacity:0.8;
-            stroke-width: 0.15px;	
-			position:absolute;
-        } 
-               
-        .y2019 {	
-			fill:steelblue;
-			fill-opacity:0;
-			stroke:steelblue;
-			stroke-opacity:0.7;
             stroke-width: 0.15px;	
 			position:absolute;
         }
@@ -77,7 +67,7 @@
 			}
 			
 		.MapTextHidden {
-			opacity:0.2;
+			opacity:0;
 		}	
 		
 		#tooltip_fixed {
@@ -166,19 +156,20 @@
             height = 900 - margin.top - margin.bottom; 
 
 //此处根据不同地图修改.	
-		d3.select("title").text("Travel China");
+		d3.select("title").text("Travel World");
 		//var mapfile = "usa_id.json";
-		var mapfile = "../mapjson/china.json";
-		//var mapfile = "world_id.json";
+		//var mapfile = "china.json";
+		var mapfile = "../mapjson/world_id.json";
 		//var mapfile = "fujian_couties.json";
 		//var mapfile = "350200.json";
 		
 		//var datafile = "travel_usa_sp.csv";
+		//var datafile = "mygpsdata_new.csv";
 		var datafile = "mygpsdata_20200208.csv";
 		
         var pjn = d3.geo
-			//.mercator().center([0, 40]).scale(300).translate([width / 2, height / 2]);//world_id.json
-			.mercator().center([105,38]).scale(1000).translate([width / 2, height / 2]);//china.json
+			.mercator().center([0, 40]).scale(300).translate([width / 2, height / 2]);//world_id.json
+			//.mercator().center([105,38]).scale(1000).translate([width / 2, height / 2]);//china.json
 			//.mercator().center([119, 26]).scale(9000).translate([width / 2, height / 2]);//fujian_couties.json
 			//.mercator().center([118.125, 24.5]).scale(200000).translate([width / 2, height / 2]);//xiamen 350200.json
 			//.albers().rotate([96, 0]).center([-.6, 38.7]).parallels([29.5, 45.5]).scale(1800).translate([width / 2, height / 2]).precision(.1);//usa_id.json
@@ -264,8 +255,8 @@
 					
             // Now retrieve the data to add to the map.
             d3.csv(datafile, function(data) {
-				//data = data.filter(function(e){return e.Country == "china" && e.PicDate>"2018-1-1"});
-				data = data.filter(function(e){return e.Country == "china"});
+				//data = data.filter(function(e){return e.City == "xiamen"});
+				data = data.filter(function(e){return e.PicDate>="2016/1/1"});
 				data.forEach(function(d){
 					data_time.push(d.PicDate);
 					filename.push(d.FileName);
@@ -279,7 +270,7 @@
                 g.selectAll("circle")
                     .data(data)
                   .enter().append("circle")
-					.attr("class",function(d,i){return "circle selected y" + new Date(d.PicDate).getFullYear()})
+					.attr("class","circle selected")
 					.attr("id",function(d,i){return "circle" + i})
                     .attr("cx", function(d) { return pjn([d.Longitude, d.Latitude])[0]; })
                     .attr("cy", function(d) { return pjn([d.Longitude, d.Latitude])[1]; })
@@ -289,7 +280,7 @@
 					//.transition()
 					//.delay(function(d,i){return 20*i})
 					//.duration(1000)//若要增加消失效果，此处延迟改为600，效果更生动
-					.attr("r", 3)
+					.attr("r", 2)
 					//.style("opacity",0.8)
 					//.style("stroke","red")//若要增加消失效果，此处改为skyblue，效果更生动
 					.on("mouseover",function(d,i){d3.select(this).transition().duration(750).attr("r",5).style("fill-opacity",0.8);update_tooltip(i)})
