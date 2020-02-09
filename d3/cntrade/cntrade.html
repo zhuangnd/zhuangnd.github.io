@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+
+
+<html>
+<head>
+    <meta HTTP-EQUIV="X-UA-COMPATIBLE" CONTENT="IE=9" >
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta property="og:image" content="../cntrade/images/Deficit_202px.png">
+
+    <title>China Trade Surplus Data Visualization D3.js</title>
+    <link type="text/css" rel="stylesheet" href="style.css">
+
+    <script type="text/javascript" src="../d3.v3.js"></script>
+
+    <script type="text/javascript" src="../cntrade/scripts/d3/math/trigonometry.js"></script>
+
+    <script type="text/javascript" src="../cntrade/scripts/d3/svg/arc.js"></script>
+
+    <script type="text/javascript" src="../cntrade/scripts/d3/core/functor.js"></script>
+    <script type="text/javascript" src="../cntrade/scripts/d3/core/source.js"></script>
+    <script type="text/javascript" src="../cntrade/scripts/d3/core/target.js"></script>
+
+
+    <script type="text/javascript" src="../cntrade/scripts/d3/layout/arc-chord.js"></script>
+    <script type="text/javascript" src="../cntrade/scripts/d3/svg/arc-chord.js"></script>
+
+    <script type="text/javascript" src="../cntrade/scripts/brightpoint/gradients.js"></script>
+
+</head>
+<body>
+
+
+
+<div id="bpg">
+
+
+    <div id="mainDiv">
+        <div id="imgDiv" style="width:300px; margin:0px auto; margin-top:10px">
+            <img id="playPause" src="images/pause_bw.png" width="24" height="24" style="float:left"/>
+            <div style="float:left; margin-top:4px; margin-left:4px">click on a timeline year to skip to that point.</div>
+        </div>
+
+        <div id="svgDiv" style="font-size:10px"></div>
+
+
+
+
+    </div>
+        <div id="toolTip" class="tooltip" style="opacity:0; width:200px; height:90px; position:absolute;">
+            <div id="header1" class="header3"></div>
+            <div class="header-rule"></div>
+            <div id="head" class="header"></div>
+            <div class="header-rule"></div>
+            <div  id="header2" class="header2"></div>
+            <div  class="tooltipTail"></div>
+        </div>
+
+    </div>
+
+    <script type="text/javascript" src="../cntrade/scripts/app/globals.js"></script>
+    <script type="text/javascript" src="../cntrade/scripts/app/initialize.js"></script>
+    <script type="text/javascript" src="../cntrade/scripts/app/events.js"></script>
+    <script type="text/javascript" src="../cntrade/scripts/app/data.js"></script>
+    <script type="text/javascript" src="../cntrade/scripts/app/_buildChords.js"></script>
+    <script type="text/javascript" src="../cntrade/scripts/app/update.js"></script>
+
+    <script type="text/javascript">
+	
+		var topCountryCount=31//显示记录数即叶片数
+		
+        initialize();
+
+        fetchData();
+
+
+        function run() {
+
+            if (month < 11) month++; else {
+                month=0;
+                if (year < countriesGrouped.length-1) year++;
+            }
+            if (month==maxMonth && year==maxYear)  {
+                month=0;
+                year=0;
+            }
+            else {
+                update(year,month);
+            }
+        }
+
+
+    </script>
+
+</body>
+</html>
