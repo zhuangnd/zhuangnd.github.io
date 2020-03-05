@@ -1,0 +1,544 @@
+<!--缩放，测试完成-->
+<!--连接线为贝塞尔曲线,效果不好-->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1,maximum-scale=3"/>
+    <script src="../d3.v5.min.js"></script>
+    <title>综合保税区</title>
+    <!--
+    <script src="https://zhuangnd.github.io/d3//d3.v5.min.js"></script>
+--><style>
+
+		.axis path {
+			fill: none;
+			stroke: none;
+			shape-rendering: crispEdges;
+		}
+		.axis line {
+			fill: none;
+			stroke: #bbb;
+			shape-rendering: crispEdges;
+		}
+		.axis text {
+			fill: #bbb;
+			font-family: Arial;
+			font-size: 12px;
+			shape-rendering: crispEdges;
+		}
+    </style>
+</head>
+
+<body>
+    <center>
+        <!--<input type="file" id="inputfile" name="fileContent">-->
+        <!-- <svg width="1900" height="1020"></svg> -->
+
+    </center>
+	
+	<form style="font: 12px var(--sans-serif); display: flex; height: 33px; align-items: center;position: absolute;left: 100px;" id="form">
+		<button id="button" name=b type=button style="margin-right: 0.4em; width: 5em;"></button>
+		<label  id="label" style="display: flex; align-items: center;">
+		<input  id="input"  name=i type=range min=0 max=1 value=0 step=1 style="width: 180px;">
+		<output  id="output" name=o style="margin-left: 0.4em;"></output>
+		</label>
+	</form>
+	
+    <script>
+    mywidth = 1500;
+    height = 850;
+    margin = ({top: 100, right: 100, bottom: 100, left: 100});
+	var zoneDate=["2006/12/16"];
+    const parseDate = d3.utcParse("%Y/%m/%d");
+	
+    //d3.csv("SpZone20191227.csv").then(function(mydata_0){draw(mydata_0);});
+	
+    d3.csv("SpZone20191227a.csv").then(
+		function(mydata_0){
+		mydata_0.forEach(function(d){zoneDate.push(d.Date);});
+		//console.log(zone_values);
+		d3.json("china.json").then(function(china){draw(mydata_0,china);});
+		}
+		);
+
+
+	//const mydata_0 = d3.csv("SpZone20191227.csv"); 经测试代码正确
+	//mydata_0.then(function(data1){console.log(data1[0].Zone_name);}); 经测试代码正确
+    
+    function draw(mydata_0,china) {
+		const mydata = mydata_0.sort((a,b) => parseDate(a.Date) - parseDate(b.Date));
+		const mydata_1 = mydata;
+		//console.log(parseDate(mydata[0].Date));
+		//console.log(china);
+		const svg = d3.select("body").append("svg")
+		.attr("viewBox", [0, 0, mywidth, height]);
+		//.attr('style', 'background: -webkit-radial-gradient(#3af0f0, #3a0a3a 100%)')
+		//.attr('style', 'background: -webkit-radial-gradient(#3a6073 , #16222a 80%)')		
+
+	line = d3.line()
+	    //.cardinal()
+		.x(function(d) { return d.x;})
+		.y(function(d) { return d.y;});
+	
+	//贝塞尔曲线函数function
+	function diagonal(d) {
+		return "M" + d[0].x + "," + d[0].y
+		+ "C" + (d[0].x + 50) + "," + d[0].y
+		+ " " + (d[1].x - 50) + "," + d[1].y
+		+ " " + d[2].x + "," + d[2].y;
+	};
+
+	//zone_position = [105,35];
+
+	proj = d3.geoMercator().center([105,38]).scale(500).translate([mywidth / 2, height / 2+200]);
+ 
+	path = d3.geoPath().projection(proj);
+
+	x = d3.scaleUtc()
+    //.domain(d3.extent(mydata, d => parseDate(d.Date)))
+    .domain([parseDate("2006/12/1"),parseDate("2020/1/1")])
+    .rangeRound([margin.left, mywidth - margin.right]);
+ 
+	y = d3.scaleLinear()
+    .domain(d3.extent(mydata, d => parseFloat(d.Value)))
+    //.domain([0,500])
+    .nice()
+    .rangeRound([height/2 - margin.bottom, margin.top]);
+
+	z = d3.scaleLinear()  //土地面积缩放比例
+    .domain(d3.extent(mydata, d => parseFloat(d.Area))).nice()
+    .rangeRound([2, 20]);
+
+	xAxis = g => g
+    .attr("transform", `translate(0,${height/2 - margin.bottom + 20})`)
+	.attr("class","axis")
+    .call(d3.axisBottom(x).ticks(mywidth / 80).tickSizeOuter(0))
+    .call(g => g.select(".domain").remove());
+
+	yAxis = g => g
+    .attr("transform", `translate(${margin.left},0)`)
+	.attr("class","axis")
+    .call(d3.axisLeft(y))
+    .call(g => g.select(".domain").remove())
+    //.call(g => g.select(".tick:last-of-type text").append("tspan").text(mydata.Value))
+	;
+ 
+ 
+	svg.append("g")
+      .call(xAxis);
+
+	svg.append("g")
+	  .attr("class","yAxis")
+      .call(yAxis);
+  
+	const pg = svg.append("g")
+      .attr("transform", d => `translate(0,0)`);//(${mywidth/2,height/2+200})`);
+  
+	const cg = svg.append("g")
+      .attr("transform", d => `translate(0,0)`);
+  
+  
+	const china_map = pg.selectAll("path")
+       .data(china.features)
+       .enter();
+  
+	const china_map_paths =china_map.append("path")
+       .attr("id", d => "map_path" + d.properties.id)
+       .attr("d", path)
+       .attr("fill", "#ddd")
+       .attr("stroke", "#ffffff")
+       .on("mouseover",function(d,i){
+			map_mouseover_update(d);
+	     if (d.properties.id != "54" && d.properties.id != "63" && d.properties.id != "71" && d.properties.id != "81" && d.properties.id != "82"){
+			upd_over(d,i);};
+         })
+       .on("mouseout",function(d,i){
+			map_mouseout_update(d);
+			upd_out();
+         })
+		;
+
+	const map_texts=china_map.append("text")
+		.text(d => d.properties.name)
+		.attr("class","map_text")
+		.attr("id",d => "map_text" + d.properties.id)
+		//.style("opacity","0")
+		.attr("style","font-size:12;fill:darkgrey")
+		.attr("transform",function(d){
+					var centroid=path.centroid(d),	
+					x=centroid[0],
+					y=centroid[1];
+					return "translate(" + (x-5) +","+ y +")";
+				})
+       .on("mouseover",function(d,i){
+					map_mouseover_update(d);
+					if (d.properties.id != "54" && d.properties.id != "63" && d.properties.id != "71" && d.properties.id != "81" && d.properties.id != "82"){
+						upd_over(d,i);};
+				})
+       .on("mouseout",function(d,i){
+				map_mouseout_update(d);
+				upd_out();
+			})
+		 ;
+		 
+		 		 
+	var values=zoneDate.sort((a,b) => parseDate(a) - parseDate(b));
+	//console.log(values);
+	var format = value => value,
+	initial = 0,
+	delay = 200,
+	autoplay = false,//true,
+	loop = false,//true,
+	alternate = false;
+
+    values = values;//Array.from(values);
+    const form = document.getElementById("form");
+  
+    form.i.oninput = event => {
+    if (event && event.isTrusted && timer) form.b.onclick();
+    form.value = values[form.i.valueAsNumber];
+    form.o.value = format(form.value, form.i.valueAsNumber, values);
+	
+	var year = form.o.value;//y = form.o.value;//
+	//	
+	//d3.selectAll(".axis path,.axis line").style("stroke",y);
+	
+	const currentData = dataAt(year);
+
+	function dataAt(year) {
+		return mydata.filter(d => parseDate(d.Date) <= parseDate(year));  
+	//console.log(mydata);
+	};
+
+	var myTransTime = 500; //过渡时间；
+	var myTransTimeExit = 0; //退出过渡时间；
+  
+	const map_cicle = pg
+       .selectAll("circle")
+       .data(currentData);
+	   
+       map_cicle.enter()
+       .append("circle")
+       .attr("class",d => "map_circle map_circle" + d.Pro_code)
+       .attr("id",(d,i) => "map_circle" + i)
+       .attr("cx",d => proj([d.Longitude, d.Latitude])[0])
+       .attr("cy",d => proj([d.Longitude, d.Latitude])[1])
+			 .attr("r", 3)
+       .attr("fill","coral")
+       .style("opacity",0)
+	  .transition()
+	  .duration(myTransTime)
+       .style("opacity",0.7);
+	   
+	  map_cicle.exit()
+	  .transition()
+	  .duration(myTransTimeExit)
+	  .remove();
+	  
+	const c_to_c_line = svg
+       .selectAll(".c_to_c_line")
+       .data(currentData);
+	   
+       c_to_c_line.enter()
+       .append("path")
+       .attr("class",d => "c_to_c_line c_to_c_line" + d.Pro_code)
+       .attr("id",(d,i) => "c_to_c_line" + i)
+	   //贝塞尔曲线函数function
+	   //.attr("d",d => diagonal([{x:x(parseDate(d.Date)),y: y(d.Value)}, {x: proj([d.Longitude, d.Latitude])[0], y: y(d.Value)}, {x: proj([d.Longitude, d.Latitude])[0], y: proj([d.Longitude, d.Latitude])[1]}]))
+       .attr("d",d => line([{x:x(parseDate(d.Date))<proj([d.Longitude, d.Latitude])[0]?x(parseDate(d.Date))+z(d.Area):x(parseDate(d.Date))-z(d.Area),y: y(d.Value)}, {x: proj([d.Longitude, d.Latitude])[0], y: y(d.Value)}, {x: proj([d.Longitude, d.Latitude])[0], y: proj([d.Longitude, d.Latitude])[1]}]))
+	   .attr("style","fill:none;stroke:steelblue;stroke-width:0.5;opacity:0")
+       //.attr("style",(d,i) => "fill:none;stroke:" + color1(i) + ";stroke-width:0.5;opacity:0.5")
+       //.attr("stroke-width",0.5)
+	   .transition()
+	   .duration(myTransTime)
+       .style("opacity",0.3)
+	   ;
+  
+	   
+	  c_to_c_line.exit()
+	  .transition()
+	  .duration(myTransTimeExit)
+	  .remove();
+	  
+    const line_turn_cicle = svg
+       .selectAll(".line_circle")
+       .data(currentData) ;
+	   
+       line_turn_cicle.enter()
+       .append("circle")
+       .attr("class",d => "line_circle line_circle" + d.Pro_code)
+       .attr("id",(d,i) => "line_circle" + i)
+       .attr("cx",d => proj([d.Longitude, d.Latitude])[0])
+       .attr("cy",d => y(d.Value))
+       .style("opacity",0.5)
+       .attr("fill","steelblue")
+	   .attr("r", 0)
+	  .transition()
+	  .duration(myTransTime)
+	   .attr("r", 1.5);
+	   
+	  line_turn_cicle.exit()
+	  .transition()
+	  .duration(myTransTimeExit)
+	  .remove();
+	  
+	const circle_lable = cg
+      .selectAll("text")
+      .data(currentData);
+	  
+      circle_lable.enter()
+      .append("text")
+       .attr("class",d => "circle_lable circle_lable" + d.Pro_code)
+       .attr("id",(d,i) => "circle_lable" + i)
+      .attr("x",(d, i) =>z(d.Area) + 5 + x(parseDate(d.Date)))
+      .attr("y",d=>y(d.Value))
+      .text(d => d.Zone_name + " " + d.Value + "亿元 " + d.Co_total + "家企业")
+      //.text(d => d.Zone_name.replace("综合保税区",""))
+      .attr("style","font-size:1;fill:black;opacity:0")
+      //.attr("style",d=>d.Value>500? "font-size:14;fill:black;opacity:0.8":"font-size:10;fill:black;opacity:0")
+      //.style("font-size",8)
+      //.style("fill","darkgrey")
+      //.style("opacity",0.5)
+		; 	   
+     circle_lable.exit()
+	  .transition()
+	  .duration(myTransTimeExit)
+	  .remove();
+	  
+	const circle = cg
+      .selectAll("circle")
+      .data(currentData);
+	  
+      circle.enter()
+      .append("circle")
+      .attr("class",d => "circle circle" + d.Pro_code)
+      .attr("id",(d,i) => "circle" + i)
+      .attr("cx",d => x(parseDate(d.Date)))
+      .attr("cy",d=> y(d.Value))
+      .attr("r",0)
+      .style("fill","coral"//"steelblue"
+             //d => color2(parseFloat(d.Area))
+             //mycolor[i]
+           )
+      .style("opacity",0.7)
+      .on("mouseover",function(d,i){
+         d3.selectAll("circle")
+           .style("opacity",0.2);
+         d3.selectAll(".c_to_c_line")
+           .style("opacity",0);
+         d3.selectAll(".map_circle")
+           .style("opacity",0.1);
+         d3.selectAll(".line_circle")
+           .style("opacity",0);
+         d3.select(this)
+           .style("opacity",1);
+         d3.select("#c_to_c_line" + i)
+           .style("opacity",1);
+         d3.select("#map_circle" + i)
+           .style("opacity",1);
+         d3.select("#line_circle" + i)
+          .style("opacity",1);
+         d3.select("#circle_lable" + i)
+           .attr("style","font-size:12;fill:black;opacity:0.8");
+       })
+      .on("mouseout",function(d,i){
+         d3.selectAll("circle")
+           .style("opacity",0.5)
+         d3.selectAll(".c_to_c_line")
+           .style("opacity",0.3);
+         d3.selectAll(".line_circle")
+           .style("opacity",0.5);
+         d3.selectAll(".map_circle")
+           .style("opacity",0.5);
+         d3.selectAll(".circle_lable")
+           .attr("style","font-size:1;fill:black;opacity:0");
+         ;})
+	  .transition()
+	  .duration(myTransTime)
+      .attr("r",d => z(d.Area)); 	
+	  
+	  circle.exit()
+	  .transition()
+	  .duration(myTransTimeExit)
+	  .remove();
+  };
+  
+  form.i.min = 0;//设置最大值
+  form.i.max = values.length-1;//设置最大值
+  
+  let timer = null;
+  let direction = 1;
+  function start() {
+    form.b.textContent = "Pause";
+    timer = delay === null
+      ? requestAnimationFrame(tick)
+      : setInterval(tick, delay);
+	console.log(form.o.value);
+  }
+  function stop() {
+    form.b.textContent = "Play";
+    if (delay === null) cancelAnimationFrame(timer);
+    else clearInterval(timer);
+    timer = null;
+  }
+  function tick() {
+    if (delay === null) timer = requestAnimationFrame(tick);
+    if (form.i.valueAsNumber === (direction > 0 ? values.length - 1 : direction < 0 ? 0 : NaN)) {
+      if (!loop) return stop();
+      if (alternate) direction = -direction;
+    }
+    form.i.valueAsNumber = (form.i.valueAsNumber + direction + values.length) % values.length;
+    form.i.dispatchEvent(new CustomEvent("input", {bubbles: true}));
+  }
+
+  form.b.onclick = () => {
+    if (timer) return stop();
+    direction = alternate && form.i.valueAsNumber === values.length - 1 ? -1 : 1;
+    form.i.valueAsNumber = (form.i.valueAsNumber + direction) % values.length;
+    form.i.dispatchEvent(new CustomEvent("input", {bubbles: true}));
+    start();
+  };
+  form.i.oninput();
+  if (autoplay) start();
+  else stop();
+
+
+  
+
+
+  function map_mouseover_update(d){
+		//y.domain(d => d3.extent(mydata.filter(e => e.Pro_code == d.properties.id),t => parseFloat(t.Value)));
+		 //y = d3.scaleLinear().domain(d => d3.extent(mydata.filter(e => e.Pro_code == d.properties.id),t => parseFloat(t.Value))).nice().rangeRound([height/2 - margin.bottom, margin.top]);
+	
+		 //yAxis.call(d3.axisLeft(y));
+		//circle.attr("cy",y(500)) ;
+		
+		 d3.selectAll("circle")
+           .style("opacity",0.2);
+         d3.selectAll(".c_to_c_line")
+           .style("opacity",0);
+         d3.selectAll(".map_circle")
+           .style("opacity",0.1);
+         d3.selectAll(".line_circle")
+           .style("opacity",0);
+         d3.select("#map_path" + d.properties.id)
+           .attr("style","fill:coral;opacity:0.8");
+         d3.selectAll(".circle" + d.properties.id)
+           .style("opacity",1);
+         d3.selectAll(".c_to_c_line" + d.properties.id)
+           .style("opacity",1);
+         d3.selectAll(".map_circle" + d.properties.id)
+           .style("opacity",1);
+         d3.selectAll(".line_circle" + d.properties.id)
+          .style("opacity",1);
+         d3.selectAll(".circle_lable" + d.properties.id)
+           .attr("style","font-size:12;fill:black;opacity:0.8");
+         };
+    function map_mouseout_update(d){       
+         d3.select("#map_path" + d.properties.id)
+           .attr("style","fill:#ddd;opacity:1");
+         d3.selectAll("circle")
+           .style("opacity",0.5)
+         d3.selectAll(".c_to_c_line")
+           .style("opacity",0.3);
+         d3.selectAll(".line_circle")
+           .style("opacity",0.5);
+         d3.selectAll(".map_circle")
+           .style("opacity",0.5);
+         d3.selectAll(".circle_lable")
+           .attr("style","font-size:1;fill:black;opacity:0");
+         };
+		 
+//d3.map(mydata, d => d.Zone_name).values()
+
+//mydata.sort((a,b)=>parseDate(a.Date) - parseDate(b.Date))
+
+//mydata.filter(d=>d.Value>500)
+
+//d3.map(mydata, d => parseDate(d.Date)).keys().sort(function(a,b){return a-b;})
+
+	function upd_over(d,i) {
+		data_new=mydata.filter(function(e){return e.Pro_code == d.properties.id;});
+        //console.log(d.properties.id);
+        //console.log(data_new);
+		
+		max_value = d3.max(d3.extent(data_new, e => parseFloat(e.Value)));
+		//console.log(d3.map(d3.extent(data_new, e => parseFloat(e.Value))));
+		//console.log(max_value);
+		
+		y.domain([0,max_value]).nice();
+		//y.domain(d3.extent(data_new, e => parseFloat(e.Value))).nice();  //部分数据只有一个，没法获得范围，会出错。
+		
+		//Update Y axis
+		svg.select(".yAxis")
+			.transition()
+			.duration(1000)
+			.call(yAxis);
+            
+		//散点
+		cg.selectAll(".circle")//.data(mydata)
+				.transition()
+				.duration(1000)
+				.attr("cy",e=> y(e.Value));
+		
+         d3.selectAll(".circle_lable")
+				.transition()
+				.duration(1000)
+				.attr("y",e=> y(e.Value));
+		   
+         d3.selectAll(".c_to_c_line")
+				.transition()
+				.duration(1000)
+				.attr("d",e => line([{x:x(parseDate(e.Date))<proj([e.Longitude, e.Latitude])[0]?x(parseDate(e.Date))+z(e.Area):x(parseDate(e.Date))-z(e.Area),y: y(e.Value)}, {x: proj([e.Longitude, e.Latitude])[0], y: y(e.Value)}, {x: proj([e.Longitude, e.Latitude])[0], y: proj([e.Longitude, e.Latitude])[1]}]));
+  
+         d3.selectAll(".line_circle")
+				.transition()
+				.duration(1000)
+				.attr("cy",e=> y(e.Value));
+				
+	};
+	function upd_out() {
+		//data_new=mydata.filter(function(e){return e.Pro_code == d.properties.id;});
+
+
+		//Update scale domains
+		//y.domain([0,4000]);		
+		y.domain(d3.extent(mydata, e => parseFloat(e.Value))).nice();
+		
+		//Update Y axis
+		svg.select(".yAxis")
+			.transition()
+			.duration(1000)
+			.call(yAxis);
+            
+		//散点
+		cg.selectAll(".circle")//.data(data_new)
+				.transition()
+				.duration(1000)
+				.attr("cy",e=> y(e.Value));
+		
+         d3.selectAll(".circle_lable")
+				.transition()
+				.duration(1000)
+				.attr("y",e=> y(e.Value));
+		   
+         d3.selectAll(".c_to_c_line")
+				.transition()
+				.duration(1000)
+				.attr("d",e => line([{x:x(parseDate(e.Date))<proj([e.Longitude, e.Latitude])[0]?x(parseDate(e.Date))+z(e.Area):x(parseDate(e.Date))-z(e.Area),y: y(e.Value)}, {x: proj([e.Longitude, e.Latitude])[0], y: y(e.Value)}, {x: proj([e.Longitude, e.Latitude])[0], y: proj([e.Longitude, e.Latitude])[1]}]));
+  
+         d3.selectAll(".line_circle")
+				.transition()
+				.duration(1000)
+				.attr("cy",e=> y(e.Value));
+				
+	};
+ }   
+    </script>
+    
+</body>
+
+</html>
