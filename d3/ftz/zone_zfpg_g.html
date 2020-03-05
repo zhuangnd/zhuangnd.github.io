@@ -60,7 +60,7 @@
 		function(mydata_0){
 		mydata_0.forEach(function(d){zoneDate.push(d.Date);});
 		//console.log(zone_values);
-		d3.json("china.json").then(function(china){draw(mydata_0,china);});
+		d3.json("../mapjson/china.json").then(function(china){draw(mydata_0,china);});
 		}
 		);
 
