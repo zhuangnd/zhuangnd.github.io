@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<title>全国机场3月份出入境旅客SANKEY图</title>
+<script type="text/javascript" src="../d3.v3.js"></script>
+<script type="text/javascript" src="../sankey.js"></script>
+<style>
+body {
+background-color: white;
+}
+
+
+</style>
+<body>
+        <div style="margin-left:600px;padding-top: 10px;;width:90%" class="text" id="download">			
+            <p><label>下载图像大小倍数:<input type="number" min=1 max=5 id="imgpix" value=1 /></label></p>	
+            <p>
+			<button onclick="downloadInvisible()" >禁止下载</button>
+			<button onclick="downloadImg()" >下载图片</button>
+			</p>
+            <!--
+            <p><input type="button" onclick="update()" value="确认" /></p>
+            -->
+		</div>	
+<svg>
+<style>
+.node rect {
+cursor: move;
+fill-opacity: .9;
+shape-rendering: crispEdges;
+}
+
+.node text {
+pointer-events: none;
+fill:darkgrey;
+font-size:12px;
+}
+
+
+.link {
+fill: none;
+stroke: lightgrey;
+stroke-opacity: .3;
+}
+.link_level1 {
+stroke: orange;
+}
+.link_level2 {
+stroke: red;
+}
+.link_foreign {
+stroke: green;
+}
+.link:hover {
+stroke-opacity: .8;
+}
+
+
+.rect {
+fill: lightgrey;
+stroke: grey;
+opacity: .5;
+stroke-width: 0.5;
+}
+.rect1 {
+fill: orange;
+stroke: orange;
+}
+.rect2 {
+fill: red;
+stroke: red;
+}
+.rect9 {
+fill: steelblue;
+stroke: steelblue;
+}
+.rect_foreign {
+fill: green;
+stroke: green;
+}
+
+.rect:hover {
+opacity: 0.8;
+stroke-width: 1;
+stroke: grey;
+}
+</style>
+</svg>
+
+<script>
+var units = "人";
+//var data_file = "flight_i_flow.csv";
+//var data_file = "flight_i_flow_37_202001-03.csv";
+var data_file = "flight_i_flow_37_2020003.csv";
+var title_text=d3.select("title").text();
+var new_title_text="Sankey" + "--" + data_file.substring(0,data_file.lastIndexOf("."))
+d3.select("title").text(new_title_text);
+
+var margin = {top: 50, right: 50, bottom: 50, left: 50},
+width = 1400 ;//- margin.left - margin.right,
+height = 900 ;//- margin.top - margin.bottom;
+
+var formatNumber = d3.format(",.0f"), // zero decimal places
+format = function(d) { return formatNumber(d) + " " + units; },
+color = d3.scale.category20();
+
+
+// append the svg canvas to the page
+var svg = d3.select("svg")
+.attr("width", width)
+.attr("height", height);
+
+// Set the sankey diagram properties
+var sankey = d3.sankey()
+.nodeWidth(30)
+.nodePadding(12)
+.size([width - margin.left , height - margin.bottom]);
+
+var path = sankey.link();
+
+// load the data with d3.csv instead of d3.json
+//for another much simpler example uncomment the below
+// d3.csv("d3noob_energy.csv", function(error, data) {
+d3.csv(data_file, function(error, data) {
+
+//data = data.filter(d => d.flow !=3);//生成航班时需筛选流向标志flow段不为3的（机场-目的地）
+
+//set up graph in same style as original example but empty
+graph = {"nodes" : [], "links" : []};
+
+data.forEach(function (d) {
+graph.nodes.push({ "name": d.source , "level": d.level });
+graph.nodes.push({ "name": d.target , "level": d.level});
+//graph.links.push({ "source": d.source, "target": d.target, "value": d.value_f, "level": d.level });//旅客为d.value_p,航班为d.value_f
+graph.links.push({ "source": d.source, "target": d.target, "value": d.value_p, "level": d.level, "flow": d.flow });//旅客为d.value_p,航班为d.value_f
+});
+
+//thanks Mike Bostock https://groups.google.com/d/msg/d3-js/pl297cFtIQk/Eso4q_eBu1IJ
+//this handy little function returns only the distinct / unique nodes
+graph.nodes = d3.keys(d3.nest()
+.key(function (d) { return d.name ; })//+ "," + d.level
+.map(graph.nodes));
+//console.log(graph.nodes);
+
+//it appears d3 with force layout wants a numeric source and target
+//so loop through each link replacing the text with its index from node
+graph.links.forEach(function (d, i) {
+graph.links[i].source = graph.nodes.indexOf(graph.links[i].source);
+graph.links[i].target = graph.nodes.indexOf(graph.links[i].target);
+});
+
+//now loop through each nodes to make nodes an array of objects rather than an array of strings
+graph.nodes.forEach(function (d, i) {
+graph.nodes[i] = { "name": d};//.split(",")[0] , "level": d.split(",")[1]
+});
+//console.log(graph.nodes);
+
+sankey
+.nodes(graph.nodes)
+.links(graph.links)
+.layout(32);
+
+// add in the links
+var link = svg.append("g").selectAll(".link")
+.data(graph.links)
+.enter().append("path")
+.attr("class", function(d) {return d.target.name.slice(-3)>"999" || d.target.name.slice(-3) == "142" ?"link link_level" + d.level + " link" + d.target.name.slice(0,3) + " link" + d.source.name.slice(0,3):"link link_level" + d.level + " link_foreign" + " link" + d.target.name.slice(0,3) + " link" + d.source.name.slice(0,3); })
+.attr("transform", function(d) { return "translate(" + margin.left/2 + "," + margin.bottom/2 + ")"; })//位移，留出svg边框
+//.attr("id", function(d) {return "link" + d.target.name + " link" + d.source.name; })
+.attr("d", path)
+.style("stroke-width", function(d) { return Math.max(1, d.dy); })
+.sort(function(a, b) { return b.dy - a.dy ; });
+
+//console.log(graph.links);
+
+// add the link titles
+link.append("title")
+.text(function(d) {return d.source.name.substring(d.source.name.indexOf("(")+1,d.source.name.lastIndexOf(")")).replace("(目的地","") + "   " + d.target.name.substring(d.target.name.indexOf("(")+1,d.target.name.lastIndexOf(")")).replace("(目的地","") + "\n" + format(d.value); });
+//.text(function(d) {return d.source.name + "   " + d.target.name + "\n" + format(d.value); });
+
+// add in the nodes
+var node = svg.append("g").selectAll(".node")
+.data(graph.nodes)
+.enter().append("g")
+.attr("class", "node")
+.attr("transform", function(d) { 
+return "translate(" + d.x + "," + d.y + ")"; })
+.call(d3.behavior.drag()
+.origin(function(d) { return d; })
+.on("dragstart", function() { 
+this.parentNode.appendChild(this); })
+.on("drag", dragmove));
+
+// add the rectangles for the nodes
+node.append("rect")
+.attr("height", function(d) { return Math.max(1, d.dy); })
+.attr("width", sankey.nodeWidth())
+//.attr("rx",2)//圆角矩形
+//.attr("ry",2)
+.attr("class",d =>d.sourceLinks.length == 0  ? (d.name.slice(-3)>"999" || d.name.slice(-3) == "142" ?"rect":"rect rect_foreign") : "rect rect" + d.sourceLinks[0].level)
+//.attr("id", function(d) {return "c" + d.name.substr(0,3); })
+//.style("stroke", function(d) { return d3.rgb(d.color).darker(1); })
+//.style("stroke-width", 0.5)
+.attr("transform", function(d) { return "translate(" + margin.left/2 + "," + margin.bottom/2 + ")"; })//位移，留出svg边框
+.on("mouseover",d => d3.selectAll(".link" + d.name.slice(0,3))
+      .attr("style","stroke-opacity:1;stroke:steelblue"))
+.on("mouseout",d => d3.selectAll(".link")
+      .attr("style","stroke-opacity:0.3;stroke:" + d.color))
+.append("title")
+.text(function(d) { 
+return d.name.substring(d.name.indexOf("(")+1,d.name.lastIndexOf(")")).replace("(目的地","") + "\n" + format(d.value); });
+
+
+// add in the title for the nodes
+node.append("text")
+.attr("x", -6)
+.attr("y", function(d) { return d.dy / 2; })
+.attr("dy", ".35em")
+.attr("text-anchor", "end")
+//.attr("transform", null)
+.attr("transform", function(d) { return "translate(" + margin.left/2 + "," + margin.bottom/2 + ")"; })//位移，留出svg边框
+.text(function(d) { return d.name.substring(d.name.indexOf("(")+1,d.name.lastIndexOf(")")).replace(")(目的地","") + " " + d.value; })
+.filter(function(d) { return d.x < width / 2; })
+.attr("x", 6 + sankey.nodeWidth())
+.attr("text-anchor", "start");
+
+
+// the function for moving the nodes
+function dragmove(d) {
+d3.select(this).attr("transform", 
+"translate(" + (
+d.x = Math.max(0, Math.min(width - d.dx, d3.event.x))
+) + "," + (
+d.y = Math.max(0, Math.min(height - d.dy, d3.event.y))
+) + ")");
+sankey.relayout();
+link.attr("d", path);
+}
+});
+
+</script>
+	<script type="text/javascript">
+	function downloadInvisible(){
+		d3.select("#download").style("display","none");
+	};
+	function downloadImg(){
+	setTimeout(function(){
+		var serializer = new XMLSerializer();
+		var source = serializer.serializeToString(svg.node());
+		
+		if (!document.getElementById("imgpix").value) var imgpix = 1;
+        else var imgpix = document.getElementById("imgpix").value;
+		
+		console.log(svg.node().innerHTML);
+		
+		source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
+		var url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
+		document.write('<img src="' + url + '"/>');
+ 
+		var canvas = document.createElement("canvas");
+		//canvas.width = width;//svg像素翻倍,画布需先翻倍
+		//canvas.height = height;//svg像素翻倍,画布需先翻倍
+		canvas.width = width * imgpix;
+		canvas.height = height * imgpix;
+ 
+		var context = canvas.getContext("2d");
+
+		//context.fillStyle="black";
+		
+		var image = new Image;
+		image.src = document.getElementsByTagName('img')[0].src;
+		image.onload = function() {
+  			//context.drawImage(image, 0, 0);
+  			context.drawImage(image, 0, 0, width * imgpix, height * imgpix);//像素翻倍,画布需先翻倍
+ 
+  			var a = document.createElement("a");
+  			a.download = new_title_text + ".png";
+  			a.href = canvas.toDataURL("image/png");
+  			a.click();
+		};
+		},1000);
+		}
+
+	</script>
+</body>
+</html>
