@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <meta charset="utf-8">
-<title>全国机场3月份出入境旅客SANKEY图</title>
+<title></title>
 <script type="text/javascript" src="../d3.v3.js"></script>
 <script type="text/javascript" src="../sankey.js"></script>
 <style>
@@ -203,9 +203,11 @@ node.append("rect")
 //.style("stroke-width", 0.5)
 .attr("transform", function(d) { return "translate(" + margin.left/2 + "," + margin.bottom/2 + ")"; })//位移，留出svg边框
 .on("mouseover",d => d3.selectAll(".link" + d.name.slice(0,3))
-      .attr("style","stroke-opacity:1;stroke:steelblue"))
+    .style("stroke-opacity",1)
+    .style("stroke","steelblue"))
 .on("mouseout",d => d3.selectAll(".link")
-      .attr("style","stroke-opacity:0.3;stroke:" + d.color))
+      .style("stroke-opacity",1)
+    .style("stroke",d.color))
 .append("title")
 .text(function(d) { 
 return d.name.substring(d.name.indexOf("(")+1,d.name.lastIndexOf(")")).replace("(目的地","") + "\n" + format(d.value); });
