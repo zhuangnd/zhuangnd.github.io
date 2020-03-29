@@ -206,7 +206,7 @@ node.append("rect")
     .style("stroke-opacity",1)
     .style("stroke","steelblue"))
 .on("mouseout",d => d3.selectAll(".link")
-      .style("stroke-opacity",1)
+      .style("stroke-opacity",0.3)
     .style("stroke",d.color))
 .append("title")
 .text(function(d) { 
