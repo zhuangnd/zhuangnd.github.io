@@ -14,8 +14,8 @@
 --><style>
 	:root {
 		--mywidth:650px;
-		--mywidth2:380px;
-		--myheight:180px;
+		--mywidth2:170px;
+		--myheight:245px;
 		--mypad1:50px;
 		--mypad2:20px;
 		}
@@ -24,7 +24,7 @@
 		font-family: "Calibri Light";
 		}
 		
-	.rect_cus,.rect_cus_3,.line_time,.circle_time {		
+	.rect_cus,.rect_cus_3,.line_time,.circle_time {			
 	  fill:rgba(102,205,170,0.3);
 	  stroke:rgba(102,205,170,0.1);
 	  cursor: pointer;
@@ -40,6 +40,17 @@
 	  stroke:lightgrey;
 	  stroke-width:1;
 	}	
+	
+	.selected {
+	  fill:rgba(102,205,170,1);
+	  stroke:none;
+	  box-shadow:1px 5px 20px rgba(102,205,170,0.8);
+	  }
+	  
+	.index_lable.selected,.ie_lable.selected {
+	  background-color:mediumaquamarine;
+	  opacity:1;
+	  }
 	  	
 	.index_title {
 		position: absolute;
@@ -90,12 +101,12 @@
 		position: absolute;
 		top:100px;
 		left:50px;
-		width: 440px;
-		height:690px;		
+		width: 900px;
+		height:325px;		
 	}
 	#lg {
-		width: 400px;
-		height:650px;
+		width: 860px;
+		height:260px;
 		}
 
 	.index_group {
@@ -112,10 +123,34 @@
 		padding-left: 20px;
 		padding-right: 20px;
 		}
-	#index_group1 {
+		
+	#index_group0 {
 		position: absolute;
 		top:30px;
 		left:30px;
+		width: 210px;
+		height:var(--myheight);
+	}
+	#index_lable0 {
+		position: absolute;
+		width: 210px;
+		height:25px;
+		background:none;
+		border:none;
+	}
+	#lg_0_1 {
+		position: absolute;
+		top:25px;
+		width: 210px;
+		height:220px;
+		color:grey;	
+		background-color:rgba(102,205,170,0.1);
+	}
+	
+	#index_group1 {
+		position: absolute;
+		top:30px;
+		left:275px;
 		width: var(--mywidth2);
 		height:var(--myheight);
 		cursor: pointer;
@@ -129,14 +164,14 @@
 		position: absolute;
 		top:25px;
 		width: var(--mywidth2);
-		height:155px;
+		height:220px;
 		border: thin solid rgba(102,205,170,0.3);
 		color:grey;	
 	}
 	#index_group2 {
 		position: absolute;
-		top:250px;
-		left:30px;
+		top:30px;
+		left:475px;
 		width: var(--mywidth2);
 		height:var(--myheight);
 		cursor: pointer;
@@ -150,14 +185,14 @@
 		position: absolute;
 		top:25px;
 		width: var(--mywidth2);
-		height:155px;
+		height:220px;
 		border: thin solid rgba(102,205,170,0.3);
 		color:grey;		
 	}
 	#index_group3 {
 		position: absolute;
-		top:470px;
-		left:30px;
+		top:30px;
+		left:675px;
 		width: var(--mywidth2);
 		height:var(--myheight);
 		cursor: pointer;
@@ -171,22 +206,14 @@
 		position: absolute;
 		top:25px;
 		width: var(--mywidth2);
-		height:155px;
+		height:220px;
 		border: thin solid rgba(102,205,170,0.3);
 		color:grey;		
 	}
 	
-	.table {
-  table-layout:fixed;
-		width:80%;
-	}
-	td {
-		vertical-align:bottom;
-	}
-	
 	#tg_0 {
 		position: absolute;
-		top:490px;
+		top:100px;
 		left:1000px;
 		width: 440px;
 		height:325px;		
@@ -198,26 +225,26 @@
 		
 	#sg_0 {
 		position: absolute;
-		top:100px;
+		top:470px;
 		left:1000px;
 		width: 440px;
-		height:375px;		
+		height:395px;		
 	}
 	#sg {	
 		width: 400px;
-		height:310px;
+		height:330px;
 		}
 		
 	#ig_0 {
 		position: absolute;
-		top:100px;
-		left:525px;
-		width: 440px;
-		height:715px;		
+		top:470px;
+		left:50px;
+		width: 900px;
+		height:395px;		
 	}
 	#ig {	
-		width: 400px;
-		height:650px;
+		width: 860px;
+		height:330px;
 		}
 	
 		
@@ -231,29 +258,18 @@
 			stroke: none;
 			shape-rendering: crispEdges;
 		}
-		.xAxis line,
+		.yAxis line,
 		.yAxis2 line, 
 		.yAxis3 line  {
 			stroke: #ccc;
 		}
 		.axis text {
-			fill: #ccc;
+			fill: #bbb;
 			font-family: Arial;
 			font-size: 12px;
 			shape-rendering: crispEdges;
 		}
 		
-	.selected {
-	  fill:rgba(102,205,170,1);
-	  stroke:none;
-	  box-shadow:2px 2px 20px 0 rgba(102,205,170,0.8);
-	  }
-	  
-	.index_lable.selected,.ie_lable.selected {
-	  background-color:mediumaquamarine;
-	  opacity:1;
-	  }
-	  	
 	td {
 	width:50px;height:50px;
 	}
@@ -295,40 +311,22 @@
 	<div id="lg_0">
 		<div class="index_lable_text">指标展示</div>
 		<div class="index_lable_text2" id="lg_text"></div>
-	  <div id="lg" >
+	  <div id="lg" >	  
+		<div class="index_group" id="index_group0">
+			<div class='index_lable' id="index_lable0">指标说明</div>	
+			<div class='index_value' id="lg_0_1" style="color:#aaa;font-size:12px">			
+			与上月相比
+			</div>
+		</div>
 	  
 		<div class="index_group" id="index_group1">
 			<div class='index_lable' id="index_lable1">报关单量</div>	
 			<div class='index_value' id="lg_1_1">
-    <!--			
-    <table class="table">
-      <tbody>
-        <tr class='barclays'>
-          <td style="color:#bbb;font-size:12px;text-align:right;">份数  </td>
-          <td id="cus_lg_1" style="font-size:24px"></td>
-          <td style="color:coral;font-size:20px;text-align:right">↑  </td>
-          <td><span id="order_lg_1" style="font-size:24px"></td>
-        </tr>
-        <tr class='barclays'>
-          <td><span style="color:#bbb;font-size:12px">排名 </span></td>
-          <td class='sparkline'><span id="ctime1"></span>小时</td>
-        </tr>
-        <tr class='barclays'>
-          <td><span style="color:#bbb;font-size:12px">全国总份数 </span></td>
-          <td class='sparkline'><span id="ctime5"></span>小时</td>
-        </tr>
-      </tbody>
-    </table>
-          		
-    -->
-
-          		<p><span style="color:#bbb;font-size:12px">份数 </span><span id="cus_lg_1" style="font-size:24px"></span>
-          		<span style="color:coral;font-size:20px">↑ </span><span id="change_lg_1" style="right:80px;text-align:right"></span></p>
-          		<p><span style="color:#bbb;font-size:12px">排名 </span><span id="order_lg_1" style="font-size:24px"></span>
+          		<p><span style="color:#bbb;font-size:12px">份数</span><br/><span id="cus_lg_1" style="font-size:24px"></span>
+          		<span style="color:coral;font-size:20px">↑ </span><span id="change_lg_1" style="text-align:right"></span></p>
+          		<p><span style="color:#bbb;font-size:12px">排序</span><br/><span id="order_lg_1" style="font-size:24px"></span>
           		<span style="color:coral;font-size:20px"> ↑ </span><span id="change_lg_1_" style="text-align:right"></span></p>
-          		<p><span style="color:#bbb;font-size:12px">全国总份数 </span><span id="country_lg_1" style="text-align:right"></span></p>
-          		
-
+          		<p><span style="color:#bbb;font-size:12px">全国总数</span><br/><span id="country_lg_1" style="text-align:right"></span></p>
 			</div>	
 			<div id="lg_1_2" >	
 			</div>
@@ -337,11 +335,11 @@
 		<div class="index_group" id="index_group2">
 			<div class='index_lable' id="index_lable2">整体通关时间</div>	
 			<div class='index_value' id="lg_2_1">
-          		<p><span style="color:#bbb;font-size:12px">小时 </span><span id="cus_lg_2" style="font-size:24px"></span>
+          		<p><span style="color:#bbb;font-size:12px">小时</span><br/><span id="cus_lg_2" style="font-size:24px"></span>
           		<span style="color:coral;font-size:20px">↑ </span><span id="change_lg_2" style="text-align:right"></span></p>
-          		<p><span style="color:#bbb;font-size:12px">排名 </span><span id="order_lg_2" style="font-size:24px"></span>
+          		<p><span style="color:#bbb;font-size:12px">排序</span><br/><span id="order_lg_2" style="font-size:24px"></span>
           		<span style="color:coral;font-size:20px">↑ </span><span id="change_lg_2_" style="text-align:right"></span></p>
-          		<p><span style="color:#bbb;font-size:12px">全国平均 </span><span id="country_lg_2"></span></p>
+          		<p><span style="color:#bbb;font-size:12px">全国平均</span><br/><span id="country_lg_2"></span></p>
 			</div>
 			<div id="lg_2_2" >	
 			</div>
@@ -350,11 +348,11 @@
 		<div class="index_group" id="index_group3">
 			<div class='index_lable' id="index_lable3">海关通关时间</div>	
 			<div class='index_value' id="lg_3_1">
-          		<p><span style="color:#bbb;font-size:12px">小时 </span><span id="cus_lg_3" style="font-size:24px"></span>
+          		<p><span style="color:#bbb;font-size:12px">小时</span><br/><span id="cus_lg_3" style="font-size:24px"></span>
           		<span style="color:coral;font-size:20px">↑ </span><span id="change_lg_3"></span></p>
-          		<p><span style="color:#bbb;font-size:12px">排名 </span><span id="order_lg_3" style="font-size:24px"></span>
+          		<p><span style="color:#bbb;font-size:12px">排序</span><br/><span id="order_lg_3" style="font-size:24px"></span>
           		<span style="color:coral;font-size:20px">↑ </span><span id="change_lg_3_"></span></p>
-          		<p><span style="color:#bbb;font-size:12px">全国平均 </span><span id="country_lg_3"></span></p>
+          		<p><span style="color:#bbb;font-size:12px">全国平均</span><br/><span id="country_lg_3"></span></p>
 			</div>
 			<div id="lg_3_2" >	
 			</div>
@@ -371,14 +369,14 @@
 	</div>
 	
 	<div id="sg_0">
-		<div  class="index_lable_text">隶属排名</div>
+		<div  class="index_lable_text">隶属排序</div>
 			<div  class="index_lable_text2" id="sg_text"></div>
 		<div id="sg" >	
 		</div>
 	</div>
 	
 	<div id="ig_0">	
-		<div  class="index_lable_text">各关排名</div>
+		<div  class="index_lable_text">各关排序</div>
 			<div class="index_lable_text2" id="ig_text"></div>	
 		<div id="ig" >	
 		</div>
@@ -420,8 +418,8 @@
 		//const svg = d3.select("body").append("svg")
 		//.attr("viewBox", [0, 0, mywidth*1.25, height*1.25]);
   
-	var ie_flag = "I",ym_flag = d3.max(mydata_0.filter(d => d.ie == "I" && d.cus_code == 0).map(d => d.ym)),ym_flag1 = ym_flag,cus_flag = "37",index_flag = "pass_time_cus";
-	
+	var ie_flag = "I",ym_flag = d3.max(mydata_0.filter(d => d.ie == "I" && d.cus_code == 0).map(d => d.ym)),ym_flag1 = ym_flag,cus_flag = "37",index_flag = "pass_time_cus",level_flag = "0",mydata_flag = mydata_0;
+	//console.log(mydata.filter(d => d.cus_code == cus_flag)[0].cus_2_name);
 	const lg = d3.select("#lg").append("svg")
 		.attr("width", 400)
 		.attr("height", 600)
@@ -438,13 +436,13 @@
 		  
 	const sg = d3.select("#sg").append("svg")
 		.attr("width", 400)
-		.attr("height", 310)
+		.attr("height", 330)
 		.append("g")
       .attr("transform", d => `translate(0,0)`);
 	  
 	const ig = d3.select("#ig").append("svg")
-		.attr("width", 400)
-		.attr("height", 650)
+		.attr("width", 860)
+		.attr("height", 330)
 		.append("g")
 		//.attr("class","ig")
       .attr("transform", d => `translate(0,0)`);
@@ -452,32 +450,32 @@
 
 	  
 	//指标标签  
-	function info_text(){
-	d3.select("#lg_text").text(mydata_0.filter(d => d.cus_code == cus_flag)[0].cus_2_name + " " + ym_flag);
+	function info_text(mydata,level){
+	d3.select("#lg_text").text(mydata.filter(d => d.cus_code == cus_flag)[0].cus_2_name + " " + ym_flag);
 	d3.select("#tg_text")
-		.text(mydata_0.filter(d => d.ie == ie_flag && d.cus_code == cus_flag)[0].cus_2_name + " " + arr_ie_name[ie_flag] + " " + arr_index_name[index_flag]);			
+		.text(mydata.filter(d => d.ie == ie_flag && d.cus_code == cus_flag)[0].cus_2_name + " " + arr_ie_name[ie_flag] + " " + arr_index_name[index_flag]);			
 	d3.select("#ig_text")
 		.text(ym_flag + "  " + arr_ie_name[ie_flag] + " " + arr_index_name[index_flag]);
-	d3.select("#cus_lg_0").text(mydata_0.filter(d => d.cus_code == cus_flag)[0].cus_2_name);
-	d3.select("#cus_lg_1").text(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code == cus_flag)[0].entry_id_count);
-	d3.select("#cus_lg_2").text(parseFloat(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code == cus_flag)[0].pass_time_total).toFixed(2));
-	d3.select("#cus_lg_3").text(parseFloat(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code == cus_flag)[0].pass_time_cus).toFixed(2));
-	d3.select("#country_lg_1").text(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code == 0)[0].entry_id_count);
-	d3.select("#country_lg_2").text(parseFloat(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code == 0)[0].pass_time_total).toFixed(2));
-	d3.select("#country_lg_3").text(parseFloat(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code == 0)[0].pass_time_cus).toFixed(2));
-	d3.select("#order_lg_1").text(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code != "0").sort((b,a) => parseFloat(a.entry_id_count) - parseFloat(b.entry_id_count)).map(d => d.cus_code).indexOf(cus_flag) + 1);
-	d3.select("#order_lg_2").text(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code != "0").sort((a,b) => parseFloat(a.pass_time_total) - parseFloat(b.pass_time_total)).map(d => d.cus_code).indexOf(cus_flag) + 1);
-	d3.select("#order_lg_3").text(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code != "0").sort((a,b) => parseFloat(a.pass_time_cus) - parseFloat(b.pass_time_cus)).map(d => d.cus_code).indexOf(cus_flag) + 1);
-	d3.select("#change_lg_1").text((parseFloat((mydata_0.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code == cus_flag)[0].entry_id_count))-(parseFloat(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym_flag -1 && d.cus_code == cus_flag)[0].entry_id_count))));
-	d3.select("#change_lg_2").text((parseFloat((mydata_0.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code == cus_flag)[0].pass_time_total))-(parseFloat(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym_flag -1 && d.cus_code == cus_flag)[0].pass_time_total))).toFixed(2));
-	d3.select("#change_lg_3").text((parseFloat((mydata_0.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code == cus_flag)[0].pass_time_cus))-(parseFloat(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym_flag -1 && d.cus_code == cus_flag)[0].pass_time_cus))).toFixed(2));
-	d3.select("#change_lg_1_").text(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym_flag-1 && d.cus_code != "0").sort((b,a) => parseFloat(a.entry_id_count) - parseFloat(b.entry_id_count)).map(d => d.cus_code).indexOf(cus_flag)-mydata_0.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code != "0").sort((b,a) => parseFloat(a.entry_id_count) - parseFloat(b.entry_id_count)).map(d => d.cus_code).indexOf(cus_flag));
-	d3.select("#change_lg_2_").text(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym_flag-1 && d.cus_code != "0").sort((a,b) => parseFloat(a.pass_time_total) - parseFloat(b.pass_time_total)).map(d => d.cus_code).indexOf(cus_flag)-mydata_0.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code != "0").sort((a,b) => parseFloat(a.pass_time_total) - parseFloat(b.pass_time_total)).map(d => d.cus_code).indexOf(cus_flag));
-	d3.select("#change_lg_3_").text(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym_flag-1 && d.cus_code != "0").sort((a,b) => parseFloat(a.pass_time_cus) - parseFloat(b.pass_time_cus)).map(d => d.cus_code).indexOf(cus_flag)-mydata_0.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code != "0").sort((a,b) => parseFloat(a.pass_time_cus) - parseFloat(b.pass_time_cus)).map(d => d.cus_code).indexOf(cus_flag));
+	d3.select("#cus_lg_0").text(mydata.filter(d => d.cus_code == cus_flag)[0].cus_2_name);
+	d3.select("#cus_lg_1").text(mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code == cus_flag)[0].entry_id_count);
+	d3.select("#cus_lg_2").text(parseFloat(mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code == cus_flag)[0].pass_time_total).toFixed(2));
+	d3.select("#cus_lg_3").text(parseFloat(mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code == cus_flag)[0].pass_time_cus).toFixed(2));
+	d3.select("#country_lg_1").text(mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code == level)[0].entry_id_count);
+	d3.select("#country_lg_2").text(parseFloat(mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code == level)[0].pass_time_total).toFixed(2));
+	d3.select("#country_lg_3").text(parseFloat(mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code == level)[0].pass_time_cus).toFixed(2));
+	d3.select("#order_lg_1").text(mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code != level).sort((b,a) => parseFloat(a.entry_id_count) - parseFloat(b.entry_id_count)).map(d => d.cus_code).indexOf(cus_flag) + 1);
+	d3.select("#order_lg_2").text(mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code != level).sort((a,b) => parseFloat(a.pass_time_total) - parseFloat(b.pass_time_total)).map(d => d.cus_code).indexOf(cus_flag) + 1);
+	d3.select("#order_lg_3").text(mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code != level).sort((a,b) => parseFloat(a.pass_time_cus) - parseFloat(b.pass_time_cus)).map(d => d.cus_code).indexOf(cus_flag) + 1);
+	d3.select("#change_lg_1").text((parseFloat((mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code == cus_flag)[0].entry_id_count))-(parseFloat(mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag -1 && d.cus_code == cus_flag)[0].entry_id_count))));
+	d3.select("#change_lg_2").text((parseFloat((mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code == cus_flag)[0].pass_time_total))-(parseFloat(mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag -1 && d.cus_code == cus_flag)[0].pass_time_total))).toFixed(2));
+	d3.select("#change_lg_3").text((parseFloat((mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code == cus_flag)[0].pass_time_cus))-(parseFloat(mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag -1 && d.cus_code == cus_flag)[0].pass_time_cus))).toFixed(2));
+	d3.select("#change_lg_1_").text(mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag-1 && d.cus_code != level).sort((b,a) => parseFloat(a.entry_id_count) - parseFloat(b.entry_id_count)).map(d => d.cus_code).indexOf(cus_flag)-mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code != level).sort((b,a) => parseFloat(a.entry_id_count) - parseFloat(b.entry_id_count)).map(d => d.cus_code).indexOf(cus_flag));
+	d3.select("#change_lg_2_").text(mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag-1 && d.cus_code != level).sort((a,b) => parseFloat(a.pass_time_total) - parseFloat(b.pass_time_total)).map(d => d.cus_code).indexOf(cus_flag)-mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code != level).sort((a,b) => parseFloat(a.pass_time_total) - parseFloat(b.pass_time_total)).map(d => d.cus_code).indexOf(cus_flag));
+	d3.select("#change_lg_3_").text(mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag-1 && d.cus_code != level).sort((a,b) => parseFloat(a.pass_time_cus) - parseFloat(b.pass_time_cus)).map(d => d.cus_code).indexOf(cus_flag)-mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code != level).sort((a,b) => parseFloat(a.pass_time_cus) - parseFloat(b.pass_time_cus)).map(d => d.cus_code).indexOf(cus_flag));
 	}
 	//console.log(arr_index_name.pass_time_cus);
 		
-	info_text();
+	info_text(mydata_0,level_flag);
 	
 	d3.select("#i_lable")
 		.classed("selected",d => ie_flag=="I"?true:false)
@@ -486,7 +484,7 @@
 		 d3.select("#i_lable").classed("selected",true);	
 		 ie_flag = "I";
 		 upd_cus(ym_flag);
-		 upd_time(cus_flag);
+		 upd_time(cus_flag,mydata_flag,level_flag);
 		 });
 	d3.select("#e_lable")
 		.classed("selected",d => ie_flag=="E"?true:false)
@@ -495,7 +493,7 @@
 		 d3.select("#e_lable").classed("selected",true);	
 		 ie_flag = "E";
 		 upd_cus(ym_flag);
-		 upd_time(cus_flag);
+		 upd_time(cus_flag,mydata_flag,level_flag);
 		 });
 	
 	d3.select("#index_lable1").classed("selected",d => index_flag=="entry_id_count"?true:false);
@@ -508,7 +506,7 @@
 		 d3.select("#index_lable1").classed("selected",true);	 		
 		 index_flag="entry_id_count";
 		 upd_cus(ym_flag);
-		 upd_time(cus_flag);
+		 upd_time(cus_flag,mydata_xm,level_flag);
 		 });
 		 
 	
@@ -522,7 +520,7 @@
 		 d3.select("#index_lable2").classed("selected",true);	 
 		 index_flag="pass_time_total";
 		 upd_cus(ym_flag);
-		 upd_time(cus_flag);
+		 upd_time(cus_flag,mydata_flag,level_flag);
 		 });
 		 
 	
@@ -536,54 +534,53 @@
 		 d3.select("#index_lable3").classed("selected",true);	
 		 index_flag="pass_time_cus";
 		 upd_cus(ym_flag);
-		 upd_time(cus_flag);
+		 upd_time(cus_flag,mydata_flag,level_flag);
 		 });
 		 
 	//指标概况
 	
 	
-	//海关排名	
-	x = d3.scaleLinear()
+	//海关排序		
+	y = d3.scaleLinear()
     //.domain(d3.extent(mydata_0, d => parseFloat(d[index_flag])))
     .domain([0,d3.max(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym_flag),d => parseFloat(d[index_flag]))])
     .nice()
-    .range([80, 380]);	
+    .range([280, 20]);	
 
-	y = d3.scaleBand()
+	x = d3.scaleBand()
     //.domain(d3.range((mydata_0.filter(d => d.ie == ie_flag && d.ym == "202006").length)))
 	//.domain(mydata_0.filter(d => d.ie == ie_flag && d.ym == "202006").map(d => d.cus_2_name))//不排序
-	.domain(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym_flag).sort((b,a) => parseFloat(a[index_flag]) - parseFloat(b[index_flag])).map(d => d.cus_2_name))//排序
-    .range([620, 20]);
+	.domain(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym_flag).sort((a,b) => parseFloat(a[index_flag]) - parseFloat(b[index_flag])).map(d => d.cus_2_name))//排序
+    .range([20, 820]);
 	
 	//console.log(mydata_0.filter(d => d.ie == ie_flag && d.ym == "202006").sort((b,a) => parseFloat(a[index_flag]) - parseFloat(b[index_flag])).map(d => d.cus_2_name));
 	
-	xAxis = g => g
-    .attr("transform",d => `translate(0,620)`)
-	.attr("class","axis xAxis")
-    .call(d3.axisBottom(x).ticks(8).tickSizeOuter(0))
+	yAxis = g => g
+    .attr("transform",d => `translate(835,-15)`)
+	.attr("class","axis yAxis")
+    .call(d3.axisRight(y).ticks(10).tickSizeOuter(0))
     .call(g => g.select(".domain").remove());
 
-	yAxis = g => g
-    .attr("transform", d => `translate(80,0)`)
-	.attr("class","axis yAxis")
-    .call(d3.axisLeft(y))
+	xAxis = g => g
+    .attr("transform", d => `translate(5,265)`)
+	.attr("class","axis xAxis")
+    .call(d3.axisBottom(x))
     .call(g => g.select(".domain").remove())
     //.call(g => g.select(".tick:last-of-type text").append("tspan").text(mydata.Value))
 	;
  
  
 	ig.append("g")
-      .call(xAxis);
+      .call(xAxis)
+		.selectAll("text")
+		//微调x轴文字位置
+		.attr("transform","rotate(-45)")
+		.style("text-anchor", "end")
+		;
 
 	ig.append("g")
 	  .attr("class","yAxis")
-      .call(yAxis)
-		.selectAll("text")
-		.attr("class","ig_y_text")
-	  .on("click",function(d,i){
-         d3.selectAll(".ig_y_text").classed("selected",false);
-		 d3.select(this).classed("selected",true);
-		 })	;
+      .call(yAxis);
 	  
 	rect_cus = ig
       .selectAll(".rect_cus")
@@ -593,33 +590,38 @@
       .append("rect")
       .attr("class","rect_cus")
       .attr("id",d => "rect_cus_" + d.cus_code)
-      .attr("x",80)
-      .attr("y",d => y(d.cus_2_name)+2)
-	  .attr("height",6)
+      .attr("y",d => y(parseFloat(d[index_flag]))-20)
+      .attr("x",d => x(d.cus_2_name)+20)
+	  .attr("width",8)
 	  //.attr("width",0)
 	  //.transition()
 	  //.duration(1500)
-	  .attr("width",d => x(parseFloat(d[index_flag]))-80)
+	  .attr("height",d => 285-  y(parseFloat(d[index_flag])))
+      //.style("opacity",(d,i) => 0.8 / i + 0.3)
 	  .on("click",function(d,i){
          d3.selectAll(".rect_cus").classed("selected",false);
 		 d3.select(this).classed("selected",true);
-		 upd_time(d.cus_code);
 		 cus_flag = d.cus_code;
-		 info_text();
+		 level_flag = "0";
+		 mydata_flag = mydata_0;
+		 upd_time(cus_flag,mydata_flag,level_flag);
+		 info_text(mydata_flag,level_flag);
 		 })		
 	  .on("mouseover",function(d,i){			
 			//Update the tooltip position and value
+			cus_flag_this = d.cus_code;
+			mydata_flag_this = mydata_0;
 			d3.select("#tooltip")
 				//.transition()
 				//.duration(150)
 				.style("left", (d3.event.pageX) + "px")
 				.style("top", (d3.event.pageY)-50 + "px")					
 				.select("#tip_time")
-				.text(d.ym + "  "  + d.cus_2_name);
+				.text(ym_flag + "  "  + d.cus_2_name);
 			d3.select("#tip_value")
-				.text(arr_ie_name[ie_flag] + " " + arr_index_name[index_flag] + " " + parseFloat(d[index_flag]).toFixed(2));		
+				.text(arr_ie_name[ie_flag] + " " + arr_index_name[index_flag] + " " + parseFloat(mydata_flag_this.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code == cus_flag_this)[0][index_flag]).toFixed(2));		
 			d3.select("#tip_order")
-				.text("全国排名 " + (mydata_0.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code != "0").sort((a,b) => parseFloat(a[index_flag]) - parseFloat(b[index_flag])).map(d => d.cus_code).indexOf(d.cus_code) + 1));				   
+				.text("全国排序 " + (mydata_flag_this.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code != "0").sort((a,b) => parseFloat(a[index_flag]) - parseFloat(b[index_flag])).map(d => d.cus_code).indexOf(d.cus_code) + 1));				   
 			//Show the tooltip
 			d3.select("#tooltip").classed("hidden", false)
                 .style("opacity",0)
@@ -636,7 +638,7 @@
 		.classed("selected",true);  
 
 	
-	//隶属关排名	
+	//隶属关排序	
 	y3 = d3.scaleLinear()
     //.domain(d3.extent(mydata_0, d => parseFloat(d[index_flag])))
     .domain([0,d3.max(mydata_xm.filter(d => d.ie == ie_flag && d.ym == ym_flag),d => parseFloat(d[index_flag]))])
@@ -654,11 +656,11 @@
 	yAxis3 = g => g
     .attr("transform",d => `translate(30,-15)`)
 	.attr("class","axis yAxis3")
-    .call(d3.axisLeft(y3).ticks(5).tickSizeOuter(0))
+    .call(d3.axisLeft(y3).ticks(10).tickSizeOuter(0))
     .call(g => g.select(".domain").remove());
 
 	xAxis3 = g => g
-    .attr("transform", d => `translate(-10,280)`)
+    .attr("transform", d => `translate(5,265)`)
 	.attr("class","axis xAxis3")
     .call(d3.axisBottom(x3))
     .call(g => g.select(".domain").remove())
@@ -670,7 +672,8 @@
       .call(xAxis3)
 		.selectAll("text")
 		//微调x轴文字位置
-		.attr("transform","rotate(-45)");
+		.attr("transform","rotate(-45)")
+		.style("text-anchor", "end");
 
 	sg.append("g")
 	  .attr("class","yAxis3")
@@ -686,7 +689,7 @@
       .attr("id",d => "rect_cus_3_" + d.cus_code)
       .attr("x",d => x3(d.cus_2_name)+20)
       .attr("y",d => y3(parseFloat(d[index_flag]))-15)
-	  .attr("width",8)
+	  .attr("width",10)
 	  //.attr("width",0)
 	  //.transition()
 	  //.duration(1500)
@@ -694,23 +697,27 @@
 	  .on("click",function(d,i){
          d3.selectAll(".rect_cus_3").classed("selected",false);
 		 d3.select(this).classed("selected",true);
-		 upd_time(d.cus_code);
 		 cus_flag = d.cus_code;
-		 info_text();
+		 level_flag = "37";
+		 mydata_flag = mydata_xm;
+		 upd_time(cus_flag,mydata_flag,level_flag);
+		 info_text(mydata_flag,level_flag);
 		 })		
 	  .on("mouseover",function(d,i){			
 			//Update the tooltip position and value
+			cus_flag_this = d.cus_code;
+			mydata_flag_this = mydata_xm;
 			d3.select("#tooltip")
 				//.transition()
 				//.duration(150)
 				.style("left", (d3.event.pageX) + "px")
 				.style("top", (d3.event.pageY)-50 + "px")					
 				.select("#tip_time")
-				.text(d.ym + "  "  + d.cus_2_name);
+				.text(ym_flag + "  "  + d.cus_2_name);
 			d3.select("#tip_value")
-				.text(arr_ie_name[ie_flag] + " " + arr_index_name[index_flag] + " " + parseFloat(d[index_flag]).toFixed(2));		
+				.text(arr_ie_name[ie_flag] + " " + arr_index_name[index_flag] + " " + parseFloat(mydata_flag_this.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code == cus_flag_this)[0][index_flag]).toFixed(2));		
 			d3.select("#tip_order")
-				.text("全国排名 " + (mydata_0.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code != "0").sort((a,b) => parseFloat(a[index_flag]) - parseFloat(b[index_flag])).map(d => d.cus_code).indexOf(d.cus_code) + 1));				   
+				.text("厦门关区排序 " + (mydata_flag_this.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code != "37").sort((a,b) => parseFloat(a[index_flag]) - parseFloat(b[index_flag])).map(d => d.cus_code).indexOf(d.cus_code) + 1));				   
 			//Show the tooltip
 			d3.select("#tooltip").classed("hidden", false)
                 .style("opacity",0)
@@ -732,7 +739,7 @@
 	
 	x2 = d3.scaleBand()
     //.domain(d3.extent(mydata_0, d => parseFloat(d[index_flag])))
-    .domain(mydata_0.filter(d => d.ie == ie_flag && d.cus_code == cus_flag).map(d => d.ym))
+    .domain(mydata_0.filter(d => d.ie == ie_flag && d.cus_code == "0").map(d => d.ym))
     .rangeRound([0, 380]);	
 
 	y2 = d3.scaleLinear()
@@ -742,19 +749,19 @@
 	
 	line = d3.line()
 		.curve(d3.curveCardinal)
-		.x(d => x2(d.ym)+mywidth / 2 / mydata_0.filter(d => d.ie == ie_flag && d.cus_code == cus_flag).length - margin.left + 70)
+		.x(d => x2(d.ym)+mywidth / 2 / mydata_0.filter(d => d.ie == ie_flag && d.cus_code == "0").map(d => d.ym).length - margin.left + 70)
 		.y(d => d[index_flag]?y2(parseFloat(d[index_flag])):0);
 			
 	xAxis2 = g => g
     .attr("transform",d => `translate(5,235)`)
 	.attr("class","axis xAxis2")
-    .call(d3.axisBottom(x2))
+    .call(d3.axisBottom(x2).ticks().tickSizeOuter(0))
     .call(g => g.select(".domain").remove());
 
 	yAxis2 = g => g
     .attr("transform", d => `translate(30,0)`)
 	.attr("class","axis yAxis2")
-    .call(d3.axisLeft(y2).ticks(5).tickSizeOuter(0))
+    .call(d3.axisLeft(y2))
     .call(g => g.select(".domain").remove())
     //.call(g => g.select(".tick:last-of-type text").append("tspan").text(mydata.Value))
 	;
@@ -806,11 +813,11 @@
 		 d3.select(this).classed("selected",true);
 		 upd_cus(d.ym);
 		 ym_flag = d.ym;
-		 ym_flag1 = ym_flag;
-		 info_text();
+		 //ym_flag1 = ym_flag;
+		 info_text(mydata_flag,level_flag);
 		 })
 		 .on("mouseover",function(d){			
-			ym_flag = d.ym;
+			ym_flag_this = d.ym;
 			//Update the tooltip position and value
 			d3.select("#tooltip")
 				//.transition()
@@ -818,11 +825,11 @@
 				.style("left", (d3.event.pageX) + "px")
 				.style("top", (d3.event.pageY)-50 + "px")				
 				.select("#tip_time")
-				.text((d,i) => ym_flag + "  "  + mydata_0.filter(d => d.cus_code == cus_flag)[0].cus_2_name);	
+				.text((d,i) => ym_flag + "  "  + mydata_flag.filter(d => d.cus_code == cus_flag)[0].cus_2_name);	
 			d3.select("#tip_value")
-				.text(arr_ie_name[ie_flag] + " " + arr_index_name[index_flag] + " " + parseFloat(d[index_flag]).toFixed(2));	
+				.text(arr_ie_name[ie_flag] + " " + arr_index_name[index_flag] + " " + parseFloat(mydata_flag.filter(d => d.ie == ie_flag && d.ym == ym_flag_this && d.cus_code == cus_flag)[0][index_flag]).toFixed(2));	
 			d3.select("#tip_order")
-				.text("全国排名 " + (mydata_0.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code != "0").sort((a,b) => parseFloat(a[index_flag]) - parseFloat(b[index_flag])).map(d => d.cus_code).indexOf(cus_flag) + 1));
+				.text("排序 " + (mydata_flag.filter(d => d.ie == ie_flag && d.ym == ym_flag_this && d.cus_code != "0").sort((a,b) => parseFloat(a[index_flag]) - parseFloat(b[index_flag])).map(d => d.cus_code).indexOf(cus_flag) + 1));
 			//Show the tooltip
 			d3.select("#tooltip").classed("hidden", false)
                 .style("opacity",0)
@@ -832,7 +839,7 @@
 			   })
 		.on("mouseout", function() {
 			//Hide the tooltip
-			ym_flag = ym_flag1;
+			//ym_flag = ym_flag1;
 			d3.select("#tooltip").classed("hidden", true);
         });
 	   
@@ -843,10 +850,10 @@
 		
 	//时间序列更新
 	
-	function upd_time(cus_code){
+	function upd_time(cus_code,mydata,level){
 		//console.log(d3.max(mydata_0.filter(d => d.ie == ie_flag && d.cus_code == cus_code),d => parseFloat(d[index_flag])));
 		
-		y2.domain([0,d3.max(mydata_0.filter(d => d.ie == ie_flag && (d.cus_code == cus_code || d.cus_code == "0")),d => parseFloat(d[index_flag]))]).nice();
+		y2.domain([0,d3.max([d3.max(mydata.filter(d => d.ie == ie_flag && (d.cus_code == cus_code)),d => parseFloat(d[index_flag])),d3.max(mydata_0.filter(d => d.ie == ie_flag && (d.cus_code == level)),d => parseFloat(d[index_flag]))])]).nice();
 		//d3.select(".yAxis2").call(yAxis2);
 
 		d3.select(".yAxis2")
@@ -857,29 +864,32 @@
 		d3.selectAll(".line_time")
 			.transition()
 			.duration(1200)
-			.attr("d",line(mydata_0.filter(d => d.ie == ie_flag && d.cus_code == cus_code)));
+			.attr("d",line(mydata.filter(d => d.ie == ie_flag && d.cus_code == cus_code)));
 		d3.selectAll(".line_time_0")
 			.transition()
 			.duration(1200)
-			.attr("d",line(mydata_0.filter(d => d.ie == ie_flag && d.cus_code == "0")));
+			.attr("d",line(mydata_0.filter(d => d.ie == ie_flag && d.cus_code == level)));
 			
         d3.selectAll(".circle_time")
 			.transition()
 			.duration(1200)
-			.attr("cy",(d,i) => y2(parseFloat(mydata_0.filter(d => d.ie == ie_flag && d.cus_code == cus_code)[i][index_flag])));
+			.attr("cy",(d,i) => y2(parseFloat(mydata.filter(d => d.ie == ie_flag && d.cus_code == cus_code)[i][index_flag])));
 			
-		info_text();
+		//info_text(mydata,level);
 
 		}
 		
 			
-	//排名更新
+		console.log(mydata_0.filter(d => d.ie == ie_flag && d.cus_code == "0").map(d => d.ym).length);
+		
+	//排序更新
 		function upd_cus(ym){
 		//console.log(d3.max(mydata_0.filter(d => d.ie == ie_flag && d.cus_code == cus_code),d => parseFloat(d[index_flag])));
 		//直属关
-		x.domain([0,d3.max(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym),d => parseFloat(d[index_flag]))]).nice();
-		y.domain(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym).sort((b,a) => parseFloat(a[index_flag]) - parseFloat(b[index_flag])).map(d => d.cus_2_name));
-
+		y.domain([0,d3.max(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym),d => parseFloat(d[index_flag]))]).nice();
+		x.domain(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym).sort((a,b) => parseFloat(a[index_flag]) - parseFloat(b[index_flag])).map(d => d.cus_2_name));
+		
+		
 		d3.select(".xAxis")
 			.transition()
 			.duration(1200)
@@ -892,8 +902,9 @@
 		d3.selectAll(".rect_cus")
 			.transition()
 			.duration(1200)
-			.attr("y",d => y(d.cus_2_name))
-			.attr("width",(d,i) => x(parseFloat(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym)[i][index_flag]))-80);
+			.attr("x",d => x(d.cus_2_name)+20)
+      		.attr("y",(d,i) => y(parseFloat(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym)[i][index_flag]))-20)
+			.attr("height",(d,i) => 285 - y(parseFloat(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym)[i][index_flag])));
 		//隶属关	
 		x3.domain(mydata_xm.filter(d => d.ie == ie_flag && d.ym == ym).sort((b,a) => parseFloat(a[index_flag]) - parseFloat(b[index_flag])).map(d => d.cus_2_name));
 		y3.domain([0,d3.max(mydata_xm.filter(d => d.ie == ie_flag && d.ym == ym),d => parseFloat(d[index_flag]))]).nice();
@@ -914,7 +925,7 @@
       		.attr("y",(d,i) => y3(parseFloat(mydata_xm.filter(d => d.ie == ie_flag && d.ym == ym)[i][index_flag]))-15)
 			.attr("height",(d,i) => 280 - y3(parseFloat(mydata_xm.filter(d => d.ie == ie_flag && d.ym == ym)[i][index_flag])));	
 			
-		info_text();
+		//info_text(mydata,level);
 	
 		}
 		
