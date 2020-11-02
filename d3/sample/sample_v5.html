@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1,maximum-scale=3"/>
+    <script src="../d3.v5.min.js"></script>
+    <title>指标展示</title>
+    <!--
+    <script src="https://zhuangnd.github.io/d3//d3.v5.min.js"></script>
+	-->
+<style>
+	:root {
+		--mywidth:650px;
+		--mywidth2:170px;
+		--myheight:255px;
+		--mypad1:50px;
+		--mypad2:20px;
+		--color_bg1:rgba(250,250,250,1);
+		--color_bg2:rgba(102,205,170,0.1);
+		--color_bg3:rgba(102,205,170,0.3);
+		--color_bg4:rgba(102,205,170,0.5);
+		--color_bg5:rgba(102,205,170,0.8);
+		--color_bg6:rgba(102,205,170,1);
+		--color1:rgba(102,205,170,0.3);
+		--color2:rgba(255,127,80,0.5);
+		--color_shadow1:rgba(225,225,225,1);
+		--color_shadow2:rgba(102,205,170,0.8);
+		}
+		
+	body {
+		background-color:var(--color_bg1);
+		font-family: "sans-serif";
+		}
+			 
+	.card_viz {
+		position: absolute;
+		padding: 20px;
+		background-color: var(--color_bg2);
+		box-shadow:1px 5px 20px var(--color_shadow1);
+	} 
+	
+	.card_lable {
+		 background-color:var(--color_bg3);
+		 width:80px;
+		 font-size:18px;
+		 text-align:center;
+		border: thin solid var(--color_bg3);
+		border-radius:5px 5px 0px 0px;
+		border-bottom: 0px;
+		 }
+	.card_info {
+		position: absolute;
+		top:5px;
+		left:90px;
+		 font-size:14px;
+		 color:dimgrey;
+		 }
+	 
+	#card_1 {
+		position: absolute;
+		top:50px;
+		left:50px;
+		width: 900px;
+		height:325px;		
+	}	
+	
+	.ie_lable {
+		position: absolute;
+		padding: 4px;
+		top:0px;
+		border: thin solid var(--color_bg3);
+		font-size:14px;
+		}
+		
+	#i_lable {
+		left:100px;
+		}
+	#e_lable {
+		left:150px;
+		}	
+	#card_1_info {
+		left:200px;
+		}
+
+	
+	#card_viz_1 {
+		box-shadow:none;
+		width: 860px;
+		height:260px;
+		background: none;
+		}
+
+	.index_group {
+		text-align:left;
+		position: absolute;
+		top:30px;
+		width: var(--mywidth2);
+		height:var(--myheight);
+		cursor: pointer;
+		}
+	#index_group0 {
+		position: absolute;
+		top:0px;
+		left:0px;
+		width: 300px;
+		height:var(--myheight);
+		cursor: help;
+	}	
+	#index_info {
+		position: absolute;
+		top:30px;
+		width: 260px;
+		height:205px;
+		padding: 25px 20px;
+		color:grey;	
+		background-color: var(--color_bg2);
+		box-shadow:1px 5px 20px var(--color_shadow1);
+	}
+
+	#index_group1 {
+		left:330px;
+	}
+	#index_group2 {
+		left:530px;
+	}
+	#index_group3 {
+		left:730px;
+	}
+		
+	.index_lable {
+		background-color:var(--color_bg4);
+		color:dimgrey;
+		text-align:center;
+		position: absolute;
+		width: var(--mywidth2);
+		height:25px;
+		}
+		
+	.index_value p {
+		padding-left: 20px;
+		padding-right: 20px;
+		}
+		
+	.index_value {
+		position: absolute;
+		top:25px;
+		width: var(--mywidth2);
+		height:230px;
+		color:grey;	
+		background-color: var(--color_bg2);
+		box-shadow:1px 5px 20px var(--color_shadow1);
+	}	
+
+	#card_2 {
+		position: absolute;
+		top:50px;
+		left:980px;
+		width: 440px;
+		height:325px;		
+	}
+	#card_viz_2 {	
+		width: 400px;
+		height:260px;
+		}	
+		
+	#card_3 {
+		position: absolute;
+		top:400px;
+		left:50px;
+		width: 900px;
+		height:395px;		
+	}
+	#card_viz_3 {	
+		width: 860px;
+		height:330px;
+		}
+		
+	#card_4 {
+		position: absolute;
+		top:400px;
+		left:980px;
+		width: 440px;
+		height:395px;		
+	}
+	#card_viz_4 {	
+		width: 400px;
+		height:330px;
+		}
+	
+		
+	.axis path {
+		fill: none;
+		stroke: none;
+		shape-rendering: crispEdges;
+		}
+	.axis line {
+		fill: none;
+		stroke: none;
+		shape-rendering: crispEdges;
+		}
+	.yAxis line,
+	.yAxis2 line, 
+	.yAxis3 line  {
+		stroke: #ccc;
+		}
+	.axis text {
+		fill: #bbb;
+		font-family: Arial;
+		font-size: 12px;
+		shape-rendering: crispEdges;
+		}
+		
+	.rect_cus,.rect_cus_3,.line_time,.line_time_0,.circle_time {			
+	  fill:var(--color1);
+	  stroke:rgba(102,205,170,0.1);
+	  cursor: pointer;
+	  }
+	  
+	.arc {			
+	  fill:var(--color_bg5);
+	  }
+		
+	.line_time {
+	  fill:none;
+	  stroke:var(--color1);
+	  stroke-width:1;
+	}	
+	
+	.line_time_0 {
+	  fill:none;
+	  stroke:lightgrey;
+	  stroke-width:1;
+	}	
+	
+	.selected {
+	  fill:var(--color_bg6);
+	  stroke:none;
+	  box-shadow:1px 5px 25px var(--color_bg6);
+	  }
+	  
+	.index_lable.selected,.ie_lable.selected {
+	  background-color:var(--color_bg6);
+
+	  /* background:linear-gradient(rgba(102,205,170,1), rgba(102,205,170,0.1)); */
+	  }
+	  
+	#tooltip {
+				position: absolute;
+				width: auto;
+				height:auto;
+				padding: 10px;
+				background-color: rgba(250,250,250,0.85);
+				border-radius: 10px;
+				box-shadow: 4px 4px 10px var(--color_shadow1);
+				pointer-events: none;
+				color:dimgrey;
+			}
+			
+			#tooltip.hidden {
+				display: none;
+			}
+			
+			#tooltip p {
+				margin: 0;
+				font-family: sans-serif;
+				font-size: 14px;
+				line-height: 18px;
+			}
+    </style>
+</head>
+
+<body>
+
+	<div class="card" id="card_1">
+		<div class="card_lable">通关效率</div>
+		<div class="ie_lable" id="i_lable" style="cursor: pointer;">进口</div>
+		<div class="ie_lable" id="e_lable" style="cursor: pointer;">出口</div>
+		<div class="card_info" id="card_1_info"></div>
+		<div class="card_viz" id="card_viz_1">	  
+			<div class="index_group" id="index_group0">
+				<div class='index_value' id="index_info" style="color:#aaa;font-size:12px">			
+				数据来源：统计司<br/>
+				口径
+				</div>
+			</div>
+	  
+		<div class="index_group" id="index_group1">
+			<div class='index_lable' id="index_lable1">报关单量</div>	
+			<div class='index_value' id="index_value_1">
+          		<p><span style="color:#bbb;font-size:12px">份数</span><br/><span id="cus_lg_1" style="font-size:24px"></span></p>
+          		<p><span style="color:#bbb;font-size:12px">排名</span><br/><span id="order_lg_1" style="font-size:24px"></span></p>
+          		<p><span style="color:#bbb;font-size:12px">占比</span></p>
+			</div>	
+		</div>
+		
+		<div class="index_group" id="index_group2">
+			<div class='index_lable' id="index_lable2">整体通关时间</div>	
+			<div class='index_value' id="index_value_2">
+          		<p><span style="color:#bbb;font-size:12px">小时</span><br/><span id="cus_lg_2" style="font-size:24px"></span></p>
+          		<p><span style="color:#bbb;font-size:12px">排名</span><br/><span id="order_lg_2" style="font-size:24px"></span></p>
+          		<p><span style="color:#bbb;font-size:12px">比2017年压缩</span></p>
+			</div>
+		</div>
+		
+		<div class="index_group" id="index_group3">
+			<div class='index_lable' id="index_lable3">海关通关时间</div>	
+			<div class='index_value' id="index_value_3">
+          		<p><span style="color:#bbb;font-size:12px">小时</span><br/><span id="cus_lg_3" style="font-size:24px"></span></p>
+          		<p><span style="color:#bbb;font-size:12px">排名</span><br/><span id="order_lg_3" style="font-size:24px"></span></p>
+          		<p><span style="color:#bbb;font-size:12px">比2017年压缩</span></p>
+			</div>
+		</div>
+	
+	  </div>	
+	</div>
+	
+	<div class="card" id="card_2">
+		<div  class="card_lable">月度趋势</div>
+		<div  class="card_info" id="card_2_info"></div>
+		<div  class="card_viz" id="card_viz_2">	
+			<!-- 
+			<svg>
+  				<line x1="0" y1="0" x2="200" y2="200"
+  				style="stroke:rgb(255,0,0);stroke-width:2"/>
+			</svg> 
+			-->	
+		</div>
+	</div>
+	
+	<div class="card" id="card_3">	
+		<div  class="card_lable">各关排名</div>
+			<div class="card_info" id="card_3_info"></div>	
+		<div  class="card_viz" id="card_viz_3">	
+		</div>
+	</div>
+	
+	<div class="card" id="card_4">
+		<div  class="card_lable">隶属排名</div>
+		<div  class="card_info" id="card_4_info"></div>
+		<div  class="card_viz" id="card_viz_4">	
+		</div>
+	</div>	
+	
+	<div id="tooltip" class="hidden">
+			<p><span id="tip_time"></span></p>
+			<p><span id="tip_value"></span></p>
+			<p><span id="tip_order"></span></p>
+	</div>
+
+	
+	
+    <script>
+    
+	//coral:rgba(255,127,80,0.5);	mediumaquamarine:rgba(102,205,170,0.8);
+
+    mywidth = 1400;
+    myheight = 700;
+    margin = {top: 100, right: 100, bottom: 100, left: 100};
+	var padding = {left:50, right:50, top:20, bottom:20};
+	//linear-gradient(235deg,#89ff00,#060c21,#00bcd4)
+
+	var arr_index_name={cus_code: "直属关代码", cus_2_name: "直属关名称", ie: "进出口标志", ym: "年月", entry_id_count: "报关单量",pass_time_cus: "海关通关时间",pass_time_total: "整体通关时间"};
+	var arr_ie_name={I: "进口", E: "出口"};
+	//console.log(arr_index_name.pass_time_cus);
+
+    d3.csv("sample_tgsj_1.csv").then(
+		function(mydata_0){
+			d3.csv("sample_xm.csv").then(
+			function(mydata_xm){
+				mydata_0=mydata_0.sort((a,b) => parseFloat(a.ym) - parseFloat(b.ym));
+				mydata_xm=mydata_xm.filter(d => d.cus_code != "37AH").sort((a,b) => parseFloat(a.ym) - parseFloat(b.ym));
+				draw(mydata_0,mydata_xm);
+				//console.log(mydata_0);
+				//console.log(mydata_xm);
+				//console.log(d3.map(mydata_0.filter(d => d.ie == ie_flag && d.ym == "202006"),d => d.cus_2_name).keys());
+				//console.log(mydata_0.filter(d => d.ie == ie_flag && d.ym == "202006").map(d => d.cus_2_name));pass_time_cus
+			//console.log(mydata_0.filter(d => d.ie == ie_flag && d.cus_code == 0).map(d => d[index_flag]));
+			});
+		});
+		
+	function draw(mydata_0,mydata_xm) {	
+		//const svg = d3.select("body").append("svg")
+		//.attr("viewBox", [0, 0, mywidth*1.25, height*1.25]);
+  
+	var ie_flag = "I",ym_flag = d3.max(mydata_0.filter(d => d.ie == "I" && d.cus_code == 0).map(d => d.ym)),ym_flag1 = ym_flag,cus_flag = "37",index_flag = "pass_time_cus",level_flag = "0",mydata_flag = mydata_0;
+	//console.log(mydata.filter(d => d.cus_code == cus_flag)[0].cus_2_name);
+	const card_viz_2 = d3.select("#card_viz_2").append("svg")
+		.attr("width", 400)
+		.attr("height", 260)
+		.append("g")
+		//.attr("class","tg")
+      .attr("transform", d => `translate(0,0)`);
+	  
+	const card_viz_3 = d3.select("#card_viz_3").append("svg")
+		.attr("width", 860)
+		.attr("height", 330)
+		.append("g")
+		//.attr("class","card_viz_3")
+      .attr("transform", d => `translate(0,0)`);
+		  
+	const card_viz_4 = d3.select("#card_viz_4").append("svg")
+		.attr("width", 400)
+		.attr("height", 330)
+		.append("g")
+      .attr("transform", d => `translate(0,0)`);
+ 
+
+	  
+	//指标标签  
+	function info_text(mydata,level,index){
+	ym_flag_last = mydata_0.filter(d => d.ie == ie_flag && d.cus_code == "0").map(d => d.ym)[mydata_0.filter(d => d.ie == ie_flag && d.cus_code == "0").map(d => d.ym).indexOf(ym_flag) - 1];
+	
+	d3.select("#card_1_info").text(mydata.filter(d => d.cus_code == cus_flag)[0].cus_2_name + " " + ym_flag);
+	d3.select("#card_2_info")
+		.text(mydata.filter(d => d.ie == ie_flag && d.cus_code == cus_flag)[0].cus_2_name + " " + arr_ie_name[ie_flag] + " " + arr_index_name[index]);			
+	d3.selectAll("#card_3_info,#card_4_info")
+		.text(ym_flag + "  " + arr_ie_name[ie_flag] + " " + arr_index_name[index]);
+	d3.select("#cus_lg_0").text(mydata.filter(d => d.cus_code == cus_flag)[0].cus_2_name);
+	d3.select("#cus_lg_1").text(mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code == cus_flag)[0].entry_id_count);
+	d3.select("#cus_lg_2").text(parseFloat(mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code == cus_flag)[0].pass_time_total).toFixed(2));
+	d3.select("#cus_lg_3").text(parseFloat(mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code == cus_flag)[0].pass_time_cus).toFixed(2));
+	d3.select("#country_lg_1").text(mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code == level)[0].entry_id_count);
+	d3.select("#country_lg_2").text(parseFloat(mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code == level)[0].pass_time_total).toFixed(2));
+	d3.select("#country_lg_3").text(parseFloat(mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code == level)[0].pass_time_cus).toFixed(2));
+	d3.select("#order_lg_1").text(mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code != level).sort((b,a) => parseFloat(a.entry_id_count) - parseFloat(b.entry_id_count)).map(d => d.cus_code).indexOf(cus_flag) + 1);
+	d3.select("#order_lg_2").text(mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code != level).sort((a,b) => parseFloat(a.pass_time_total) - parseFloat(b.pass_time_total)).map(d => d.cus_code).indexOf(cus_flag) + 1);
+	d3.select("#order_lg_3").text(mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code != level).sort((a,b) => parseFloat(a.pass_time_cus) - parseFloat(b.pass_time_cus)).map(d => d.cus_code).indexOf(cus_flag) + 1);
+	d3.select("#change_lg_1").text((parseFloat((mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code == cus_flag)[0].entry_id_count))-(parseFloat(mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag_last && d.cus_code == cus_flag)[0].entry_id_count))));
+	d3.select("#change_lg_2").text((parseFloat((mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code == cus_flag)[0].pass_time_total))-(parseFloat(mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag_last && d.cus_code == cus_flag)[0].pass_time_total))).toFixed(2));
+	d3.select("#change_lg_3").text((parseFloat((mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code == cus_flag)[0].pass_time_cus))-(parseFloat(mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag_last && d.cus_code == cus_flag)[0].pass_time_cus))).toFixed(2));
+	d3.select("#change_lg_1_").text(mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag_last && d.cus_code != level).sort((b,a) => parseFloat(a.entry_id_count) - parseFloat(b.entry_id_count)).map(d => d.cus_code).indexOf(cus_flag)-mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code != level).sort((b,a) => parseFloat(a.entry_id_count) - parseFloat(b.entry_id_count)).map(d => d.cus_code).indexOf(cus_flag));
+	d3.select("#change_lg_2_").text(mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag_last && d.cus_code != level).sort((a,b) => parseFloat(a.pass_time_total) - parseFloat(b.pass_time_total)).map(d => d.cus_code).indexOf(cus_flag)-mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code != level).sort((a,b) => parseFloat(a.pass_time_total) - parseFloat(b.pass_time_total)).map(d => d.cus_code).indexOf(cus_flag));
+	d3.select("#change_lg_3_").text(mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag_last && d.cus_code != level).sort((a,b) => parseFloat(a.pass_time_cus) - parseFloat(b.pass_time_cus)).map(d => d.cus_code).indexOf(cus_flag)-mydata.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code != level).sort((a,b) => parseFloat(a.pass_time_cus) - parseFloat(b.pass_time_cus)).map(d => d.cus_code).indexOf(cus_flag));
+	
+    }
+	//console.log(arr_index_name.pass_time_cus);
+		
+	info_text(mydata_flag,level_flag,index_flag);
+	
+	d3.select("#i_lable")
+		.classed("selected",d => ie_flag=="I"?true:false)
+		.on("click",function(d,i){
+		 d3.selectAll(".ie_lable").classed("selected",false);
+		 d3.select("#i_lable").classed("selected",true);	
+		 ie_flag = "I";
+		 upd_cus(ym_flag);
+		 upd_time(cus_flag,mydata_flag,level_flag);		
+		 info_text(mydata_flag,level_flag,index_flag);
+		 });
+	d3.select("#e_lable")
+		.classed("selected",d => ie_flag=="E"?true:false)
+		.on("click",function(d,i){
+		 d3.selectAll(".ie_lable").classed("selected",false);
+		 d3.select("#e_lable").classed("selected",true);	
+		 ie_flag = "E";
+		 upd_cus(ym_flag);
+		 upd_time(cus_flag,mydata_flag,level_flag);		
+		info_text(mydata_flag,level_flag,index_flag);
+		 });
+	
+	d3.select("#index_lable1").classed("selected",d => index_flag=="entry_id_count"?true:false);
+	d3.select("#index_group1")
+		.classed("selected",d => index_flag=="entry_id_count"?true:false)
+		.on("click",function(d,i){ 
+		 d3.selectAll(".index_group").classed("selected",false);
+		 d3.select("#index_group1").classed("selected",true);	
+		 d3.selectAll(".index_lable").classed("selected",false);
+		 d3.select("#index_lable1").classed("selected",true);	 		
+		 index_flag="entry_id_count";
+		 upd_cus(ym_flag);
+		 upd_time(cus_flag,mydata_flag,level_flag);	
+		info_text(mydata_flag,level_flag,index_flag);
+		 });
+		 
+	
+	d3.select("#index_lable2").classed("selected",d => index_flag=="pass_time_total"?true:false);
+	d3.select("#index_group2")
+		.classed("selected",d => index_flag=="pass_time_total"?true:false)
+		.on("click",function(d,i){
+		 d3.selectAll(".index_group").classed("selected",false);
+		 d3.select("#index_group2").classed("selected",true);	
+		 d3.selectAll(".index_lable").classed("selected",false);
+		 d3.select("#index_lable2").classed("selected",true);	 
+		 index_flag="pass_time_total";
+		 upd_cus(ym_flag);
+		 upd_time(cus_flag,mydata_flag,level_flag);
+		info_text(mydata_flag,level_flag,index_flag);
+		 });
+		 
+	
+	d3.select("#index_lable3").classed("selected",d => index_flag=="pass_time_cus"?true:false);
+	d3.select("#index_group3")
+		.classed("selected",d => index_flag=="pass_time_cus"?true:false)
+		.on("click",function(d,i){	 
+		 d3.selectAll(".index_group").classed("selected",false);
+		 d3.select("#index_group3").classed("selected",true);	
+		 d3.selectAll(".index_lable").classed("selected",false);
+		 d3.select("#index_lable3").classed("selected",true);	
+		 index_flag="pass_time_cus";
+		 upd_cus(ym_flag);
+		 upd_time(cus_flag,mydata_flag,level_flag);
+		info_text(mydata_flag,level_flag,index_flag);
+		 });
+		 
+	//指标概况
+	
+	var dataset = [
+    {
+        "vendor-name":"HP",
+        "overall-score":45,
+    },
+    {
+        "vendor-name":"Tridion",
+        "overall-score":73
+    },
+    {
+        "vendor-name":"Tridion",
+        "overall-score":93
+    },
+];
+
+var width = 45
+    , height = 45
+    , innerRadius = 35;
+
+var drawArc = d3.arc()
+    .innerRadius(innerRadius/2)
+    .outerRadius(width/2)
+    .startAngle(0);
+
+var s = d3.select("#index_value_1")
+	.selectAll('.score')
+    .data( dataset )
+    .enter()  
+	.append("svg")
+    .attr('width', 50)
+    .attr('height', 50) 
+    .attr("transform", (d,i) => "translate(" + (15 + i * 150)  + "," + (-15)  + ")")
+    .append('g')
+    .attr("transform", "translate(" + (5 +  width/2)  + "," + (5 + height/2)  + ")")
+	;
+
+//creating background circle
+s.append("circle")
+    .attr("fill", "none")
+    .attr("stroke", "#dfe5e6")
+    .attr("stroke-width", 2)
+    .attr('r', width / 2);
+
+//creaeting arc path
+var arc = s.append("path")
+    //.attr("fill", "#21addd")
+    .attr('class', 'arc')
+    .each(function(d) { d.endAngle = 0; })
+    .attr('d', drawArc);
+
+//transition arc path from start angle to end angle
+arc.transition()
+    .duration(750)
+    .delay(300)
+    //.ease('bounce')
+    .call(arcTween, this );
+
+//percentage value
+s.append('text')
+    .text(function(d){
+        return d['overall-score'] + "%";
+    })
+    .attr("class", "perc")
+    .attr("text-anchor", "middle")
+    .attr('font-size', '13px') 
+	.attr("fill","#555")
+    .attr("y", +4);
+
+              
+function arcTween(transition, newAngle) {
+    
+    transition.attrTween("d", function(d) {
+        
+        var interpolate = d3.interpolate( 0, 360*( d['overall-score']/100) * Math.PI/180 );
+        
+        return function(t) {
+            
+            d.endAngle = interpolate(t)
+            
+            return drawArc(d);
+        };
+    });
+}
+	
+	//海关排名		
+	y = d3.scaleLinear()
+    //.domain(d3.extent(mydata_0, d => parseFloat(d[index_flag])))
+    .domain([0,d3.max(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym_flag),d => parseFloat(d[index_flag]))])
+    .nice()
+    .range([280, 20]);	
+
+	x = d3.scaleBand()
+    //.domain(d3.range((mydata_0.filter(d => d.ie == ie_flag && d.ym == "202006").length)))
+	//.domain(mydata_0.filter(d => d.ie == ie_flag && d.ym == "202006").map(d => d.cus_2_name))//不排名
+	.domain(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym_flag).sort((a,b) => parseFloat(a[index_flag]) - parseFloat(b[index_flag])).map(d => d.cus_2_name))//排名
+    .range([20, 820]);
+	
+	//console.log(mydata_0.filter(d => d.ie == ie_flag && d.ym == "202006").sort((b,a) => parseFloat(a[index_flag]) - parseFloat(b[index_flag])).map(d => d.cus_2_name));
+	
+	yAxis = g => g
+    .attr("transform",d => `translate(835,-15)`)
+	.attr("class","axis yAxis")
+    .call(d3.axisRight(y).ticks(10).tickSizeOuter(0))
+    .call(g => g.select(".domain").remove());
+
+	xAxis = g => g
+    .attr("transform", d => `translate(5,265)`)
+	.attr("class","axis xAxis")
+    .call(d3.axisBottom(x))
+    .call(g => g.select(".domain").remove())
+    //.call(g => g.select(".tick:last-of-type text").append("tspan").text(mydata.Value))
+	;
+ 
+ 
+	card_viz_3.append("g")
+      .call(xAxis)
+		.selectAll("text")
+		//微调x轴文字位置
+		.attr("transform","rotate(-45)")
+		.style("text-anchor", "end")
+		;
+
+	card_viz_3.append("g")
+	  .attr("class","yAxis")
+      .call(yAxis);
+      
+	  
+	rect_cus = card_viz_3
+      .selectAll(".rect_cus")
+      .data(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym_flag));
+	  //console.log(mydata_0.filter(d => d.ie == ie_flag && d.ym == "202006")[0][index_flag]);
+      rect_cus.enter()
+      .append("rect")
+      .attr("class","rect_cus")
+      .attr("id",d => "rect_cus_" + d.cus_code)
+      .attr("y",d => y(parseFloat(d[index_flag]))-20)
+      .attr("x",d => x(d.cus_2_name)+20)
+	  .attr("width",6)
+	  //.attr("width",0)
+	  //.transition()
+	  //.duration(1500)
+	  .attr("height",d => 285-  y(parseFloat(d[index_flag])))
+      //.style("opacity",(d,i) => 0.8 / i + 0.3)
+	  .on("click",function(d,i){
+         d3.selectAll(".rect_cus").classed("selected",false);
+		 d3.select(this).classed("selected",true);
+		 cus_flag = d.cus_code;
+		 level_flag = "0";
+		 mydata_flag = mydata_0;
+		 upd_time(cus_flag,mydata_flag,level_flag);
+		 info_text(mydata_flag,level_flag,index_flag);
+		 })		
+	  .on("mouseover",function(d,i){			
+			//Update the tooltip position and value
+			cus_flag_this = d.cus_code;
+			mydata_flag_this = mydata_0;
+			d3.select("#tooltip")
+				//.transition()
+				//.duration(150)
+				.style("left", (d3.event.pageX) + "px")
+				.style("top", (d3.event.pageY)-50 + "px")					
+				.select("#tip_time")
+				.text(ym_flag + "  "  + d.cus_2_name);
+			d3.select("#tip_value")
+				.text(arr_ie_name[ie_flag] + " " + arr_index_name[index_flag] + " " + parseFloat(mydata_flag_this.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code == cus_flag_this)[0][index_flag]).toFixed(2));		
+			d3.select("#tip_order")
+				.text("全国排名 " + (mydata_flag_this.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code != "0").sort((a,b) => parseFloat(a[index_flag]) - parseFloat(b[index_flag])).map(d => d.cus_code).indexOf(d.cus_code) + 1));				   
+			//Show the tooltip
+			d3.select("#tooltip").classed("hidden", false)
+                .style("opacity",0)
+				.transition()
+				.duration(750)
+                .style("opacity",1);
+			   })
+		.on("mouseout", function() {
+			//Hide the tooltip
+			d3.select("#tooltip").classed("hidden", true);
+        });
+	  
+	d3.select("#rect_cus_" + cus_flag)
+		.classed("selected",true);  
+
+	
+	//隶属关排名	
+	y3 = d3.scaleLinear()
+    //.domain(d3.extent(mydata_0, d => parseFloat(d[index_flag])))
+    .domain([0,d3.max(mydata_xm.filter(d => d.ie == ie_flag && d.ym == ym_flag),d => parseFloat(d[index_flag]))])
+    .nice()
+    .range([280, 20]);	
+
+	x3 = d3.scaleBand()
+    //.domain(d3.range((mydata_0.filter(d => d.ie == ie_flag && d.ym == "202006").length)))
+	//.domain(mydata_0.filter(d => d.ie == ie_flag && d.ym == "202006").map(d => d.cus_2_name))//不排名
+	.domain(mydata_xm.filter(d => d.ie == ie_flag && d.ym == ym_flag).sort((b,a) => parseFloat(a[index_flag]) - parseFloat(b[index_flag])).map(d => d.cus_2_name))//排名
+    .range([20, 380]);
+	
+	//console.log(mydata_0.filter(d => d.ie == ie_flag && d.ym == "202006").sort((b,a) => parseFloat(a[index_flag]) - parseFloat(b[index_flag])).map(d => d.cus_2_name));
+	
+	yAxis3 = g => g
+    .attr("transform",d => `translate(30,-15)`)
+	.attr("class","axis yAxis3")
+    .call(d3.axisLeft(y3).ticks(10).tickSizeOuter(0))
+    .call(g => g.select(".domain").remove());
+
+	xAxis3 = g => g
+    .attr("transform", d => `translate(5,265)`)
+	.attr("class","axis xAxis3")
+    .call(d3.axisBottom(x3))
+    .call(g => g.select(".domain").remove())
+    //.call(g => g.select(".tick:last-of-type text").append("tspan").text(mydata.Value))
+	;
+ 
+ 
+	card_viz_4.append("g")
+      .call(xAxis3)
+		.selectAll("text")
+		//微调x轴文字位置
+		.attr("transform","rotate(-45)")
+		.style("text-anchor", "end");
+
+	card_viz_4.append("g")
+	  .attr("class","yAxis3")
+      .call(yAxis3);
+	  
+	rect_cus_3 = card_viz_4
+      .selectAll(".rect_cus_3")
+      .data(mydata_xm.filter(d => d.ie == ie_flag && d.ym == ym_flag));
+	  //console.log(mydata_0.filter(d => d.ie == ie_flag && d.ym == "202006")[0][index_flag]);
+      rect_cus_3.enter()
+      .append("rect")
+      .attr("class","rect_cus_3")
+      .attr("id",d => "rect_cus_3_" + d.cus_code)
+      .attr("x",d => x3(d.cus_2_name)+20)
+      .attr("y",d => y3(parseFloat(d[index_flag]))-15)
+	  .attr("width",8)
+	  //.attr("width",0)
+	  //.transition()
+	  //.duration(1500)
+	  .attr("height",d => 280-y3(parseFloat(d[index_flag])))
+	  .on("click",function(d,i){
+         d3.selectAll(".rect_cus_3").classed("selected",false);
+		 d3.select(this).classed("selected",true);
+		 cus_flag = d.cus_code;
+		 level_flag = "37";
+		 mydata_flag = mydata_xm;
+		 upd_time(cus_flag,mydata_flag,level_flag);
+		 info_text(mydata_flag,level_flag,index_flag);
+		 })		
+	  .on("mouseover",function(d,i){			
+			//Update the tooltip position and value
+			cus_flag_this = d.cus_code;
+			mydata_flag_this = mydata_xm;
+			d3.select("#tooltip")
+				//.transition()
+				//.duration(150)
+				.style("left", (d3.event.pageX) + "px")
+				.style("top", (d3.event.pageY)-50 + "px")					
+				.select("#tip_time")
+				.text(ym_flag + "  "  + d.cus_2_name);
+			d3.select("#tip_value")
+				.text(arr_ie_name[ie_flag] + " " + arr_index_name[index_flag] + " " + parseFloat(mydata_flag_this.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code == cus_flag_this)[0][index_flag]).toFixed(2));		
+			d3.select("#tip_order")
+				.text("厦门关区排名 " + (mydata_flag_this.filter(d => d.ie == ie_flag && d.ym == ym_flag && d.cus_code != "37").sort((a,b) => parseFloat(a[index_flag]) - parseFloat(b[index_flag])).map(d => d.cus_code).indexOf(d.cus_code) + 1));				   
+			//Show the tooltip
+			d3.select("#tooltip").classed("hidden", false)
+                .style("opacity",0)
+				.transition()
+				.duration(750)
+                .style("opacity",1);
+			   })
+		.on("mouseout", function() {
+			//Hide the tooltip
+			d3.select("#tooltip").classed("hidden", true);
+        });
+	  
+	d3.select("#rect_cus_3_" + cus_flag)
+		.classed("selected",true);  		
+
+			
+	
+	//时间序列
+	
+	x2 = d3.scaleBand()
+    //.domain(d3.extent(mydata_0, d => parseFloat(d[index_flag])))
+    .domain(mydata_0.filter(d => d.ie == ie_flag && d.cus_code == "0").map(d => d.ym))
+    .rangeRound([0, 380]);	
+
+	y2 = d3.scaleLinear()
+	.domain([0,d3.max(mydata_0.filter(d => d.ie == ie_flag && (d.cus_code == cus_flag || d.cus_code == "0")),d => parseFloat(d[index_flag]))])
+    .nice()
+    .range([220, 20]);
+	
+	line = d3.line()
+		.curve(d3.curveCardinal)
+		.x(d => x2(d.ym)+mywidth / 2 / mydata_0.filter(d => d.ie == ie_flag && d.cus_code == "0").map(d => d.ym).length - margin.left + 75)
+		//.y0(y2(0))
+		.y(d => d[index_flag]?y2(parseFloat(d[index_flag])):0);
+			
+	xAxis2 = g => g
+    .attr("transform",d => `translate(10,235)`)
+	.attr("class","axis xAxis2")
+    .call(d3.axisBottom(x2).ticks().tickSizeOuter(0))
+    .call(g => g.select(".domain").remove());
+
+	yAxis2 = g => g
+    .attr("transform", d => `translate(35,0)`)
+	.attr("class","axis yAxis2")
+    .call(d3.axisLeft(y2))
+    .call(g => g.select(".domain").remove())
+    //.call(g => g.select(".tick:last-of-type text").append("tspan").text(mydata.Value))
+	;
+ 
+ 
+	card_viz_2.append("g")
+      .call(xAxis2)
+		.selectAll("text")
+		//微调x轴文字位置
+		.attr("transform","rotate(-45)");
+
+	card_viz_2.append("g")
+	  .attr("class","yAxis2")
+      .call(yAxis2);
+      
+	//图例
+    legend_time = card_viz_2.append("g")   
+    /* 
+    legend_time.append("line")
+        .attr("class","line_time_0")
+    	.attr("x1","280")
+    	.attr("y1","7")
+    	.attr("x2","300")
+    	.attr("y2","7")
+    	.attr("style","stroke-width:1.5");    
+    legend_time.append("line")
+        .attr("class","line_time")
+    	.attr("x1","340")
+    	.attr("y1","7")
+    	.attr("x2","360")
+    	.attr("y2","7")
+    	.attr("style","stroke-width:1.5");
+    	*/
+    legend_time.append("text")
+    	.text(d => cus_flag.length < 3?"全国":mydata_flag.filter(d => d.cus_code == (cus_flag.slice(0,2)))[0].cus_2_name)
+    	.attr("id","legend_time_1")
+    	.attr("x","385")
+    	.attr("y","10")
+    	.attr("style","font-size:12PX;fill:lightgrey;text-anchor:end");
+    legend_time.append("text")
+    	.text(mydata_flag.filter(d => d.cus_code == cus_flag)[0].cus_2_name)
+    	.attr("id","legend_time_2")
+    	.attr("x","385")
+    	.attr("y","25")
+    	.attr("style","font-size:12PX;fill:rgba(102,205,170,0.9);text-anchor:end");
+	
+	//渐变色	
+	var my_lg = card_viz_2.append("defs")
+		.append("LinearGradient")
+		.attr("id","my_lg")
+		.attr("x1","0%")
+		.attr("x2","0%")
+		.attr("y1","0%")
+		.attr("y2","100%")
+		;
+	my_lg.append("stop")
+		.attr("offset","0%")
+		.attr("stop-color","rgba(102,205,170,0.1)")
+		;
+	my_lg.append("stop")
+		.attr("offset","100%")
+		.attr("stop-color","rgba(102,205,170,0.8)")
+		; 
+	
+	
+	line_time = card_viz_2
+       .selectAll(".line_time")
+       .data(mydata_0.filter(d => d.ie == ie_flag && d.cus_code == cus_flag));
+	   //console.log(mydata_0.filter(d => d.ie == ie_flag && d.cus_code == 0));
+       line_time.enter()
+       .append("path")
+       .attr("class","line_time")
+       .attr("id",d => "line_time_" + d.ym)
+       .attr("d",line(mydata_0.filter(d => d.ie == ie_flag && d.cus_code == cus_flag)))
+	   .style("fill","url(#my_lg)")
+	   ;
+	   
+	line_time_0 = card_viz_2
+       .selectAll(".line_time_0")
+       .data(mydata_0.filter(d => d.ie == ie_flag && d.cus_code == "0"));
+       line_time_0.enter()
+       .append("path")
+       .attr("class","line_time_0")
+       .attr("id",d => "line_time_0_" + d.ym)
+       .attr("d",line(mydata_0.filter(d => d.ie == ie_flag && d.cus_code == "0")));
+	   
+	circle_time = card_viz_2
+       .selectAll(".circle_time")
+       .data(mydata_0.filter(d => d.ie == ie_flag && d.cus_code == cus_flag));
+	   //console.log(mydata_0.filter(d => d.ie == ie_flag && d.cus_code == 0));
+       circle_time.enter()
+       .append("circle")
+       .attr("class","circle_time")
+       .attr("id",d => "circle_time_" + d.ym)
+       .attr("cx",d => x2(d.ym)+mywidth / 2 / mydata_0.filter(d => d.ie == ie_flag && d.cus_code == cus_flag).length - margin.left + 75)
+       .attr("cy",d => d[index_flag]?y2(parseFloat(d[index_flag])):0)
+       .attr("fill","mediumaquamarine")
+	   .attr("r", 5)
+	   .on("click",function(d,i){
+         d3.selectAll(".circle_time").classed("selected",false);
+		 d3.select(this).classed("selected",true);
+		 upd_cus(d.ym);
+		 ym_flag = d.ym;
+		 //ym_flag1 = ym_flag;
+		 info_text(mydata_flag,level_flag,index_flag);
+		 })
+		 .on("mouseover",function(d){			
+			ym_flag_this = d.ym;
+			//Update the tooltip position and value
+			d3.select("#tooltip")
+				//.transition()
+				//.duration(150)
+				.style("left", (d3.event.pageX) + "px")
+				.style("top", (d3.event.pageY)-50 + "px")				
+				.select("#tip_time")
+				.text((d,i) => ym_flag + "  "  + mydata_flag.filter(d => d.cus_code == cus_flag)[0].cus_2_name);	
+			d3.select("#tip_value")
+				.text(arr_ie_name[ie_flag] + " " + arr_index_name[index_flag] + " " + parseFloat(mydata_flag.filter(d => d.ie == ie_flag && d.ym == ym_flag_this && d.cus_code == cus_flag)[0][index_flag]).toFixed(2));	
+			d3.select("#tip_order")
+				.text("排名 " + (mydata_flag.filter(d => d.ie == ie_flag && d.ym == ym_flag_this && d.cus_code != "0").sort((a,b) => parseFloat(a[index_flag]) - parseFloat(b[index_flag])).map(d => d.cus_code).indexOf(cus_flag) + 1));
+			//Show the tooltip
+			d3.select("#tooltip").classed("hidden", false)
+                .style("opacity",0)
+				.transition()
+				.duration(750)
+                .style("opacity",1);
+			   })
+		.on("mouseout", function() {
+			//Hide the tooltip
+			//ym_flag = ym_flag1;
+			d3.select("#tooltip").classed("hidden", true);
+        });
+	   
+	   d3.select("#circle_time_" + ym_flag)
+		.classed("selected",true);
+		
+		
+		
+	//时间序列更新
+	
+	function upd_time(cus_code,mydata,level){
+		//console.log(d3.max(mydata_0.filter(d => d.ie == ie_flag && d.cus_code == cus_code),d => parseFloat(d[index_flag])));
+		
+		y2.domain([0,d3.max([d3.max(mydata.filter(d => d.ie == ie_flag && (d.cus_code == cus_code)),d => parseFloat(d[index_flag])),d3.max(mydata_0.filter(d => d.ie == ie_flag && (d.cus_code == level)),d => parseFloat(d[index_flag]))])]).nice();
+		//d3.select(".yAxis2").call(yAxis2);
+
+		d3.select(".yAxis2")
+			.transition()
+			.duration(1200)
+			.call(yAxis2);
+		
+		d3.selectAll(".line_time")
+			.transition()
+			.duration(1200)
+			.attr("d",line(mydata.filter(d => d.ie == ie_flag && d.cus_code == cus_code)));
+		d3.selectAll(".line_time_0")
+			.transition()
+			.duration(1200)
+			.attr("d",line(mydata_0.filter(d => d.ie == ie_flag && d.cus_code == level)));
+			
+        d3.selectAll(".circle_time")
+			.transition()
+			.duration(1200)
+			.attr("cy",(d,i) => y2(parseFloat(mydata.filter(d => d.ie == ie_flag && d.cus_code == cus_code)[i][index_flag])));
+		d3.select("#legend_time_1").text(d => level.length == 1?"全国":mydata_flag.filter(d => d.cus_code == (cus_flag.slice(0,2)))[0].cus_2_name);
+    	d3.select("#legend_time_2").text(mydata_flag.filter(d => d.cus_code == cus_flag)[0].cus_2_name);
+
+		}
+		
+			
+		console.log(mydata_0.filter(d => d.ie == ie_flag && d.cus_code == "0").map(d => d.ym).length);
+		
+	//排名更新
+		function upd_cus(ym){
+		//console.log(d3.max(mydata_0.filter(d => d.ie == ie_flag && d.cus_code == cus_code),d => parseFloat(d[index_flag])));
+		//直属关
+		y.domain([0,d3.max(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym),d => parseFloat(d[index_flag]))]).nice();
+		x.domain(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym).sort((a,b) => parseFloat(a[index_flag]) - parseFloat(b[index_flag])).map(d => d.cus_2_name));
+		
+		
+		d3.select(".xAxis")
+			.transition()
+			.duration(1200)
+			.call(xAxis);
+		d3.select(".yAxis")
+			.transition()
+			.duration(1200)
+			.call(yAxis);
+		
+		d3.selectAll(".rect_cus")
+			.transition()
+			.duration(1200)
+			.attr("x",d => x(d.cus_2_name)+20)
+      		.attr("y",(d,i) => y(parseFloat(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym)[i][index_flag]))-20)
+			.attr("height",(d,i) => 285 - y(parseFloat(mydata_0.filter(d => d.ie == ie_flag && d.ym == ym)[i][index_flag])));
+		//隶属关	
+		x3.domain(mydata_xm.filter(d => d.ie == ie_flag && d.ym == ym).sort((b,a) => parseFloat(a[index_flag]) - parseFloat(b[index_flag])).map(d => d.cus_2_name));
+		y3.domain([0,d3.max(mydata_xm.filter(d => d.ie == ie_flag && d.ym == ym),d => parseFloat(d[index_flag]))]).nice();
+
+		d3.select(".xAxis3")
+			.transition()
+			.duration(1200)
+			.call(xAxis3);
+		d3.select(".yAxis3")
+			.transition()
+			.duration(1200)
+			.call(yAxis3);
+		
+		d3.selectAll(".rect_cus_3")
+			.transition()
+			.duration(1200)
+			.attr("x",d => x3(d.cus_2_name)+20)
+      		.attr("y",(d,i) => y3(parseFloat(mydata_xm.filter(d => d.ie == ie_flag && d.ym == ym)[i][index_flag]))-15)
+			.attr("height",(d,i) => 280 - y3(parseFloat(mydata_xm.filter(d => d.ie == ie_flag && d.ym == ym)[i][index_flag])));	
+
+	
+		}
+		
+		}
+	
+    </script>
+    
+</body>
+
+</html>
