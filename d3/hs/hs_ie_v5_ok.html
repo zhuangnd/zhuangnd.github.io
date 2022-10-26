@@ -68,7 +68,7 @@
 
 </div>
 <script type="text/javascript">
-    var width = 800, height = 800;
+    var width = d3.min([screen.width*0.7,800]), height = d3.min([screen.height,800]);
     var margin = ({top: 50, right: 50, bottom: 50, left: 50})
     var svg = d3.select("svg")
             .attr("width", width)
@@ -100,9 +100,9 @@
           .on("mouseover",function(){d3.select("body").style("cursor","pointer");})
           .on("mouseleave",function(){d3.select("body").style("cursor",null);});
        
-       l_hs8 = legend(d3.scaleSqrt([1,85, 169], [ "#caf0fe","#008cb4","#00364a"]),hs8_legend,{tx:100,ty:600,title:"HS8数量",width:150,height:50,tickValues : [1,85,169]});  
-       l_e = legend(d3.scaleSqrt([1,e_max/2, e_max], [ "#ffdad8","#ff4013","#5c0700"]),e_legend,{tx:100,ty:650,title:"HS4出口(亿元)",width:150,height:50,tickValues : [1,5000,e_max],tickFormat:",f"}); //".0f"
-       l_i = legend(d3.scaleSqrt([1,i_max/2, i_max], [ "#cce8b5","#669c35","#263e0f"]),i_legend,{tx:100,ty:700,title:"HS4进口(亿元)",width:150,height:50,tickValues : [1,10000,i_max],tickFormat:",f"}); 
+       l_hs8 = legend(d3.scaleSqrt([1,85, 169], [ "#caf0fe","#008cb4","#00364a"]),hs8_legend,{tx:100,ty:height-150,title:"HS8数量",width:100,height:45,tickValues : [1,85,169]});  
+       l_e = legend(d3.scaleSqrt([1,e_max/2, e_max], [ "#ffdad8","#ff4013","#5c0700"]),e_legend,{tx:100,ty:height-100,title:"HS4出口(亿元)",width:100,height:45,tickValues : [1,5000,e_max],tickFormat:",f"}); //".0f"
+       l_i = legend(d3.scaleSqrt([1,i_max/2, i_max], [ "#cce8b5","#669c35","#263e0f"]),i_legend,{tx:100,ty:height-50,title:"HS4进口(亿元)",width:100,height:45,tickValues : [1,10000,i_max],tickFormat:",f"}); 
 
         x = d3.scaleLinear()
           .domain([1,100])
