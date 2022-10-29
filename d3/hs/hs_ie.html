@@ -352,7 +352,7 @@
         ;
         country.on("mouseover touchstart", function (e,d) {  
             //console.log(flag,is_clicked,d.properties.id);
-            flag=='ie'?null:fill_cell_w(flag,d.properties.ISO_N3) ;
+            flag=='ie'?null:fill_cell_w(flag,parseFloat(d.properties.ISO_N3)) ;
           })
           .on("mouseout touchmove",function (e,d) {
             cells.attr("fill",d=>flag=='ie'?color_map('ie',169,d[1].length):color_map(flag,e_max ,d[1][0].hs4e));
