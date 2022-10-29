@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="initial-scale=1,maximum-scale=1"/>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1，,minimum-scale=0.5"/>
     <title>hs</title>
     <script type="text/javascript" src="../js/d3.v7.min.js"></script>
     <script type="text/javascript" src="../js/legend.js"></script>
@@ -83,9 +83,9 @@
 		mydata = data;//d3.sort(data,(a,b)=>b.name-a.name);
 		//console.log(mydata);
     
-        var i_max = d3.max(mydata.map(d=>parseFloat(d.hs4i)))/10000;
+        var i_max = d3.max(mydata.map(d=>parseFloat(d.hs4i)));
         //console.log(i_max);
-        var e_max = d3.max(mydata.map(d=>parseFloat(d.hs4e)))/10000;
+        var e_max = d3.max(mydata.map(d=>parseFloat(d.hs4e)));
     
         color=(x)=>{return d3.scaleSqrt([0, 1, 85, 169], [ "white","#caf0fe","#008cb4","#00364a"])(x);};
         color_e=(x)=>{return d3.scaleSqrt([0,1,e_max/2, e_max], [ "white","#ffdad8","#ff4013","#5c0700"])(x);};
@@ -165,7 +165,7 @@
            cells.transition()
                .delay(d=>y(d[1][0].hs2_code)*5)
                .duration(1000)
-               .attr("fill",(d,i)=>color_e(d[1][0].hs4e/10000));
+               .attr("fill",(d,i)=>color_e(d[1][0].hs4e));
         }) 
         i_legend.on("click",function(){
             cf = 1;
@@ -173,7 +173,7 @@
                 .delay(d=>y(d[1][0].hs2_code)*5)
                 //.delay(d=>y(Math.random()*500))
                 .duration(1000)
-                .attr("fill",(d,i)=>color_i(d[1][0].hs4i/10000))
+                .attr("fill",(d,i)=>color_i(d[1][0].hs4i))
          }) 
           
         hs8_legend.on("click",function(){
@@ -195,7 +195,7 @@
             tip_hs2.text(`${d[1][0].hs2_name}`);
             tip_hs4.text(d[1][0].hs4_code<1000?`HS 0${d[1][0].hs4_code}. ${d[1][0].hs4_name}`:`HS ${d[1][0].hs4_code}. ${d[1][0].hs4_name}`);
             tip_flag.text(cf==0?'出口 ':cf==1?'进口 ':'共');
-            tip_info.text(cf==0?` ${d3.format(",.2f")(parseFloat(d[1][0].hs4e/10000))} `:cf==1?` ${d3.format(",.2f")(parseFloat(d[1][0].hs4i/10000))} `:` ${d[1].length} `);
+            tip_info.text(cf==0?` ${d3.format(",.2f")(parseFloat(d[1][0].hs4e))} `:cf==1?` ${d3.format(",.2f")(parseFloat(d[1][0].hs4i))} `:` ${d[1].length} `);
             tip_add.text(cf==2?' 个HS8编码':' 亿元');
             
             //.style("left",(e.x)+"px")
