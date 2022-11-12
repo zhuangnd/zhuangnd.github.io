@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1"/>
+    <title>hs</title>
+    <script type="text/javascript" src="../js/d3.v7.min.js"></script>
+
+    <style>
+        body {
+            background: white;
+        }
+        .axis path,line  {
+            stroke: none;
+        }
+        .axis line  {
+            stroke: #aaa;
+        }
+        .axis text  {
+            fill: #aaa;
+        }
+
+
+        }
+    </style>
+</head>
+
+<body>
+
+<div >
+    <label>
+        <span id="tooltip"></span>
+    </label>
+</div>
+<script type="text/javascript">
+    var width = 900, height = 900;
+    var margin = ({top: 50, right: 50, bottom: 50, left: 50})
+    var svg = d3.select("body").append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .attr("preserveAspectRatio", "xMidYMid")
+            .attr('transform', 'translate(50, 100)')
+            .attr("viewBox", "0 0 " + (width) + " " + (height));
+            
+    svg.append("rect")
+      .attr("transform",`translate(${margin.left},${margin.top})`)
+      .attr("width",width-margin.left-margin.right+5)
+      .attr("height",height-margin.top)
+      .attr("fill","none");
+      
+    color=(x)=>{return d3.scaleSqrt([1, 85, 169], [ "#eee", "#fd8f24","#ED5B67"])(x);};
+    //color=(x)=>{return d3.interpolatePlasma(1-x/286);};
+
+    d3.csv("hs_ie_202201-09.csv").then(
+		function(data){
+		//draw_cs(mydata);
+		mydata = data;//d3.sort(data,(a,b)=>b.name-a.name);
+		console.log(mydata.columns);
+        
+        /*
+        x = d3.scaleBand()
+          .domain(mydata.map(d=>d.hs2_code))
+          .rangeRound([margin.left, width - margin.right]);
+          //.paddingInner(0.05);                
+        y = d3.scaleBand()
+          .domain(mydata.map(d=>d.hs34))
+          .rangeRound([margin.top, height - margin.bottom]);
+          
+        */
+                
+        x = d3.scaleLinear()
+          .domain([1,100])
+          .range([margin.left, width - margin.right])
+          //.nice();
+        y = d3.scaleLinear()
+          .domain([1,100])
+          .range([margin.top, height - margin.bottom])
+          //.nice();  
+           
+        xAxis = svg.append("g")
+          .attr("class","x axis")
+          .attr("transform", `translate(${height/200-1},${margin.top})`)
+          .call(d3.axisTop(x).ticks(10).tickSizeOuter(0))
+          .append("text")
+          .text("HS1-2 ⇢")
+          .attr("transform", `translate(${margin.left+20},-8)`)
+          ;
+        /*
+        xAxis.selectAll("line")
+          .attr("id",(d,i)=>"textx"+(i+1))
+          .attr("opacity",0);
+        xAxis.selectAll("text")
+          .attr("id",(d,i)=>"textx"+(i+1))
+          .attr("opacity",0);
+        d3.selectAll("#textx1,#textx11,#textx1,#textx21,#textx31,#textx41,#textx51,#textx61,#textx71,#textx80,#textx90,#textx97")
+          .attr("opacity",1);
+          //微调x轴文字位置
+          //.attr("transform","translate(5,-2) rotate(-45)");  
+        */        
+        yAxis = svg.append("g")
+          .attr("class","y axis")
+          .attr("transform", `translate(${margin.left},${height/200-1})`)
+          .call(d3.axisLeft(y).ticks(10).tickSizeOuter(0))
+            .append("text")
+            .text("HS3-4 ⇣")
+            .attr("transform", `translate(-8,${margin.top+15})`)
+          ;
+        /*
+        yAxis.selectAll("line")
+          .attr("id",(d,i)=>"texty"+(i+1))
+          .attr("opacity",0);
+        yAxis.selectAll("text")
+          .attr("id",(d,i)=>"texty"+(i+1))
+          .attr("opacity",0);
+        d3.selectAll("#texty1,#texty11,#texty20,#texty31,#texty53,#texty80")
+          .attr("opacity",1);
+        */
+            
+        cells = svg.append("g")
+            .selectAll(".rect")
+            //.data(mydata)
+            .data(d3.group(mydata,d=>d.hs4_code))
+            .enter()
+            .append("rect")
+            .attr("class","rect")
+            //.attr("class",(d,i)=>{console.log(d[1][0].hs2_code);return "rect";})
+            .attr("x",d => x(d[1][0].hs2_code))
+            .attr("y",margin.top)
+            .attr("height",height/100-2)
+            .attr("width", width/100-2)
+            //.attr("fill","#168B98")
+            .attr("fill",(d,i)=>color(mydata.filter(e=>e.hs2_code==d[1][0].hs2_code).length))
+            .attr("opacity",0.8)
+        cells.transition()
+            .duration(1000)
+            .delay(d => 1000+y(d[1][0].hs4_code%100)*10)
+            .attr("y",d => y(d[1][0].hs4_code%100))
+            .attr("fill",(d,i)=>color(d[1].length))
+            
+            /*
+            .style("fill-opacity",d=>{
+              //console.log('rect:', d)
+              //console.log(d.hs4_code,data.filter(e=>e.hs4_code===d.hs4_code).length);
+              return d[1].length/286;
+            })
+            */
+            //.style("stroke","grey")
+            //.style("stroke-width",0.05)
+        cells.append("title")
+            .text(d=>d[1][0].hs4_code<1000?`${d[1][0].hs2_name}\n\nHS4 0${d[1][0].hs4_code}. ${d[1][0].hs4_name}\n\n共 ${d[1].length} 个HS8`:`${d[1][0].hs2_name}\n\nHS4 ${d[1][0].hs4_code}. ${d[1][0].hs4_name}\n\n共 ${d[1].length} 个HS8`);
+            
+        });    
+    
+		
+		
+</script>
+
+</body>
+
+</html>
