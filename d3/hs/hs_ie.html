@@ -1,40 +1,5 @@
 <!DOCTYPE html>
 <!--
-  1.hs4、hs8数量
-  2.hs4进出口
-  3.添加地图，添加鼠标事件
-  4.legend变化
-  5.文字信息
-  
-  
-  不知道什么是最有效的，现有的知识基本无法考虑效率问题，只能按照思路流程一步步实现
-  
-  
-  todo：
-  --1.地图click--
-  --2.修改突出显示，ie标志时的地图显示互动。--
-  d3.sum(province_data.filter(d=>d.province_code==11 && d.hs_code==0).map(e=>e.rmb))
-  country.on 
-  is_clicked==0?flag=='ie'?null:fill_cell_w(flag,(d.properties.ISO_N3)):null ;
-  //导致响应变慢，考虑从数据源进行规范
-  --3.地图legend,hs legend--
-  --6.补充重要进出口商品的国家数据，筛选4位商品--
-  --ie状态下点击cell显示 地图变化--
-  --减少parseFloat，优化效率--
-  --函数过程减少data.filter  filter是table操作，全数据遍历，group.get(key)是dict操作，更快
-  --添加各省对各国进出口--
-  --修改地图鼠标事件主图比例尺，(line 641)--
-  --修改world_605kb.json，从world.json 复制中国台湾的地理位置信息到world_605kb.json，作为单独的关境
-  --性能优化，数据提前处理，函数中不使用filter--
-  --数据源格式调整，恢复为元为单位，之前为亿元。-调整相应的legend数值--
-  --  on click后 tooltip数据更新 (line 421),--
-  --tooltip，hs界面添加进、出口概况--
-  --添加进出口主要信息，top10，info整合--
-  --修正0数据的颜色为"#dddddd"--
-  
-  添加hs4商编数量地图着色
-  5.视图适配优化
-  
 -->
 <html>
 <head>
@@ -72,7 +37,7 @@
           left:300px;
           background-color: #f0f0f0;
           border: 1px solid #d5d5d5;
-          padding: 10px;
+          padding: 10px 5px 0px 10px;
           color: #78909c;
           font-size: 12px;
           display:null; 
@@ -83,6 +48,7 @@
           left:70px;
           font-size:12px;
           width:auto;
+          
         }
         .axis path  {
             stroke: none;
@@ -217,7 +183,7 @@
         var flag_set = {hs:'HS8编码',ie:'进出口',i:'进口',e:'出口'}
         //var lg_title={hs:'HS8数量',ie:'HS4进出口(亿元)',i:'HS4进口(亿元)',e:'HS4出口(亿元)'};
         var flag ='hs';//0:export,1:import,2:hs_count
-        var color_range={hs:["white","#eee","#aaa","#555"],ie:["white","#e0edd4","#59a14f","#38571a"],i:[ "white","#caf0fe","#008cb4","#00364a"],e:[ "white","#ffdad8","#ff4013","#5c0700"]};
+        var color_range={hs:["white","#e4e4d9","#215f00","#222"],hs_m:["white","#f0f5f9","#e4e4d9","#215f00"],ie:["white","#e0edd4","#59a14f","#38571a"],i:[ "white","#caf0fe","#008cb4","#00364a"],e:[ "white","#ffdad8","#ff4013","#5c0700"]};
         //var color_range2={hs:{color:["white","#ddd","#999","#333"],title:'HS8编码(个)'},ie:{color:["white","#e0edd4","#59a14f","#38571a"],title:'HS4进出口(亿元)'},i:{color:[ "white","#caf0fe","#008cb4","#00364a"],title:'HS4进口(亿元)'},e:{color:[ "white","#ffdad8","#ff4013","#5c0700"],title:'HS4出口(亿元)'}};
         var legend_data=[{flag:'hs',title:'HS8编码(个)'},{flag:'ie',title:'HS4进出口(亿元)'},{flag:'i',title:'HS4进口(亿元)'},{flag:'e',title:'HS4出口(亿元)'}];
         var domain_max = {hs:169,ie:d3.max(hs4_data.map(d=>(d.ie))),i:d3.max(hs4_data.map(d=>(d.i))),e:d3.max(hs4_data.map(d=>(d.e)))};
@@ -611,11 +577,11 @@
               //v_max = flag=='hs'?cnty_hs4_count_range[1]:data?d3.max(data.map(e=>(e[flag]))):0;
               v_max = flag=='hs'?1234:data?d3.max(data.map(e=>(e[flag]))):0;
               //v_max = d3.max(country_data.filter(d=>d.hs_code==hs).map(e=>(e[flag])));
-              return flag=='hs'?cnty_hs4_count.get(dd.properties.ISO_N3)?color_map(flag,v_max,cnty_hs4_count.get(dd.properties.ISO_N3)[0].hs4_count):'#f5f5f5':data?data.filter(el=>el.ISO_N3==(dd.properties.ISO_N3)).length>0?data.filter(e=>(e.ISO_N3)==(dd.properties.ISO_N3))[0][flag]>0?color_map(flag,v_max,data.filter(e=>(e.ISO_N3)==(dd.properties.ISO_N3))[0][flag]):"#dddddd":"#dddddd":"#dddddd";
+              return flag=='hs'?cnty_hs4_count.get(dd.properties.ISO_N3)?color_map('hs_m',v_max,cnty_hs4_count.get(dd.properties.ISO_N3)[0].hs4_count):'#f5f5f5':data?data.filter(el=>el.ISO_N3==(dd.properties.ISO_N3)).length>0?data.filter(e=>(e.ISO_N3)==(dd.properties.ISO_N3))[0][flag]>0?color_map(flag,v_max,data.filter(e=>(e.ISO_N3)==(dd.properties.ISO_N3))[0][flag]):"#dddddd":"#dddddd":"#dddddd";
             });
             w_linearGradient.selectAll("stop").remove();
             w_linearGradient.selectAll("stop")
-              .data(linearGradient_data([0,1,v_max/2,v_max],flag))//----2
+              .data(linearGradient_data([0,1,v_max/2,v_max],flag=='hs'?'hs_m':flag))//----2
               .enter()
               .append("stop")
               .attr("offset", d => d.offset)
@@ -633,11 +599,11 @@
             hs=hs?hs:0;
             data=flag=='hs'?pr_hs4_count:id==0?pr_hs_grp.get(hs.toString()):p_c_cgrp.get(id);
             v_max = flag=='hs'?1234:data?d3.max(data.map(e=>e[flag])):0;
-            return flag=='hs'?pr_hs4_count.get(dd.properties.id)?color_map(flag,v_max,pr_hs4_count.get(dd.properties.id)[0].hs4_count):'#f5f5f5':data?data.filter(el=>el.province_code==(dd.properties.id)).length>0?data.filter(e=>(e.province_code)==(dd.properties.id))[0][flag]>0?color_map(flag,v_max,data.filter(e=>(e.province_code)==(dd.properties.id))[0][flag]):"#dddddd":"#dddddd":"#dddddd";
+            return flag=='hs'?pr_hs4_count.get(dd.properties.id)?color_map('hs_m',v_max,pr_hs4_count.get(dd.properties.id)[0].hs4_count):'#f5f5f5':data?data.filter(el=>el.province_code==(dd.properties.id)).length>0?data.filter(e=>(e.province_code)==(dd.properties.id))[0][flag]>0?color_map(flag,v_max,data.filter(e=>(e.province_code)==(dd.properties.id))[0][flag]):"#dddddd":"#dddddd":"#dddddd";
           });
           cn_linearGradient.selectAll("stop").remove();
           cn_linearGradient.selectAll("stop")
-            .data(linearGradient_data([0,1,v_max/2,v_max],flag))//----2
+            .data(linearGradient_data([0,1,v_max/2,v_max],flag=='hs'?'hs_m':flag))//----2
             .enter()
             .append("stop")
             .attr("offset", d => d.offset)
@@ -769,10 +735,10 @@
                 tip_subtitle.html(flag=='hs'?`<span style='font-weight:bold'>HS2(章)：</span>98<br><br>
                 <span style='font-weight:bold'>HS4(4位商编)：</span>${hs4_data.map(d=>d.hs4_code).length}<br><br>
                 <span style='font-weight:bold'>HS6(6位商编)：</span>5618<br><br>
-                <span style='font-weight:bold'>HS8(8位商编)：</span>${d3.sum(hs4_data.map(d=>d.hs8_count))}`
+                <span style='font-weight:bold'>HS8(8位商编)：</span>${d3.sum(hs4_data.map(d=>d.hs8_count))}<br><br>`
                 :`<span style='font-weight:bold'>HS商品编码：</span>章:98. HS4商编:${[hs4_data.filter(d=>d[flag]>0).map(d=>d.hs4_code)][0].length}个. HS8商编:${d3.sum(hs4_data.filter(d=>d[flag]>0).map(d=>d.hs8_count))}个<br><br>
                 <span style='font-weight:bold'>贸易国/地区：</span> ${cnty_tmp.filter(d=>d[flag]>0).length}个<br>`)
-                tip_info.html(flag=='hs'?'':`<span style='font-weight:bold'>${flag_set[flag]}总值：</span> ${simplifyNum(d3.sum(pr_hs_grp.get('0').map(d=>d[flag])))}元`)
+                tip_info.html(flag=='hs'?`<span style='font-size:12px; color: #aaa'>1.移动鼠标查看相关信息。<br>2.点击下方图例，切换视图。<br>3.在进出口视图点击小方块或地图进行锁定，并移动鼠标查看信息。</span>`:`<span style='font-weight:bold'>${flag_set[flag]}总值：</span> ${simplifyNum(d3.sum(pr_hs_grp.get('0').map(d=>d[flag])))}元`)
                                 
                                 
               //null;
@@ -809,9 +775,9 @@
                 tip_subtitle.html(flag=='hs'?`<span style='font-weight:bold'>HS2(章)：</span>98<br><br>
                   <span style='font-weight:bold'>HS4(4位商编)：</span>${hs4_data.map(d=>d.hs4_code).length}<br><br>
                   <span style='font-weight:bold'>HS6(6位商编)：</span>5618<br><br>
-                  <span style='font-weight:bold'>HS8(8位商编)：</span>${d3.sum(hs4_data.map(d=>d.hs8_count))}`
+                  <span style='font-weight:bold'>HS8(8位商编)：</span>${d3.sum(hs4_data.map(d=>d.hs8_count))}<br><br>`
                   :`<span style='font-weight:bold'>HS商品编码：</span>章:98. HS4商编:${[hs4_data.filter(d=>d[flag]>0).map(d=>d.hs4_code)][0].length}个. HS8商编:${d3.sum(hs4_data.filter(d=>d[flag]>0).map(d=>d.hs8_count))}个<br><br><span style='font-weight:bold'>贸易国/地区：</span> ${cnty_tmp.filter(d=>d[flag]>0).length}个<br>`)
-                tip_info.html(flag=='hs'?'':`<span style='font-weight:bold'>${flag_set[flag]}总值：</span> ${simplifyNum(d3.sum(pr_hs_grp.get('0').map(d=>d[flag])))}元`)
+                tip_info.html(flag=='hs'?`<span style='font-size:12px; color: #aaa'>1.移动鼠标查看相关信息。<br>2.点击下方图例，切换视图。<br>3.在进出口视图点击小方块或地图进行锁定，并移动鼠标查看信息。</span>`:`<span style='font-weight:bold'>${flag_set[flag]}总值：</span> ${simplifyNum(d3.sum(pr_hs_grp.get('0').map(d=>d[flag])))}元`)
                               //tooltip.style("display",'none');
           }
           
