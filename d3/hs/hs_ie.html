@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <!--
+
+  
 -->
 <html>
 <head>
@@ -709,7 +711,7 @@
                 
                 tip_subtitle.html(flag=='hs'?'':last_c.slice(0,1)=='b'?(last_c.slice(1)<1000?`HS 0${last_c.slice(1)}. ${hs4_grp.get(last_c.slice(1))[0].hs4_name}<br>`:`HS ${last_c.slice(1)}. ${hs4_grp.get(last_c.slice(1))[0].hs4_name}<br>`):last_c.slice(0,1)=='w'?`${d.properties.name}<br>`:'')//`${d.properties.name}`);
                 
-                tip_info.html(flag=='hs'?`进出口HS4商编：${pr_hs4_count.get(d.properties.id)[0].hs4_count}个`:last_c.slice(0,1)=='b'?pr_grp.get(d.properties.id).get(last_c.slice(1))?`${flag_set[flag]}: ${simplifyNum(pr_grp.get(d.properties.id).get(last_c.slice(1))[0][flag])}元`:`${flag_set[flag]}: 0元`:last_c.slice(0,1)=='w'?p_c_grp.get(d.properties.id).get(last_c.slice(1))?`${flag_set[flag]}: ${simplifyNum(p_c_grp.get(d.properties.id).get(last_c.slice(1))[0][flag])}元`:`${flag_set[flag]}: 0元`:`${flag_set[flag]}: ${simplifyNum(d3.sum(pr_id_grp.get(d.properties.id).map(e=>e[flag]))/2)}元`);
+                tip_info.html(flag=='hs'?`进出口HS4商编：${pr_hs4_count.get(d.properties.id)[0].hs4_count}个`:last_c.slice(0,1)=='b'?pr_grp.get(d.properties.id).get(last_c.slice(1))?`${flag_set[flag]}: ${simplifyNum(pr_grp.get(d.properties.id).get(last_c.slice(1))[0][flag])}元`:`${flag_set[flag]}: 0元`:last_c.slice(0,1)=='w'?p_c_grp.get(d.properties.id).get(last_c.slice(1))?`${flag_set[flag]}: ${simplifyNum(p_c_grp.get(d.properties.id).get(last_c.slice(1))[0][flag])}元`:`${flag_set[flag]}: 0元`:`${flag_set[flag]}: ${simplifyNum(pr_id_grp.get(d.properties.id)[0][flag])}元`);
                 
                 tooltip.style("display",null);
               break;
@@ -719,9 +721,9 @@
                 //flag=flag=='hs'?'ie':flag;
                 tip_title.html(last_c.slice(0,1)=='c'?`<span style='font-weight:bold'>${p_c_pgrp.get(last_c.slice(1))[0].province_name}</span><br>`:`贸易国/地区:<span style='font-weight:bold'>    ${pr_cnty.find(el=>el.ISO_N3==d.properties.ISO_N3).country_name}</span><br>`);
                 
-                tip_subtitle.html('hs'?'':last_c.slice(0,1)=='b'?(last_c.slice(1)<1000?`HS 0${last_c.slice(1)}. ${hs4_grp.get(last_c.slice(1))[0].hs4_name}<br>`:`HS ${last_c.slice(1)}. ${hs4_grp.get(last_c.slice(1))[0].hs4_name}<br>`):last_c.slice(0,1)=='c'?`贸易国/地区:<span style='font-weight:bold'>    ${pr_cnty.find(el=>el.ISO_N3==d.properties.ISO_N3).country_name}</span><br>`:'')//`${pr_cnty.find(el=>el.ISO_N3==d.properties.ISO_N3).country_name}<br>`);
+                tip_subtitle.html(flag=='hs'?'':last_c.slice(0,1)=='b'?(last_c.slice(1)<1000?`HS 0${last_c.slice(1)}. ${hs4_grp.get(last_c.slice(1))[0].hs4_name}<br>`:`HS ${last_c.slice(1)}. ${hs4_grp.get(last_c.slice(1))[0].hs4_name}<br>`):last_c.slice(0,1)=='c'?`贸易国/地区:<span style='font-weight:bold'>    ${pr_cnty.find(el=>el.ISO_N3==d.properties.ISO_N3).country_name}</span><br>`:'')//`${pr_cnty.find(el=>el.ISO_N3==d.properties.ISO_N3).country_name}<br>`);
                 
-                tip_info.html(flag=='hs'?`进出口HS4商编：${cnty_hs4_count.get(d.properties.ISO_N3)[0].hs4_count}个`:last_c.slice(0,1)=='b'?cnty_grp.get(d.properties.ISO_N3).get(last_c.slice(1))?`${flag_set[flag]}: ${simplifyNum(cnty_grp.get(d.properties.ISO_N3).get(last_c.slice(1))[0][flag])}元`:`${flag_set[flag]}: 0元`:last_c.slice(0,1)=='c'?p_c_grp.get(last_c.slice(1)).get(d.properties.ISO_N3)?`${flag_set[flag]}: ${simplifyNum(p_c_grp.get(last_c.slice(1)).get(d.properties.ISO_N3)[0][flag])}元`:`${flag_set[flag]}: 0元`:`${flag_set[flag]}: ${simplifyNum(d3.sum(cnty_id_grp.get(d.properties.ISO_N3).map(e=>e[flag]))/2)}元`);
+                tip_info.html(flag=='hs'?`进出口HS4商编：${cnty_hs4_count.get(d.properties.ISO_N3)[0].hs4_count}个`:last_c.slice(0,1)=='b'?cnty_grp.get(d.properties.ISO_N3).get(last_c.slice(1))?`${flag_set[flag]}: ${simplifyNum(cnty_grp.get(d.properties.ISO_N3).get(last_c.slice(1))[0][flag])}元`:`${flag_set[flag]}: 0元`:last_c.slice(0,1)=='c'?p_c_grp.get(last_c.slice(1)).get(d.properties.ISO_N3)?`${flag_set[flag]}: ${simplifyNum(p_c_grp.get(last_c.slice(1)).get(d.properties.ISO_N3)[0][flag])}元`:`${flag_set[flag]}: 0元`:`${flag_set[flag]}: ${simplifyNum(cnty_id_grp.get(d.properties.ISO_N3).slice(-1)[0][flag])}元`);
                 
                 tooltip.style("display",null);
               break;
@@ -754,17 +756,17 @@
                 tooltip.style("display",null);  
               break;
               case last_c.slice(0,1)=='c':
-                flag=flag=='hs'?'ie':flag;
+                //flag=flag=='hs'?'ie':flag;
                 tip_title.html(`<span style='font-weight:bold'>    ${pr_id_grp.get(last_c.slice(1))[0].province_name}</span><br>`)
                 tip_subtitle.html('')//`${d.properties.name}`);
                 tip_info.html(`${flag_set[flag]}: ${simplifyNum(pr_id_grp.get(last_c.slice(1))[0][flag])}元`);
                 tooltip.style("display",null);
               break;
               case last_c.slice(0,1)=='w':
-                flag=flag=='hs'?'ie':flag;
+                //flag=flag=='hs'?'ie':flag;
                 tip_title.html(`贸易国/地区:<span style='font-weight:bold'>    ${cnty_id_grp.get(last_c.slice(1))[0].country_name}</span><br>`);
                 tip_subtitle.html('')
-                tip_info.html(`${flag_set[flag]}: ${simplifyNum(cnty_id_grp.get(last_c.slice(1))[0][flag])}元`);
+                tip_info.html(`${flag_set[flag]}: ${simplifyNum(cnty_id_grp.get(last_c.slice(1)).slice(-1)[0][flag])}元`);
                 tooltip.style("display",null);
               break;
               default:
