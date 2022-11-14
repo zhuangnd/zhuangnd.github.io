@@ -185,7 +185,7 @@
         var flag_set = {hs:'HS8编码',ie:'进出口',i:'进口',e:'出口'}
         //var lg_title={hs:'HS8数量',ie:'HS4进出口(亿元)',i:'HS4进口(亿元)',e:'HS4出口(亿元)'};
         var flag ='hs';//0:export,1:import,2:hs_count
-        var color_range={hs:["white","#BBD2C5","#536976","#222"],hs_m:["white","#f0f5f9","#BBD2C5","#536976"],ie:["white","#e0edd4","#59a14f","#38571a"],i:[ "white","#caf0fe","#008cb4","#00364a"],e:[ "white","#ffdad8","#ff4013","#5c0700"]};
+        var color_range={hs:["white","#e5e5e5","#8d8882","#222"],hs_m:["white","#f0f5f9","#ddf2e5","#536976"],ie:["white","#e0edd4","#59a14f","#38571a"],i:[ "white","#caf0fe","#008cb4","#00364a"],e:[ "white","#ffdad8","#ff4013","#5c0700"]};
         //var color_range2={hs:{color:["white","#ddd","#999","#333"],title:'HS8编码(个)'},ie:{color:["white","#e0edd4","#59a14f","#38571a"],title:'HS4进出口(亿元)'},i:{color:[ "white","#caf0fe","#008cb4","#00364a"],title:'HS4进口(亿元)'},e:{color:[ "white","#ffdad8","#ff4013","#5c0700"],title:'HS4出口(亿元)'}};
         var legend_data=[{flag:'hs',title:'HS8编码(个)'},{flag:'ie',title:'HS4进出口(亿元)'},{flag:'i',title:'HS4进口(亿元)'},{flag:'e',title:'HS4出口(亿元)'}];
         var domain_max = {hs:169,ie:d3.max(hs4_data.map(d=>(d.ie))),i:d3.max(hs4_data.map(d=>(d.i))),e:d3.max(hs4_data.map(d=>(d.e)))};
