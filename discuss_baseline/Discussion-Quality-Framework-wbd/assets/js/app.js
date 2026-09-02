@@ -635,6 +635,60 @@
   /* =========================================================
      九、导航 / 主题 / 滚动
      ========================================================= */
+
+  /* ---------- 返回按钮 ----------
+     用途：案例分析中的「在雷达图中查看 / 用诊断器分析 / 带入自检清单」
+     会把用户带离 #cases，跳转时由 DQF.backTo(fromId, label) 唤起本按钮，
+     点击后滚回来源小节；回到来源后自动收起。
+     注意：平滑滚动期间不判定，否则刚点跳转就会被误判为「已回到来源」。 */
+  var backOrigin = null;   // 跳转来源 section id
+  var backArmAt = 0;       // 该时间戳之后才允许自动隐藏
+
+  function hideBack() {
+    var btn = document.getElementById('backToCases');
+    if (btn) btn.classList.remove('is-on');
+    backOrigin = null;
+  }
+
+  /* 已滚回来源小节则收起。平滑滚动结束前不能判定，
+     否则刚点跳转（人还在来源小节）就会被误判为「已返回」。 */
+  function checkBack() {
+    if (!backOrigin || Date.now() <= backArmAt) return;
+    var o = document.getElementById(backOrigin);
+    if (!o) return;
+    var r = o.getBoundingClientRect();
+    if (r.top <= 240 && r.bottom > 240) hideBack();
+  }
+
+  DQF.backTo = function (fromId, label) {
+    var btn = document.getElementById('backToCases');
+    if (!btn) return;
+    backOrigin = fromId;
+    var txt = btn.querySelector('.backto__txt');
+    if (txt && label) txt.textContent = label;
+    btn.classList.add('is-on');
+    backArmAt = Date.now() + 900;
+  };
+
+  function initBackTo() {
+    var btn = document.getElementById('backToCases');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var el = backOrigin && document.getElementById(backOrigin);
+      if (el && el.scrollIntoView) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      // 回程期间保持可见，滚到位后自动收起。
+      // 平滑滚动结束前不能判定；scrollend 不是所有浏览器都有，故加定时兜底。
+      backArmAt = Date.now() + 900;
+      if ('onscrollend' in window) {
+        window.addEventListener('scrollend', checkBack, { once: true });
+      }
+      setTimeout(checkBack, 1600);
+      setTimeout(checkBack, 2600);
+    });
+  }
+
   function initNav() {
     var nav = document.getElementById('nav');
     var links = DQF.$$('#navLinks .nav__link');
@@ -658,6 +712,9 @@
       links.forEach(function (a, i) {
         a.classList.toggle('is-active', i === best);
       });
+
+      // 已经滚回来源小节（含手动滚回）→ 收起返回按钮
+      checkBack();
     }
 
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -733,6 +790,7 @@
   function boot() {
     initTheme();
     initNav();
+    initBackTo();
     initHeroCanvas();
 
     initOverview();

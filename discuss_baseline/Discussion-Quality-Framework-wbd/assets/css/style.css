@@ -1200,6 +1200,29 @@ a { color: inherit; text-decoration: none; }
 .totop:hover { color: var(--accent); border-color: var(--accent-line); }
 .totop svg { width: 16px; height: 16px; }
 
+/* 返回按钮：从案例分析跳到其他模块后，一键回到来源小节。
+   位于 .totop 上方 54px，两者不重叠；默认隐藏，靠 .is-on 显示 */
+.backto {
+  position: fixed; right: 20px; bottom: 74px;
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 36px; padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--accent-line);
+  background: var(--glass);
+  -webkit-backdrop-filter: var(--blur);
+  backdrop-filter: var(--blur);
+  color: var(--text-soft);
+  font-size: var(--fs-sm);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+  transition: all var(--dur) var(--ease);
+  z-index: var(--z-pop);
+}
+.backto.is-on { opacity: 1; pointer-events: auto; transform: none; }
+.backto:hover { color: var(--accent); border-color: var(--accent); }
+.backto svg { width: 15px; height: 15px; }
+
 /* ------------------------------ 响应式 ------------------------------ */
 @media (max-width: 1040px) {
   .hero__inner,
@@ -1232,6 +1255,7 @@ a { color: inherit; text-decoration: none; }
   .exit__formula .op { transform: rotate(90deg); }
   .dim__row { grid-template-columns: 62px 1fr 30px; }
   .prec__row { grid-template-columns: 68px 1fr auto; }
+  .backto { right: 14px; bottom: 70px; height: 34px; padding: 0 12px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

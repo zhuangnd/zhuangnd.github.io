@@ -165,6 +165,7 @@
         if (window.DQFRadar) window.DQFRadar.load(c.scores);
         var el = document.getElementById('radar');
         if (el && el.scrollIntoView) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (window.DQF && window.DQF.backTo) window.DQF.backTo('cases', '返回案例分析');
       });
     }
 
@@ -172,6 +173,7 @@
     if (a) {
       a.addEventListener('click', function () {
         if (window.DQFAnalyzer) window.DQFAnalyzer.load(c.text);
+        if (window.DQF && window.DQF.backTo) window.DQF.backTo('cases', '返回案例分析');
       });
     }
 
@@ -181,6 +183,7 @@
         if (window.DQFChecklist) window.DQFChecklist.preset(c.chk);
         var el = document.getElementById('checklist');
         if (el && el.scrollIntoView) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (window.DQF && window.DQF.backTo) window.DQF.backTo('cases', '返回案例分析');
       });
     }
   }
