@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="PqaP66pfZOKTZ7nrnEiFhb">
+<head data-page-node-id="dCZBSGumjttOse9MuctCP7">
+<meta charset="UTF-8" data-page-node-id="fBAkCTKlhH5JWubDKFBdNH">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="vvZvLnCJF1pZsWbCZaV0tf">
+<title>Discussion Quality Framework · 讨论质量框架</title>
+<style>
+/* ============================================================
+   Design Tokens — Dark / Liquid Glass / Orange Accent / Minimal
+   ============================================================ */
+:root{
+  --bg:#111315;
+  --bg-deep:#0B0D0E;
+  --bg-soft:#16191C;
+  --glass:rgba(255,255,255,.06);
+  --glass-2:rgba(255,255,255,.035);
+  --glass-3:rgba(255,255,255,.09);
+  --border:rgba(255,255,255,.10);
+  --border-strong:rgba(255,255,255,.16);
+  --text:#E9ECEF;
+  --text-2:#B6BCC4;
+  --muted:#8A9199;
+  --faint:#5F676F;
+  --accent:#F59E0B;
+  --accent-soft:rgba(245,158,11,.14);
+  --accent-line:rgba(245,158,11,.34);
+  --green:#22C55E;
+  --blue:#60A5FA;
+  --red:#EF4444;
+  --radius:18px;
+  --radius-sm:12px;
+  --radius-lg:26px;
+  --maxw:1120px;
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","PingFang SC","Helvetica Neue","Hiragino Sans GB","Microsoft YaHei",Inter,Arial,sans-serif;
+  --mono:"SF Mono",ui-monospace,"JetBrains Mono","Menlo","Consolas",monospace;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font);
+  font-size:16px;
+  line-height:1.7;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overflow-x:hidden;
+}
+h1,h2,h3,h4,p,ul,ol{margin:0}
+ul{padding:0;list-style:none}
+button{font-family:inherit;color:inherit;background:none;border:none;cursor:pointer}
+::selection{background:rgba(245,158,11,.28)}
+
+/* ============================ Layout ============================ */
+.wrap{width:100%;max-width:var(--maxw);margin:0 auto;padding:0 28px}
+section{position:relative;padding:120px 0}
+.sec-head{margin-bottom:56px;max-width:720px}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:9px;
+  font-size:11.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:18px;
+}
+.eyebrow::before{content:"";width:22px;height:1px;background:var(--accent-line)}
+.sec-title{font-size:clamp(28px,3.6vw,42px);font-weight:600;letter-spacing:-.02em;line-height:1.22}
+.sec-desc{margin-top:18px;font-size:15.5px;color:var(--text-2);line-height:1.85}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent)}
+
+/* ============================ Top bar ============================ */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:60;
+  backdrop-filter:blur(20px) saturate(160%);
+  -webkit-backdrop-filter:blur(20px) saturate(160%);
+  background:rgba(17,19,21,.62);
+  border-bottom:1px solid transparent;
+  transition:border-color .4s var(--ease),background .4s var(--ease);
+}
+.topbar.solid{border-bottom-color:var(--border);background:rgba(17,19,21,.82)}
+.topbar-in{
+  max-width:var(--maxw);margin:0 auto;padding:0 28px;height:60px;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+}
+.brand{display:flex;align-items:center;gap:11px;font-size:13.5px;font-weight:600;letter-spacing:.02em}
+.brand-dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 14px rgba(245,158,11,.75)}
+.brand span{color:var(--muted);font-weight:400}
+.topnav{display:flex;gap:26px}
+.topnav a{
+  font-size:13px;color:var(--muted);text-decoration:none;letter-spacing:.02em;
+  transition:color .25s var(--ease);position:relative;padding:4px 0;
+}
+.topnav a:hover{color:var(--text)}
+.topnav a.on{color:var(--text)}
+.topnav a.on::after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--accent);
+}
+
+/* ============================ Dot nav ============================ */
+.dotnav{
+  position:fixed;right:26px;top:50%;transform:translateY(-50%);z-index:50;
+  display:flex;flex-direction:column;gap:14px;align-items:flex-end;
+}
+.dotnav a{
+  display:flex;align-items:center;gap:10px;text-decoration:none;
+  font-size:11px;color:var(--faint);letter-spacing:.04em;
+  transition:color .3s var(--ease);
+}
+.dotnav i{
+  width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.20);
+  transition:all .35s var(--ease);flex:none;
+}
+.dotnav a span{opacity:0;transform:translateX(6px);transition:all .35s var(--ease)}
+.dotnav a:hover span{opacity:1;transform:translateX(0)}
+.dotnav a.on{color:var(--text-2)}
+.dotnav a.on i{background:var(--accent);transform:scale(1.5);box-shadow:0 0 12px rgba(245,158,11,.6)}
+.dotnav a.on span{opacity:1;transform:translateX(0)}
+
+/* ============================ Hero ============================ */
+.hero{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:140px 0 90px;text-align:center;overflow:hidden;
+}
+.hero-bg{position:absolute;inset:0;z-index:0;pointer-events:none}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5}
+.orb-a{
+  width:620px;height:620px;left:50%;top:-14%;margin-left:-310px;
+  background:radial-gradient(circle at 50% 50%,rgba(245,158,11,.20),transparent 66%);
+  animation:drift 22s ease-in-out infinite;
+}
+.orb-b{
+  width:520px;height:520px;right:-8%;bottom:-16%;
+  background:radial-gradient(circle at 50% 50%,rgba(96,165,250,.15),transparent 68%);
+  animation:drift 27s ease-in-out infinite reverse;
+}
+.orb-c{
+  width:440px;height:440px;left:-6%;bottom:-6%;
+  background:radial-gradient(circle at 50% 50%,rgba(255,255,255,.07),transparent 70%);
+  animation:drift 32s ease-in-out infinite;
+}
+.hero-grid{
+  position:absolute;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.028) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.028) 1px,transparent 1px);
+  background-size:64px 64px;
+  mask-image:radial-gradient(ellipse 78% 62% at 50% 42%,#000 20%,transparent 78%);
+  -webkit-mask-image:radial-gradient(ellipse 78% 62% at 50% 42%,#000 20%,transparent 78%);
+}
+@keyframes drift{
+  0%,100%{transform:translate(0,0) scale(1)}
+  33%{transform:translate(28px,-24px) scale(1.07)}
+  66%{transform:translate(-22px,18px) scale(.95)}
+}
+.hero-in{position:relative;z-index:2}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:9px;
+  padding:7px 15px;border-radius:999px;
+  background:var(--glass);border:1px solid var(--border);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-2);
+  margin-bottom:34px;
+}
+.hero-badge em{width:5px;height:5px;border-radius:50%;background:var(--green);font-style:normal}
+.hero h1{
+  font-size:clamp(38px,6.4vw,74px);font-weight:600;letter-spacing:-.035em;line-height:1.06;
+  background:linear-gradient(180deg,#FFFFFF 8%,#B9C0C8 96%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero h2{
+  margin-top:20px;font-size:clamp(17px,2.2vw,23px);font-weight:400;
+  letter-spacing:.05em;color:var(--text-2);
+}
+.hero-sub{margin-top:26px;font-size:16.5px;color:var(--muted);letter-spacing:.03em}
+.hero-sub b{color:var(--accent);font-weight:500}
+
+/* hero chain */
+.hero-chain{
+  margin-top:60px;display:flex;align-items:center;justify-content:center;
+  flex-wrap:wrap;gap:0;
+}
+.hc-node{
+  padding:9px 18px;border-radius:999px;
+  background:var(--glass);border:1px solid var(--border);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  font-size:13px;letter-spacing:.05em;color:var(--text);white-space:nowrap;
+  transition:all .45s var(--ease);
+}
+.hc-node:hover{border-color:var(--accent-line);background:var(--glass-3);transform:translateY(-2px)}
+.hc-link{position:relative;width:58px;height:1px;margin:0 4px;overflow:hidden;background:rgba(255,255,255,.10)}
+.hc-link::after{
+  content:"";position:absolute;top:0;left:-42%;width:42%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  animation:travel 2.8s linear infinite;
+}
+.hc-link:nth-child(2)::after{animation-delay:0s}
+.hc-link:nth-child(4)::after{animation-delay:.35s}
+.hc-link:nth-child(6)::after{animation-delay:.7s}
+.hc-link:nth-child(8)::after{animation-delay:1.05s}
+@keyframes travel{0%{left:-42%}100%{left:100%}}
+.hero-scroll{
+  margin-top:70px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+}
+.hero-scroll i{
+  display:block;width:1px;height:42px;
+  background:linear-gradient(180deg,var(--border-strong),transparent);
+  position:relative;overflow:hidden;
+}
+.hero-scroll i::after{
+  content:"";position:absolute;top:-40%;left:0;width:1px;height:40%;background:var(--accent);
+  animation:drop 2.4s ease-in-out infinite;
+}
+@keyframes drop{0%{top:-40%;opacity:0}30%{opacity:1}100%{top:100%;opacity:0}}
+
+/* ============================ Reveal ============================ */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+
+/* ==================== Framework Overview ==================== */
+.ov-list{display:flex;flex-direction:column;gap:12px}
+.ov-item{
+  border:1px solid var(--border);border-radius:var(--radius);
+  background:var(--glass-2);overflow:hidden;
+  transition:border-color .35s var(--ease),background .35s var(--ease);
+}
+.ov-item:hover{border-color:var(--border-strong);background:var(--glass)}
+.ov-head{
+  width:100%;display:flex;align-items:center;gap:18px;
+  padding:20px 24px;text-align:left;
+}
+.ov-num{
+  flex:none;width:30px;height:30px;border-radius:9px;
+  display:grid;place-items:center;
+  background:var(--glass-3);border:1px solid var(--border);
+  font-size:12px;font-family:var(--mono);color:var(--accent);
+  transition:all .35s var(--ease);
+}
+.ov-title{font-size:16.5px;font-weight:550;letter-spacing:.01em;flex:1}
+.ov-tag{font-size:12px;color:var(--muted);letter-spacing:.06em}
+.ov-caret{
+  flex:none;width:16px;height:16px;position:relative;
+  transition:transform .4s var(--ease);
+}
+.ov-caret::before,.ov-caret::after{
+  content:"";position:absolute;background:var(--muted);border-radius:2px;
+  transition:background .3s var(--ease);
+}
+.ov-caret::before{top:7.5px;left:2px;width:12px;height:1.3px}
+.ov-caret::after{left:7.3px;top:2px;width:1.3px;height:12px;transition:opacity .3s var(--ease),transform .3s var(--ease)}
+.ov-item.open .ov-caret{transform:rotate(180deg)}
+.ov-item.open .ov-caret::after{opacity:0;transform:scaleY(0)}
+.ov-item.open .ov-num{background:var(--accent-soft);border-color:var(--accent-line)}
+.ov-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .45s var(--ease)}
+.ov-item.open .ov-body{grid-template-rows:1fr}
+.ov-body>div{overflow:hidden}
+.ov-body-in{
+  padding:2px 24px 24px 72px;color:var(--text-2);font-size:14.5px;line-height:1.9;
+  border-top:1px solid transparent;
+}
+.ov-item.open .ov-body-in{border-top-color:var(--border)}
+.ov-body-in b{color:var(--text);font-weight:550}
+.ov-body-in .q{color:var(--accent)}
+
+/* ==================== Baseline Cards ==================== */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px}
+.card{
+  border:1px solid var(--border);border-radius:var(--radius-lg);
+  background:linear-gradient(180deg,var(--glass),var(--glass-2));
+  backdrop-filter:blur(22px) saturate(150%);
+  -webkit-backdrop-filter:blur(22px) saturate(150%);
+  overflow:hidden;transition:all .45s var(--ease);
+}
+.card:hover{transform:translateY(-4px);border-color:var(--border-strong);box-shadow:0 24px 60px -30px rgba(0,0,0,.85)}
+.card.open{border-color:var(--accent-line);box-shadow:0 0 0 1px rgba(245,158,11,.10),0 24px 60px -30px rgba(0,0,0,.9)}
+.card-head{width:100%;display:flex;align-items:flex-start;gap:16px;padding:26px 26px 22px;text-align:left}
+.card-idx{
+  flex:none;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;
+  background:var(--accent-soft);border:1px solid var(--accent-line);
+  font-family:var(--mono);font-size:12.5px;color:var(--accent);
+}
+.card-tt{flex:1}
+.card-tt h3{font-size:18px;font-weight:580;letter-spacing:-.01em}
+.card-tt p{margin-top:3px;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.card-plus{flex:none;margin-top:6px;width:14px;height:14px;position:relative;transition:transform .4s var(--ease)}
+.card-plus::before,.card-plus::after{content:"";position:absolute;background:var(--muted);border-radius:2px}
+.card-plus::before{top:6.3px;left:1px;width:12px;height:1.3px}
+.card-plus::after{left:6.3px;top:1px;width:1.3px;height:12px;transition:opacity .3s var(--ease)}
+.card.open .card-plus{transform:rotate(180deg)}
+.card.open .card-plus::after{opacity:0}
+.card-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .5s var(--ease)}
+.card.open .card-body{grid-template-rows:1fr}
+.card-body>div{overflow:hidden}
+.card-body-in{padding:0 26px 26px 76px}
+.blk{margin-top:18px}
+.blk-t{
+  font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);
+  margin-bottom:8px;display:flex;align-items:center;gap:8px;
+}
+.blk-t::before{content:"";width:12px;height:1px;background:var(--accent-line)}
+.blk-c{font-size:14.5px;color:var(--text-2);line-height:1.85}
+.blk-c strong{color:var(--text);font-weight:550}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.chip{
+  padding:5px 12px;border-radius:999px;font-size:12.5px;
+  background:var(--glass-3);border:1px solid var(--border);color:var(--text-2);
+}
+.chip.warn{border-color:rgba(239,68,68,.28);color:#F4A3A3;background:rgba(239,68,68,.08)}
+.chip.ok{border-color:rgba(34,197,94,.26);color:#96DCAE;background:rgba(34,197,94,.07)}
+.warn-list li{
+  font-size:14px;color:var(--text-2);padding-left:16px;position:relative;line-height:1.8;
+}
+.warn-list li::before{
+  content:"";position:absolute;left:0;top:11px;width:5px;height:5px;border-radius:50%;background:var(--red);opacity:.75;
+}
+
+/* ==================== Flow ==================== */
+.flow-wrap{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:start}
+.flow{display:flex;flex-direction:column;align-items:center;gap:0}
+.fnode{
+  width:100%;max-width:360px;padding:16px 22px;border-radius:var(--radius);
+  border:1px solid var(--border);background:var(--glass-2);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  display:flex;align-items:center;gap:14px;text-align:left;
+  transition:all .4s var(--ease);
+}
+.fnode:hover{border-color:var(--border-strong);background:var(--glass);transform:translateY(-2px)}
+.fnode.active{border-color:var(--accent-line);background:var(--accent-soft);box-shadow:0 0 0 1px rgba(245,158,11,.14)}
+.fnode.dim{opacity:.34}
+.fq{flex:1;font-size:15.5px;font-weight:520;letter-spacing:.01em}
+.fk{
+  flex:none;font-family:var(--mono);font-size:11px;letter-spacing:.06em;
+  color:var(--faint);padding:3px 8px;border-radius:6px;background:var(--glass-3);
+}
+.fnode.active .fk{color:var(--accent);background:rgba(245,158,11,.12)}
+.farrow{width:1px;height:26px;background:linear-gradient(180deg,var(--border-strong),rgba(255,255,255,.05));position:relative}
+.farrow::after{
+  content:"";position:absolute;left:-2.5px;bottom:-1px;width:6px;height:6px;
+  border-right:1px solid var(--border-strong);border-bottom:1px solid var(--border-strong);
+  transform:rotate(45deg);
+}
+.fend{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap;justify-content:center}
+.fend button{
+  padding:9px 20px;border-radius:999px;border:1px solid var(--border);
+  background:var(--glass-2);font-size:13.5px;letter-spacing:.03em;color:var(--text-2);
+  transition:all .35s var(--ease);
+}
+.fend button:hover{border-color:var(--border-strong);color:var(--text)}
+.fend button.g:hover{border-color:rgba(34,197,94,.4);color:#96DCAE;background:rgba(34,197,94,.08)}
+.fend button.r:hover{border-color:rgba(239,68,68,.4);color:#F4A3A3;background:rgba(239,68,68,.08)}
+.fpanel{
+  border:1px solid var(--border);border-radius:var(--radius-lg);
+  background:linear-gradient(180deg,var(--glass),var(--glass-2));
+  backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+  padding:30px 30px 32px;min-height:320px;
+}
+.fp-idx{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;color:var(--accent);text-transform:uppercase}
+.fp-title{font-size:26px;font-weight:580;letter-spacing:-.015em;margin-top:12px}
+.fp-desc{margin-top:16px;font-size:15px;color:var(--text-2);line-height:1.9}
+.fp-split{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:26px}
+.fp-box{padding:16px 18px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--glass-2)}
+.fp-box.y{border-color:rgba(34,197,94,.22)}
+.fp-box.n{border-color:rgba(239,68,68,.22)}
+.fp-box h5{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);font-weight:600;display:flex;gap:8px;align-items:center}
+.fp-box.y h5{color:#7DCB98}
+.fp-box.n h5{color:#E08A8A}
+.fp-box p{margin-top:8px;font-size:13.8px;color:var(--text-2);line-height:1.75}
+
+/* ==================== Tolerance Slider ==================== */
+.tol{
+  border:1px solid var(--border);border-radius:var(--radius-lg);
+  background:linear-gradient(180deg,var(--glass),var(--glass-2));
+  backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+  padding:40px 38px 34px;
+}
+.tol-top{display:flex;align-items:baseline;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.tol-name{font-size:24px;font-weight:580;letter-spacing:-.01em}
+.tol-name span{color:var(--muted);font-weight:400;font-size:14px;margin-left:10px;letter-spacing:.06em}
+.tol-goal{font-size:13.5px;color:var(--muted);max-width:340px;text-align:right;line-height:1.7}
+.slider-row{margin-top:34px}
+.slider-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--faint);margin-bottom:14px;letter-spacing:.06em}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:999px;
+  background:rgba(255,255,255,.10);outline:none;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:20px;height:20px;border-radius:50%;
+  background:var(--accent);border:3px solid #1A1D20;cursor:grab;
+  box-shadow:0 0 0 1px rgba(245,158,11,.4),0 6px 18px -4px rgba(245,158,11,.7);
+  transition:transform .25s var(--ease),box-shadow .25s var(--ease);
+}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.14);box-shadow:0 0 0 6px rgba(245,158,11,.12),0 6px 20px -4px rgba(245,158,11,.8)}
+input[type=range]::-webkit-slider-thumb:active{cursor:grabbing;transform:scale(1.05)}
+input[type=range]::-moz-range-thumb{
+  width:16px;height:16px;border-radius:50%;background:var(--accent);border:3px solid #1A1D20;cursor:grab;
+}
+input[type=range]::-moz-range-track{height:4px;border-radius:999px;background:rgba(255,255,255,.10)}
+.ticks{display:flex;justify-content:space-between;margin-top:14px}
+.tick{
+  flex:1;text-align:center;font-size:11.5px;color:var(--faint);letter-spacing:.04em;
+  transition:color .3s var(--ease);cursor:pointer;padding:4px 0;
+}
+.tick.on{color:var(--accent)}
+.tick:hover{color:var(--text-2)}
+.tol-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:34px}
+.tol-item{padding:18px 20px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--glass-2)}
+.tol-item-h{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.tol-item-h b{font-size:14.5px;font-weight:550}
+.stars{font-size:14px;letter-spacing:2px;color:var(--accent);white-space:nowrap}
+.stars i{font-style:normal;color:rgba(255,255,255,.16)}
+.tol-item p{margin-top:9px;font-size:13.2px;color:var(--muted);line-height:1.7}
+.tol-meter{margin-top:32px;display:flex;align-items:center;gap:16px}
+.tol-meter label{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);white-space:nowrap}
+.meter{flex:1;height:3px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
+.meter i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--green),var(--accent));transition:width .6s var(--ease)}
+.tol-meter em{font-style:normal;font-family:var(--mono);font-size:12px;color:var(--text-2);width:52px;text-align:right}
+
+/* ==================== Cognitive Gain ==================== */
+.gain{text-align:center}
+.gain-statement{
+  font-size:clamp(26px,3.6vw,40px);font-weight:580;letter-spacing:-.02em;line-height:1.4;
+  max-width:800px;margin:0 auto;
+}
+.gain-statement em{font-style:normal;color:var(--accent)}
+.gain-sub{margin-top:20px;font-size:15.5px;color:var(--muted);max-width:640px;margin-inline:auto;line-height:1.85}
+.gain-chain{
+  margin-top:64px;display:flex;align-items:stretch;justify-content:center;gap:0;flex-wrap:wrap;
+}
+.gn{flex:1;min-width:150px;max-width:190px;padding:22px 14px;position:relative;text-align:center}
+.gn b{
+  display:block;font-size:15.5px;font-weight:550;letter-spacing:.01em;
+  padding:14px 0;border-radius:var(--radius-sm);
+  border:1px solid var(--border);background:var(--glass-2);
+  transition:all .4s var(--ease);
+}
+.gn:hover b{border-color:var(--accent-line);background:var(--accent-soft);color:var(--accent);transform:translateY(-3px)}
+.gn span{display:block;margin-top:10px;font-size:12px;color:var(--faint);letter-spacing:.04em}
+.gn+.gn::before{
+  content:"";position:absolute;left:-6px;top:36px;width:12px;height:1px;background:var(--border-strong);
+}
+.gain-list{
+  margin-top:64px;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;text-align:left;
+}
+.gain-list li{
+  padding:18px 20px;border-radius:var(--radius-sm);
+  border:1px solid var(--border);background:var(--glass-2);
+  font-size:14px;color:var(--text-2);line-height:1.75;
+  display:flex;gap:12px;align-items:flex-start;
+  transition:all .4s var(--ease);
+}
+.gain-list li:hover{border-color:var(--border-strong);background:var(--glass)}
+.gain-list i{
+  flex:none;font-style:normal;font-family:var(--mono);font-size:11px;color:var(--accent);
+  width:20px;height:20px;border-radius:6px;display:grid;place-items:center;
+  background:var(--accent-soft);border:1px solid var(--accent-line);margin-top:2px;
+}
+.quote{
+  margin-top:60px;padding:34px 30px;border-radius:var(--radius-lg);
+  border:1px solid var(--accent-line);
+  background:linear-gradient(180deg,rgba(245,158,11,.09),rgba(245,158,11,.02));
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+}
+.quote p{font-size:clamp(18px,2.4vw,24px);font-weight:520;letter-spacing:-.01em;line-height:1.6}
+.quote small{display:block;margin-top:14px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+
+/* ==================== Exit Tree ==================== */
+.tree{display:flex;flex-direction:column;gap:0}
+.tnode{
+  border:1px solid var(--border);border-radius:var(--radius);
+  background:var(--glass-2);padding:22px 24px;margin-left:0;
+  opacity:.4;transition:all .5s var(--ease);
+}
+.tnode.on{opacity:1;border-color:var(--border-strong);background:var(--glass)}
+.tnode.hit{border-color:var(--accent-line);box-shadow:0 0 0 1px rgba(245,158,11,.12)}
+.tnode-q{font-size:16.5px;font-weight:520;letter-spacing:.01em}
+.tnode-h{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+.tbranches{display:flex;gap:12px;margin-top:16px;flex-wrap:wrap}
+.tb{
+  padding:9px 18px;border-radius:999px;border:1px solid var(--border);
+  background:var(--glass-3);font-size:13.5px;letter-spacing:.04em;color:var(--text-2);
+  display:inline-flex;align-items:center;gap:9px;
+  transition:all .35s var(--ease);
+}
+.tb s{text-decoration:none;font-size:11px;font-family:var(--mono);letter-spacing:.1em;opacity:.7}
+.tb:hover{transform:translateY(-2px);color:var(--text);border-color:var(--border-strong)}
+.tb.y:hover{border-color:rgba(34,197,94,.42);color:#96DCAE;background:rgba(34,197,94,.09)}
+.tb.n:hover{border-color:rgba(239,68,68,.42);color:#F4A3A3;background:rgba(239,68,68,.09)}
+.tb.sel{color:var(--text);border-color:var(--accent-line);background:var(--accent-soft);box-shadow:0 0 0 1px rgba(245,158,11,.12)}
+.tb.y.sel{border-color:rgba(34,197,94,.5);background:rgba(34,197,94,.12);color:#A9E6BF}
+.tb.n.sel{border-color:rgba(239,68,68,.5);background:rgba(239,68,68,.12);color:#F6B3B3}
+.tlink{height:22px;margin-left:34px;width:1px;background:linear-gradient(180deg,var(--border-strong),rgba(255,255,255,.04))}
+.tnode.lv1{margin-left:38px}
+.tnode.lv2{margin-left:76px}
+.tout{
+  margin-top:26px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;
+  padding:22px 26px;border-radius:var(--radius);
+  border:1px solid var(--border);background:var(--glass-2);
+}
+.tout-l{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.tout-v{font-size:22px;font-weight:560;letter-spacing:-.01em;margin-top:6px;transition:color .3s var(--ease)}
+.tout-v.go{color:var(--green)}
+.tout-v.stop{color:var(--red)}
+.tout-v.idle{color:var(--muted)}
+.tout-d{font-size:13.5px;color:var(--muted);max-width:420px;line-height:1.75}
+.reset{
+  margin-top:22px;padding:9px 20px;border-radius:999px;border:1px solid var(--border);
+  background:var(--glass-2);font-size:13px;color:var(--text-2);letter-spacing:.04em;
+  transition:all .3s var(--ease);
+}
+.reset:hover{border-color:var(--border-strong);color:var(--text)}
+.exit-note{
+  margin-top:44px;display:flex;align-items:stretch;gap:18px;flex-wrap:wrap;justify-content:center;
+  padding:30px 26px;border-radius:var(--radius-lg);
+  border:1px solid var(--border);background:linear-gradient(180deg,var(--glass),var(--glass-2));
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+}
+.en-item{display:flex;align-items:center;gap:14px;font-size:19px;font-weight:520;letter-spacing:.01em}
+.en-item.del{color:var(--faint);text-decoration:line-through;text-decoration-color:rgba(255,255,255,.28);text-decoration-thickness:1.5px}
+.en-op{color:var(--accent);font-size:22px;font-weight:400;display:grid;place-items:center}
+.en-item.fin{color:var(--accent)}
+
+/* ==================== Checklist ==================== */
+.chk-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:28px;align-items:start}
+.chk-list{display:flex;flex-direction:column;gap:11px}
+.chk{
+  display:flex;align-items:center;gap:16px;padding:18px 22px;
+  border:1px solid var(--border);border-radius:var(--radius);
+  background:var(--glass-2);cursor:pointer;
+  transition:all .35s var(--ease);
+}
+.chk:hover{border-color:var(--border-strong);background:var(--glass)}
+.chk.on{border-color:rgba(34,197,94,.32);background:rgba(34,197,94,.06)}
+.chk-box{
+  flex:none;width:21px;height:21px;border-radius:7px;
+  border:1.5px solid var(--border-strong);background:var(--glass-3);
+  display:grid;place-items:center;transition:all .3s var(--ease);
+}
+.chk.on .chk-box{background:var(--green);border-color:var(--green);box-shadow:0 0 16px -3px rgba(34,197,94,.6)}
+.chk-box svg{width:11px;height:11px;opacity:0;transform:scale(.5);transition:all .3s var(--ease)}
+.chk.on .chk-box svg{opacity:1;transform:none}
+.chk-t{flex:1}
+.chk-t b{display:block;font-size:15.5px;font-weight:520;letter-spacing:.01em}
+.chk-t span{display:block;margin-top:2px;font-size:12.8px;color:var(--muted)}
+.chk.on .chk-t b{color:#CFEFD9}
+.score{
+  border:1px solid var(--border);border-radius:var(--radius-lg);
+  background:linear-gradient(180deg,var(--glass),var(--glass-2));
+  backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+  padding:36px 32px;text-align:center;position:sticky;top:96px;
+}
+.score-l{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+.score-n{
+  font-size:74px;font-weight:300;letter-spacing:-.04em;line-height:1;margin-top:16px;
+  font-variant-numeric:tabular-nums;font-family:var(--mono);
+}
+.score-n small{font-size:26px;color:var(--muted);margin-left:2px}
+.score-bar{height:4px;border-radius:999px;background:rgba(255,255,255,.08);margin-top:24px;overflow:hidden}
+.score-bar i{
+  display:block;height:100%;width:0;border-radius:999px;
+  background:linear-gradient(90deg,var(--green),var(--accent));
+  transition:width .7s var(--ease);
+}
+.score-grade{
+  margin-top:20px;display:inline-block;padding:7px 18px;border-radius:999px;
+  font-size:13px;letter-spacing:.1em;text-transform:uppercase;
+  border:1px solid var(--border);background:var(--glass-3);color:var(--text-2);
+  transition:all .4s var(--ease);
+}
+.score-note{margin-top:18px;font-size:13px;color:var(--muted);line-height:1.75;min-height:44px}
+
+/* ==================== Summary ==================== */
+.summary{
+  min-height:88vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:140px 0 120px;position:relative;overflow:hidden;
+}
+.sum-bg{
+  position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 50% at 50% 46%,rgba(245,158,11,.10),transparent 70%);
+}
+.sum-in{position:relative;z-index:2;width:100%}
+.sum-eyebrow{font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent)}
+.sum-title{margin-top:20px;font-size:clamp(26px,3.4vw,38px);font-weight:580;letter-spacing:-.02em;line-height:1.35}
+.sum-chain{margin-top:66px;display:flex;flex-direction:column;align-items:center;gap:0}
+.sn{width:min(300px,80vw);padding:17px 0;border-radius:var(--radius);border:1px solid var(--border);background:var(--glass-2);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);font-size:17px;font-weight:520;letter-spacing:.02em;transition:all .5s var(--ease)}
+.sn:hover{transform:translateY(-2px);border-color:var(--border-strong);background:var(--glass)}
+.sn.no{
+  color:var(--faint);text-decoration:line-through;
+  text-decoration-color:rgba(255,255,255,.26);text-decoration-thickness:1.5px;
+  border-style:dashed;
+}
+.sn.accent{border-color:var(--accent-line);background:var(--accent-soft);color:var(--accent);box-shadow:0 0 46px -18px rgba(245,158,11,.6)}
+.sn-c{height:24px;width:1px;background:linear-gradient(180deg,var(--border-strong),rgba(255,255,255,.05))}
+.sn-lab{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin:10px 0}
+.sum-foot{margin-top:70px;font-size:14px;color:var(--faint);letter-spacing:.05em}
+
+/* ============================ Footer ============================ */
+footer{border-top:1px solid var(--border);padding:38px 0;background:var(--bg-deep)}
+.foot-in{max-width:var(--maxw);margin:0 auto;padding:0 28px;display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;font-size:12.5px;color:var(--faint);letter-spacing:.04em}
+.foot-in b{color:var(--text-2);font-weight:500}
+
+/* ============================ Responsive ============================ */
+@media (max-width:960px){
+  .flow-wrap,.chk-grid,.tol-grid{grid-template-columns:1fr}
+  .score{position:static}
+  .dotnav{display:none}
+  .topnav{display:none}
+  .fp-split{grid-template-columns:1fr}
+  section{padding:88px 0}
+  .tol-goal{text-align:left}
+  .hero-chain{gap:0}
+  .hc-link{width:30px}
+  .gn+.gn::before{display:none}
+}
+@media (max-width:640px){
+  .wrap{padding:0 20px}
+  .tol{padding:30px 22px 26px}
+  .card-body-in{padding:0 20px 22px 20px}
+  .ov-body-in{padding:2px 20px 22px 20px}
+  .card-head{padding:22px 20px 18px;gap:12px}
+  .tnode.lv1{margin-left:0}
+  .tnode.lv2{margin-left:0}
+  .tlink{margin-left:22px}
+  .score-n{font-size:60px}
+  .hero-chain{flex-direction:column;gap:10px}
+  .hc-link{width:1px;height:22px;margin:0;background:linear-gradient(180deg,var(--border-strong),transparent)}
+  .hc-link::after{width:1px;height:40%;left:0;top:-40%;background:linear-gradient(180deg,transparent,var(--accent),transparent);animation:dropv 2.8s linear infinite}
+  @keyframes dropv{0%{top:-40%}100%{top:100%}}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms!important;transition-duration:.001ms!important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body data-page-node-id="3oJlOXCk8ntI6n3mDhKqMT">
+
+<!-- ============================ TOP BAR ============================ -->
+<header class="topbar" id="topbar" data-page-node-id="9l5R1ZlYuK17vSu3Alr6aw">
+  <div class="topbar-in" data-page-node-id="SGVZXpA9hfJPCkJP8synqk">
+    <div class="brand" data-page-node-id="IcuvIYEPHAolFt28KSXXbI"><i class="brand-dot" data-page-node-id="6as5447QRBSXnRzAgAkxDD"></i>Discussion Quality <span data-page-node-id="JlmTDJIYKvmDmcpJ2v6cOl">Framework</span></div>
+    <nav class="topnav" id="topnav" data-page-node-id="GEIMZ3pSE3uoDiNFC1K3td">
+      <a href="#overview" data-page-node-id="iFqpYozsJ7wWHuHfIY4e26">Overview</a>
+      <a href="#baselines" data-page-node-id="uw4jJToDMGpFzsBljBHU3Q">Baselines</a>
+      <a href="#flow" data-page-node-id="ZLLX63w1Zq09ylRCUBiXSk">Flow</a>
+      <a href="#tolerance" data-page-node-id="Gf7OH7RwX6wQo1pthNSv7l">Tolerance</a>
+      <a href="#gain" data-page-node-id="2w8Os8McEAG6NFZhLUXxHi">Gain</a>
+      <a href="#exit" data-page-node-id="3AwothX05pEJvhPELAzWtQ">Exit</a>
+      <a href="#checklist" data-page-node-id="5bZqfMdce5neug3EDVP5pw">Checklist</a>
+    </nav>
+    <div class="brand" style="color:var(--faint);font-weight:400" data-page-node-id="TzsiW6dKHNC27tahNGMqaw">V1</div>
+  </div>
+</header>
+
+<!-- ============================ DOT NAV ============================ -->
+<nav class="dotnav" id="dotnav" data-page-node-id="m0yrDcWf7Zw67YdwJvPbPu">
+  <a href="#hero" data-sec="hero" data-page-node-id="vtUrHhxhaC759u9E0wp7sN"><span data-page-node-id="jQHnXFgPydD1qAx455vtZy">Start</span><i data-page-node-id="c9LlrYr9Rj4Ifc1GxyAuhY"></i></a>
+  <a href="#overview" data-sec="overview" data-page-node-id="qvpM2rzHG3SuFUXUPrcIF5"><span data-page-node-id="dwywdBpVmEXl54GbHO5d9H">Overview</span><i data-page-node-id="6L9lXLfJNKWAQ51H1OGjZd"></i></a>
+  <a href="#baselines" data-sec="baselines" data-page-node-id="fBeQCshvJ6UsVjdZdHi8C0"><span data-page-node-id="uU4MctdfmKCcmfitvEDCyB">Baselines</span><i data-page-node-id="Xx6wdtX78tRnCanVhApJdX"></i></a>
+  <a href="#flow" data-sec="flow" data-page-node-id="oxNP6NyFA32CQhNtIJEo57"><span data-page-node-id="bzQRFFCRYeuD4p9hDz8VEI">Flow</span><i data-page-node-id="ggifCFEb1zL85XcdvXMkRi"></i></a>
+  <a href="#tolerance" data-sec="tolerance" data-page-node-id="EKFZsCfrtiCQlwMkxzsRdZ"><span data-page-node-id="BWA3m5bc76eZPi0WV4jfRm">Tolerance</span><i data-page-node-id="JQom3CoGkbRYuixJzQihpE"></i></a>
+  <a href="#gain" data-sec="gain" data-page-node-id="qoFlCsiO1Db124WWdSDm6q"><span data-page-node-id="eAxyOJom3PZjAAXOFYIZJv">Gain</span><i data-page-node-id="4qFGtwy6K4ggkUNyaZ6jj5"></i></a>
+  <a href="#exit" data-sec="exit" data-page-node-id="7q3MhyVWfv8bWsqWUmExJl"><span data-page-node-id="NL5BCJh1Tsu5JTqxac9iUl">Exit</span><i data-page-node-id="YpvTGo7x3HbRToNxxV6gNo"></i></a>
+  <a href="#checklist" data-sec="checklist" data-page-node-id="wZ5X2ePJOrrKRVhPwGAlde"><span data-page-node-id="BT2S61GxCaL6IbuSdvd5Dv">Checklist</span><i data-page-node-id="H2b4gW49VBYf3ClIiuLHBm"></i></a>
+  <a href="#summary" data-sec="summary" data-page-node-id="TERGThSrKpunKVSxHqy3U8"><span data-page-node-id="mcnsvE2lL91QPj5IrFtAJp">Summary</span><i data-page-node-id="AGvKJFnrrYt329i0oXUoaJ"></i></a>
+</nav>
+
+<!-- ============================ HERO ============================ -->
+<section class="hero" id="hero" data-page-node-id="Zbt5hAyvQaPSjqSMMXSjYP">
+  <div class="hero-bg" data-page-node-id="fRRva6vEVz9ylZUjIyVanK">
+    <div class="orb orb-a" data-page-node-id="Yooq9FU2tepiWttdqFodjA"></div>
+    <div class="orb orb-b" data-page-node-id="ReHavU4VsBgOw7Sotv576k"></div>
+    <div class="orb orb-c" data-page-node-id="OReVemnFwRvgo5pn5JygdO"></div>
+    <div class="hero-grid" data-page-node-id="V7kIuDfUKuF1aOAukZRbKz"></div>
+  </div>
+
+  <div class="wrap hero-in" data-page-node-id="ubQi0KVxxWMq75Un6V5eZv">
+    <div class="hero-badge" style="opacity:0;animation:fadeUp .9s var(--ease) .1s forwards" data-page-node-id="E0x4alf2dXPCutiCHDNZtX">
+      <em data-page-node-id="4saOk0z3l2tK9Jv02yaflC"></em>Thinking Framework · No.01
+    </div>
+
+    <h1 style="opacity:0;animation:fadeUp 1s var(--ease) .22s forwards" data-page-node-id="9KvXuKRm5dmHkezS5OAML3">
+      Discussion Quality<br data-page-node-id="R5AszIFPFhI7fYwXURXACG">Framework
+    </h1>
+
+    <h2 style="opacity:0;animation:fadeUp 1s var(--ease) .38s forwards" data-page-node-id="bUtjP4FHV9pcjimIQOaBrt">讨论质量框架</h2>
+
+    <p class="hero-sub" style="opacity:0;animation:fadeUp 1s var(--ease) .52s forwards" data-page-node-id="63wfWRk2q1qH3iNLvtq4Ga">
+      建立高质量讨论，<b data-page-node-id="jRGhJdnviXCNOHs97ph68W">而不是赢得讨论</b>
+    </p>
+
+    <div class="hero-chain" id="heroChain" style="opacity:0;animation:fadeUp 1s var(--ease) .68s forwards" data-page-node-id="HTxMetTclAFfw0RcU3vHHS"></div>
+
+    <div class="hero-scroll" style="opacity:0;animation:fadeUp 1s var(--ease) .9s forwards" data-page-node-id="lxkG27qmd0bf966Ci8RAFM">
+      <span data-page-node-id="mzHt7LAUJgicP7gvozvhPJ">Scroll</span><i data-page-node-id="LLH8xX2r3mgHMTDFNtRWjE"></i>
+    </div>
+  </div>
+</section>
+
+<style>
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+</style>
+
+<!-- ============================ OVERVIEW ============================ -->
+<section id="overview" data-page-node-id="NDGdDbocA8DAb0TRsnuS6Q">
+  <div class="wrap" data-page-node-id="xPOAiE3GQxzQcgeEMm2Ro9">
+    <div class="sec-head reveal" data-page-node-id="ABP7g9dMm7BGwAYj3HuEv2">
+      <div class="eyebrow" data-page-node-id="hXxfQ9Ehdi0X3Au9iiccY4">Framework Overview</div>
+      <h2 class="sec-title" data-page-node-id="1wxqLBBtrpwDR0kYqzmhVo">一条链路，六个判断点</h2>
+      <p class="sec-desc" data-page-node-id="aICRnAeSDdAsG7SB8GIEmT">
+        讨论不是一个动作，而是一条有先后顺序的链路。前面任何一步没有对齐，后面的所有推理都建立在不同的基础上。
+        点击任意节点，查看这一步到底在解决什么。
+      </p>
+    </div>
+
+    <div class="ov-list reveal" id="ovList" data-page-node-id="V2u65bob3fOMmNYc3ztTjC"></div>
+  </div>
+</section>
+
+<div class="wrap" data-page-node-id="3Mtfj6Molt7jCtSFjEP0g7"><div class="divider" data-page-node-id="yyVMKV1Zg8rv2UyzfZ4Sx5"></div></div>
+
+<!-- ============================ BASELINES ============================ -->
+<section id="baselines" data-page-node-id="oUSrXo9brOA7x7VkHBA2cy">
+  <div class="wrap" data-page-node-id="yCzkKVWKOhPm0k9IYvYyzx">
+    <div class="sec-head reveal" data-page-node-id="6eGWqXTntvsbC9uKitQBRL">
+      <div class="eyebrow" data-page-node-id="JIdCSY426WaDCEBRxewJ8M">Five Baselines</div>
+      <h2 class="sec-title" data-page-node-id="4sXhIXtmQFaX4l557GYoKv">五大基线</h2>
+      <p class="sec-desc" data-page-node-id="Ft7GfQXAj4Srsv7m1xlCri">
+        基线本身不随场景改变，改变的是对它的要求精度。五张卡片分别对应：统一对象、统一评价函数、
+        验证事实、保证推理、评估收益。点击卡片展开完整说明。
+      </p>
+    </div>
+    <div class="cards reveal" id="cards" data-page-node-id="tVSS5ONLEOkjPHmOZI1Y00"></div>
+  </div>
+</section>
+
+<div class="wrap" data-page-node-id="kLaPJT4hipTaxPcp5Cgw2E"><div class="divider" data-page-node-id="dKTYQOHvm8SElvdchCE1mA"></div></div>
+
+<!-- ============================ FLOW ============================ -->
+<section id="flow" data-page-node-id="fbUwZZX9UPqDDA8V1bjJh8">
+  <div class="wrap" data-page-node-id="lp6BeZVgVnAdiCu1DCDDxl">
+    <div class="sec-head reveal" data-page-node-id="etUTMCcs76MonH7zz77Ks3">
+      <div class="eyebrow" data-page-node-id="RdpnJMnwgv1PREUpVDSFX0">Discussion Flow</div>
+      <h2 class="sec-title" data-page-node-id="Ik3C8QRvFaDjfEXNBoRvbD">讨论流程</h2>
+      <p class="sec-desc" data-page-node-id="ikz6XfyrOM5TCVDJa0sXPz">
+        左侧是一次讨论的检查顺序，右侧是每一步的含义与两条分支的走向。点击左侧任意一步查看细节。
+      </p>
+    </div>
+
+    <div class="flow-wrap reveal" data-page-node-id="5HUBOsYyOO9zOHHeFXnfgf">
+      <div data-page-node-id="c92G1fc79mMaritVQyA1QV">
+        <div class="flow" id="flowList" data-page-node-id="sJbXngQ3kcba3nXwKFGGyc"></div>
+        <div class="fend" data-page-node-id="T6cVyO3DLDfBO7NCNq06QR">
+          <button class="g" data-end="continue" data-page-node-id="GLgobHD5bCtp0NQo4OHPOV">继续讨论</button>
+          <button class="r" data-end="exit" data-page-node-id="MogswHrF1OJqYh7BQnL5XJ">退出讨论</button>
+        </div>
+      </div>
+      <div class="fpanel" id="flowPanel" data-page-node-id="YiiKNfk1eIwD229UI0ZrxA"></div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap" data-page-node-id="hIkSaaoYbwE3yq9siZd5dm"><div class="divider" data-page-node-id="3JBB4nGXKGGfocA5hGGKQ7"></div></div>
+
+<!-- ============================ TOLERANCE ============================ -->
+<section id="tolerance" data-page-node-id="pKipDV3zvo0Q0o5cCXa9gc">
+  <div class="wrap" data-page-node-id="EPG3DyjVVh2CFO9wWlJphb">
+    <div class="sec-head reveal" data-page-node-id="4pOtdYKf5BfGDFlOIQU3cy">
+      <div class="eyebrow" data-page-node-id="3UY8rmEHdtpbcH9nY2Bn4U">Tolerance</div>
+      <h2 class="sec-title" data-page-node-id="tpDo8hJqA1XIW2C0xtWQOr">讨论宽容度</h2>
+      <p class="sec-desc" data-page-node-id="bzKxFJjF2XQrXXNrYKwHzL">
+        不同场景不需要不同规则，只需要不同的精度要求。拖动滑块，观察四项基线的要求如何随场景变化。
+      </p>
+    </div>
+
+    <div class="tol reveal" data-page-node-id="NktOXeQvjTldDdxohNDGva">
+      <div class="tol-top" data-page-node-id="twdrMGYKtpFo2e8SmuDMeb">
+        <div class="tol-name" id="tolName" data-page-node-id="ILf0Br4E8Blt1EWKuJZoBN">一般交流 <span data-page-node-id="cwkDPUN594u8JaBrwHWBPu">General Talk</span></div>
+        <div class="tol-goal" id="tolGoal" data-page-node-id="C3HC5h54qK9R0aVqxfbxOQ"></div>
+      </div>
+
+      <div class="slider-row" data-page-node-id="cHXVUqOUz2kvEoeIkNDCPz">
+        <div class="slider-labels" data-page-node-id="fCGSHWREMEeLgxGaoEwtoO"><span data-page-node-id="JpnDd73N5G1nan12Kx4cRx">闲聊</span><span data-page-node-id="8KBhNGeCR55jzselP0Z2k7">数学证明</span></div>
+        <input type="range" id="tolRange" min="0" max="5" step="1" value="1" aria-label="讨论宽容度" data-page-node-id="MwFFQ3uNs0tiR3VCs9vyqP">
+        <div class="ticks" id="tolTicks" data-page-node-id="1IDVH1iisY4OZ1XFa9CIUO"></div>
+      </div>
+
+      <div class="tol-grid" id="tolGrid" data-page-node-id="kCTD5FD8XRs97RzDWu84jI"></div>
+
+      <div class="tol-meter" data-page-node-id="0nS0WuwGc1zNy0O3EMFaH0">
+        <label data-page-node-id="dDq4uwnkPA5gVas8oSrFYu">误差容忍</label>
+        <div class="meter" data-page-node-id="f0WQrcWp8ftZibsPrEFo5C"><i id="tolMeter" style="width:80%" data-page-node-id="5rFMgrE9xxKmbssCGcWcEW"></i></div>
+        <em id="tolErr" data-page-node-id="BBEacpGVf9G9GBB3lOCC1r">80%</em>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap" data-page-node-id="6PMVD7LRL03ADCgLYeLESv"><div class="divider" data-page-node-id="i83TQbCxX3AkXirKArZGUV"></div></div>
+
+<!-- ============================ COGNITIVE GAIN ============================ -->
+<section id="gain" class="gain" data-page-node-id="xHKTOb8pWqnQ96rnu9JNrg">
+  <div class="wrap" data-page-node-id="0q4nFRyMNwCDJumQNSGJ42">
+    <div class="reveal" data-page-node-id="K8uRtnjpuS9sGcgwJTESsg">
+      <div class="eyebrow" style="justify-content:center" data-page-node-id="FYpskOj1Swdr1EDg2BycWk">Cognitive Gain</div>
+      <h2 class="gain-statement" data-page-node-id="UHED0Dhu835aULwvxLwLK4">
+        讨论最大的价值，不一定是得到答案，<br data-page-node-id="eEK5x8ZGpLQiDXAxfr7Eih">而是<em data-page-node-id="gRqxy9LuiC0S4ONvDNLJoj">增加认知</em>。
+      </h2>
+      <p class="gain-sub" data-page-node-id="WFKurPQRrd6q2f7H0oV4xE">
+        把衡量标准从「对方是否被说服」换成「是否有人获得了新认知」，讨论就从零和的输赢变成了可积累的产出。
+      </p>
+    </div>
+
+    <div class="gain-chain reveal" id="gainChain" data-page-node-id="gqT1Vzp6LZEIWQHW4Wb2Vy"></div>
+
+    <ul class="gain-list reveal" id="gainList" data-page-node-id="VIWAczZoRWMWqmIzeq3jy4"></ul>
+
+    <div class="quote reveal" data-page-node-id="1GvV9b8N1uvLeQGFBhfDy3">
+      <p data-page-node-id="IoXdZ4GqSwy9jPkH6F7aJH">高质量讨论未必产生共识，但一定产生认知增量。</p>
+      <small data-page-node-id="oWcDBFdKQ8XOJjytxVageJ">Consensus is optional · Cognitive gain is not</small>
+    </div>
+  </div>
+</section>
+
+<div class="wrap" data-page-node-id="XUVxMZXMyv8t21lmJmTZTq"><div class="divider" data-page-node-id="4ADYlGgXuLpi0TzRHEj7pC"></div></div>
+
+<!-- ============================ EXIT ============================ -->
+<section id="exit" data-page-node-id="VwtX6jdUJUDFJVHqYyXpPs">
+  <div class="wrap" data-page-node-id="azDKaRgMYQYIlh5r7xlSFW">
+    <div class="sec-head reveal" data-page-node-id="qNy9Dm1C0Ak0fx3mdRJ6hC">
+      <div class="eyebrow" data-page-node-id="KQWlSQ8GuLZDz4aUzMPCsp">When To Stop</div>
+      <h2 class="sec-title" data-page-node-id="BHbR96riPtpPFGExBgcmDE">是否退出讨论</h2>
+      <p class="sec-desc" data-page-node-id="ZZmLry5DRg9CmRDrttj03e">
+        退出讨论是一个可以判断的技术问题，而不是情绪问题。依次回答三个问题，看它把你带到哪里。
+      </p>
+    </div>
+
+    <div class="tree reveal" id="tree" data-page-node-id="qDuUqQ3mucOh8GlSRGsWmL"></div>
+
+    <div class="exit-note reveal" data-page-node-id="a6WFwafvmLzWWV9J3UZWej">
+      <div class="en-item del" data-page-node-id="Fvy6zZK90CHHeIXZ1zNgm1">退出讨论 = 认输</div>
+      <div class="en-op" data-page-node-id="BkALCpbHkECv7VpWlP5DDG">≠</div>
+      <div class="en-item fin" data-page-node-id="e5ujPV8owcowRRFZxJPiu2">退出讨论 = 没有新的认知增量</div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap" data-page-node-id="sQOSyBmcJ6YkSstCh1W9Ko"><div class="divider" data-page-node-id="8MBFo5zZShjfgQimhGq2wG"></div></div>
+
+<!-- ============================ CHECKLIST ============================ -->
+<section id="checklist" data-page-node-id="uFXmXWHTCv4T2kr7Hk4xdR">
+  <div class="wrap" data-page-node-id="EJRl5KJanlBNpGxJw9Ep88">
+    <div class="sec-head reveal" data-page-node-id="jF1RdUCINGEmhQStQvpVTe">
+      <div class="eyebrow" data-page-node-id="7XdDp84euYD0zttgQ9e2JG">Checklist</div>
+      <h2 class="sec-title" data-page-node-id="Mhlm98UuMTAbxuPY1QF20Z">讨论质量自检</h2>
+      <p class="sec-desc" data-page-node-id="AHOFSJX3YEhLzC5HpyoBg6">
+        讨论进行中或结束后，用这六项给自己打分。它衡量的不是你赢了多少，而是这场讨论本身的质量。
+      </p>
+    </div>
+
+    <div class="chk-grid reveal" data-page-node-id="Q7rnwmYcSFVKtBjnOlFhYD">
+      <div class="chk-list" id="chkList" data-page-node-id="4Tj3MA7s5bqaGYp9qGDS0M"></div>
+
+      <div class="score" data-page-node-id="MDMOwhpUmMW3MVMT32SNll">
+        <div class="score-l" data-page-node-id="BWAbIeOiyq20UJjYO6vidh">Discussion Quality</div>
+        <div class="score-n" data-page-node-id="kBGR6kuWIf6Fc5n9RKPOlr"><span id="scoreNum" data-page-node-id="FZi3GAFUgYiN1jCn1GwVwA">0</span><small data-page-node-id="56fngAxicgQPqUp8LrbT0H">%</small></div>
+        <div class="score-bar" data-page-node-id="MTIBdBWRtTLsEMFGot3W7R"><i id="scoreBar" data-page-node-id="VGgtE4mQtxEbO8tedN5WsU"></i></div>
+        <div class="score-grade" id="scoreGrade" data-page-node-id="qRbHaKSZVUNiZ6tuzk8MAm">Not started</div>
+        <div class="score-note" id="scoreNote" data-page-node-id="kXm43LDOf5u7XBQ4EBQOyQ">勾选左侧项目，实时评估这场讨论的质量。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ SUMMARY ============================ -->
+<section class="summary" id="summary" data-page-node-id="QyZ2c73jMH9gGe2xaEFAUv">
+  <div class="sum-bg" data-page-node-id="M1cUVLCjUJHmrBDP5wzIHa"></div>
+  <div class="wrap sum-in" data-page-node-id="v48M0Eh007muCIrJcBEd7J">
+    <div class="sum-eyebrow reveal" data-page-node-id="0Dl0uGZsb0nVsszjP0rX9u">Summary</div>
+    <h2 class="sum-title reveal" data-page-node-id="Ks1r9a0ElEa06lzP0IRagU">讨论的目的</h2>
+
+    <div class="sum-chain" data-page-node-id="mwjmCSfBxH9aL69XHCm30F">
+      <div class="sn no reveal" data-page-node-id="ePMv0nRr77Do7dRwAO8bN9">赢</div>
+      <div class="sn-c" data-page-node-id="DKsoXJ2Yf3952iqqDamSZg"></div>
+      <div class="sn reveal" data-page-node-id="kLHxOtNOZ6L9AdycbYEx86">理解</div>
+      <div class="sn-c" data-page-node-id="N8sVpkLXoXF8V2WjBepUvp"></div>
+      <div class="sn reveal" data-page-node-id="trCiYJPlGDLjn1G1yQZUA9">分析</div>
+      <div class="sn-c" data-page-node-id="naWEQswpVbzpZYMLIBcqP5"></div>
+      <div class="sn reveal" data-page-node-id="DAAKadn9G0gteSaWPYc4En">增加认知</div>
+      <div class="sn-c" data-page-node-id="UvgNxAkDDsvoup8QqVLvpa"></div>
+      <div class="sn accent reveal" data-page-node-id="pVTAhvVKjdsGk0KSlCwjbR">适时结束</div>
+    </div>
+
+    <div class="sum-foot reveal" data-page-node-id="V9uAiNFdQdUJgj1nKFG8FX">Discussion Quality Framework · V1 · 单文件 / 零依赖 / 可离线运行</div>
+  </div>
+</section>
+
+<footer data-page-node-id="oEoi4cvfAHNiu0lL5lkf6N">
+  <div class="foot-in" data-page-node-id="V3IF3T8qChXaiBqdZSoNPD">
+    <div data-page-node-id="GbxDqqzjx9UQC59T6NHAGL"><b data-page-node-id="JMIKKZbyVpE7aFnWGPJvgO">Discussion Quality Framework</b> — 概念定义 · 标准约束 · 事实依据 · 逻辑遵循 · 认知增量</div>
+    <div data-page-node-id="jdzixnpp5CKNZTNjSvX5lq">Vanilla HTML / CSS / JavaScript</div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  /* =========================================================
+     1. Hero Chain
+     ========================================================= */
+  var HERO_NODES = ["Concept", "Standard", "Evidence", "Logic", "Cognitive Gain"];
+  (function buildHeroChain() {
+    var box = document.getElementById("heroChain");
+    var html = "";
+    for (var i = 0; i < HERO_NODES.length; i++) {
+      if (i > 0) {
+        html += '<span class="hc-link"></span>';
+      }
+      html += '<span class="hc-node">' + HERO_NODES[i] + "</span>";
+    }
+    box.innerHTML = html;
+  })();
+
+  /* =========================================================
+     2. Framework Overview
+     ========================================================= */
+  var OVERVIEW = [
+    {
+      t: "讨论", en: "Discussion", tag: "起点",
+      d: "两个人（或两个人以上）围绕同一问题交换观点。讨论开始前，默认双方对「我们在讨论什么」的理解是一致的——这个假设往往是错的。"
+    },
+    {
+      t: "概念定义", en: "Object", tag: "讨论什么",
+      d: "明确讨论对象。<span class='q'>问：我们说的是同一个东西吗？</span><br>「AI 会取代程序员」里，AI 指 LLM 还是 AGI？取代是全部失业还是工作方式改变？程序员包括哪些层级？定义不同，后面全部失效。"
+    },
+    {
+      t: "标准约束", en: "Criterion", tag: "如何评价",
+      d: "明确评价函数。<span class='q'>问：什么算成立？</span><br>「谁是历史最佳」按 MVP、按冠军、还是按巅峰高度？标准不同的两个人都可能是「对」的——这不是事实冲突，是评价函数不同。"
+    },
+    {
+      t: "事实依据", en: "Evidence", tag: "证据是否真实",
+      d: "确认前提为真。<span class='q'>问：我们认可哪些事实？</span><br>逻辑只能保证「如果前提为真，则结论成立」，无法保证前提本身真实。定义对、标准对、推理对，但数据是假的，结论一样是错的。"
+    },
+    {
+      t: "逻辑遵循", en: "Reasoning", tag: "推理是否有效",
+      d: "检查推导链条。<span class='q'>问：结论由前提有效推出了吗？</span><br>不能跳步、不能偷换、不能循环论证、不能把相关当因果。「GDP 增长所以每个人都更富有」中间每一步都需要单独证明。"
+    },
+    {
+      t: "认知增量", en: "Cognitive Gain", tag: "收益评估",
+      d: "这场讨论有没有产生新东西。<span class='q'>问：有没有人获得了新认知？</span><br>新问题、新事实、更准确的定义、被发现的逻辑漏洞、被缩小的分歧——这些都算。"
+    },
+    {
+      t: "继续？", en: "Continue?", tag: "价值判断",
+      d: "还有没有进一步增加认知的可能。分歧来自事实 → 可以找证据；来自推理 → 可以继续分析；来自价值排序且双方都不打算调整 → 继续通常不会改变结论。"
+    },
+    {
+      t: "停止", en: "Stop", tag: "理性结论",
+      d: "<b>停止不等于认输。</b>它意味着：当前讨论已经无法产生新的信息，继续下去的边际收益接近零。这是一个判断，不是一种退让。"
+    }
+  ];
+
+  (function buildOverview() {
+    var box = document.getElementById("ovList");
+    var html = "";
+    for (var i = 0; i < OVERVIEW.length; i++) {
+      var o = OVERVIEW[i];
+      html +=
+        '<div class="ov-item">' +
+          '<button class="ov-head" type="button">' +
+            '<span class="ov-num">' + (i + 1) + "</span>" +
+            '<span class="ov-title">' + o.t + "</span>" +
+            '<span class="ov-tag">' + o.en + " · " + o.tag + "</span>" +
+            '<span class="ov-caret"></span>' +
+          "</button>" +
+          '<div class="ov-body"><div><div class="ov-body-in">' + o.d + "</div></div></div>" +
+        "</div>";
+    }
+    box.innerHTML = html;
+
+    var items = box.querySelectorAll(".ov-item");
+    Array.prototype.forEach.call(items, function (item) {
+      item.querySelector(".ov-head").addEventListener("click", function () {
+        var wasOpen = item.classList.contains("open");
+        Array.prototype.forEach.call(items, function (x) { x.classList.remove("open"); });
+        if (!wasOpen) item.classList.add("open");
+      });
+    });
+  })();
+
+  /* =========================================================
+     3. Five Baseline Cards
+     ========================================================= */
+  var BASELINES = [
+    {
+      n: "01", t: "概念定义", en: "Definition",
+      sub: "讨论对象是什么",
+      def: "在讨论开始前，明确每一个关键术语指什么。概念定义的本质是<strong>确定讨论对象</strong>——没有共同对象，就没有有效讨论。",
+      why: "很多争论其实不是观点不同，而是讨论的对象不同。讨论了两个小时之后才发现，双方对「公平」的理解完全不同。这一步出问题，后面的所有推理都建立在空中。",
+      err: ["偷换概念：中途悄悄改变术语含义", "语义含混：用「不错」「效率高」这类词而不定义", "范围漂移：讨论中不断扩大或缩小对象边界"],
+      eg: ["文明", "自由", "AI", "效率高", "公平"]
+    },
+    {
+      n: "02", t: "标准约束", en: "Criterion",
+      sub: "依据什么判断",
+      def: "在给出结论前，先说清楚<strong>什么算成立</strong>。标准约束的本质是确定评价函数——没有评价函数，就不存在统一结论。",
+      why: "「世界第一」按收入、按奖项、按技术水平、按历史影响力，答案完全不同。标准不同的两个人可能都是对的——这不是事实冲突，是评价函数不同。",
+      err: ["隐含标准：标准没写出来，各用各的", "标准漂移：看到结果不利就换标准", "权重缺失：多个指标却不说明如何加权"],
+      eg: ["MVP / 冠军 / 数据", "技术天花板 / 巅峰高度", "效率优先 / 就业优先"]
+    },
+    {
+      n: "03", t: "事实依据", en: "Evidence",
+      sub: "事实是否真实",
+      def: "确认推理所依赖的前提本身是真的。逻辑只保证<strong>如果前提为真，则结论成立</strong>，它不能保证前提真实。",
+      why: "定义正确、标准正确、逻辑正确，但输入的数据是假数据，一样得到错误结论。事实依据必须作为独立的一层，而不能隐含在逻辑之中。",
+      err: ["把「我觉得」当成事实", "样本偏差：用身边案例推导整体", "相关当因果：两件事同时发生不等于有因果"],
+      eg: ["个人经历 / 常识", "新闻报道", "可验证的一手数据", "可复现的实验"]
+    },
+    {
+      n: "04", t: "逻辑遵循", en: "Logic",
+      sub: "推理是否有效",
+      def: "检查从前提到结论的每一步推导。逻辑遵循的本质是<strong>保证推理有效</strong>——不能跳步、不能偷换、不能循环。",
+      why: "「中国 GDP 增长，所以每个人都更富有」：GDP 增长 → 居民收入增长 → 所有居民收入增长，每一步都需要单独证明。中间任何一步断裂，结论就不成立。",
+      err: ["跳步推理：略过关键中间环节", "循环论证：用结论证明前提", "稻草人：攻击对方没说过的观点", "以偏概全：用个案推导普遍结论"],
+      eg: ["GDP 增长 → 人人更富有？", "房价涨 → 租金必涨？", "AI 能写代码 → 程序员会被取代？"]
+    },
+    {
+      n: "05", t: "认知增量", en: "Cognitive Gain",
+      sub: "有没有产生新东西",
+      def: "讨论结束后，是否有任何一方获得了新的认知。这里的「新认知」<strong>不等于改变立场</strong>。",
+      why: "「有没有说服对方」容易变成输赢之争，也容易被立场、情绪、身份认同污染。认知增量把目标从改变他人，转变为增加认知——前者是一次性的，后者是可积累的。",
+      err: ["把「对方没被说服」等同于讨论失败", "只统计立场改变，忽略问题被缩小", "重复观点却误以为在推进"],
+      eg: ["学到了新事实", "发现自己的定义不够准确", "意识到存在另一种评价标准", "找到了推理中的漏洞", "明确了真正的分歧点"]
+    }
+  ];
+
+  (function buildCards() {
+    var box = document.getElementById("cards");
+    var html = "";
+    for (var i = 0; i < BASELINES.length; i++) {
+      var b = BASELINES[i];
+      var err = "";
+      for (var e = 0; e < b.err.length; e++) err += "<li>" + b.err[e] + "</li>";
+      var eg = "";
+      for (var g = 0; g < b.eg.length; g++) eg += '<span class="chip">' + b.eg[g] + "</span>";
+
+      html +=
+        '<div class="card">' +
+          '<button class="card-head" type="button">' +
+            '<span class="card-idx">' + b.n + "</span>" +
+            '<span class="card-tt"><h3>' + b.t + "</h3><p>" + b.en + " · " + b.sub + "</p></span>" +
+            '<span class="card-plus"></span>' +
+          "</button>" +
+          '<div class="card-body"><div><div class="card-body-in">' +
+            '<div class="blk"><div class="blk-t">定义</div><div class="blk-c">' + b.def + "</div></div>" +
+            '<div class="blk"><div class="blk-t">为什么重要</div><div class="blk-c">' + b.why + "</div></div>" +
+            '<div class="blk"><div class="blk-t">常见错误</div><ul class="warn-list">' + err + "</ul></div>" +
+            '<div class="blk"><div class="blk-t">示例</div><div class="chips">' + eg + "</div></div>" +
+          "</div></div></div>" +
+        "</div>";
+    }
+    box.innerHTML = html;
+
+    var cards = box.querySelectorAll(".card");
+    Array.prototype.forEach.call(cards, function (c) {
+      c.querySelector(".card-head").addEventListener("click", function () {
+        c.classList.toggle("open");
+      });
+    });
+  })();
+
+  /* =========================================================
+     4. Discussion Flow
+     ========================================================= */
+  var FLOW = [
+    {
+      k: "Q1", q: "概念一致？", en: "Same Object",
+      d: "双方讨论的是同一个对象吗？如果不一致，先停下来定义，而不是继续论证。",
+      y: "进入下一步：讨论评价标准",
+      n: "回到概念定义，先统一讨论对象"
+    },
+    {
+      k: "Q2", q: "标准一致？", en: "Same Criterion",
+      d: "双方用的是同一个评价函数吗？如果各自使用不同标准，两人都可能正确。",
+      y: "进入下一步：核对事实依据",
+      n: "协商标准，或明确承认分歧来自标准"
+    },
+    {
+      k: "Q3", q: "事实一致？", en: "Same Evidence",
+      d: "推理所依赖的前提真实吗？有没有可验证、可追溯的来源？",
+      y: "进入下一步：检查推理链条",
+      n: "补充证据，或标记为「证据不足、暂不结论」"
+    },
+    {
+      k: "Q4", q: "逻辑成立？", en: "Valid Reasoning",
+      d: "从前提到结论的每一步都成立吗？有没有跳步、偷换、循环论证？",
+      y: "进入下一步：评估认知增量",
+      n: "指出断裂的那一步，修正后重新推导"
+    },
+    {
+      k: "Q5", q: "产生认知？", en: "Cognitive Gain",
+      d: "讨论结束后，有没有人获得了新的事实、更准确的定义、新的标准，或被发现的漏洞？",
+      y: "有增量，讨论可以继续",
+      n: "没有增量，考虑退出讨论"
+    }
+  ];
+
+  (function buildFlow() {
+    var list = document.getElementById("flowList");
+    var panel = document.getElementById("flowPanel");
+    var html = "";
+    for (var i = 0; i < FLOW.length; i++) {
+      if (i > 0) html += '<div class="farrow"></div>';
+      html +=
+        '<button class="fnode" type="button" data-i="' + i + '">' +
+          '<span class="fk">' + FLOW[i].k + "</span>" +
+          '<span class="fq">' + FLOW[i].q + "</span>" +
+        "</button>";
+    }
+    list.innerHTML = html;
+
+    function render(i) {
+      var f = FLOW[i];
+      panel.innerHTML =
+        '<div class="fp-idx">' + f.k + " · " + f.en + "</div>" +
+        '<div class="fp-title">' + f.q + "</div>" +
+        '<div class="fp-desc">' + f.d + "</div>" +
+        '<div class="fp-split">' +
+          '<div class="fp-box y"><h5>YES · 成立</h5><p>' + f.y + "</p></div>" +
+          '<div class="fp-box n"><h5>NO · 不成立</h5><p>' + f.n + "</p></div>" +
+        "</div>";
+      var nodes = list.querySelectorAll(".fnode");
+      Array.prototype.forEach.call(nodes, function (nd, idx) {
+        nd.classList.toggle("active", idx === i);
+        nd.classList.toggle("dim", idx !== i);
+      });
+    }
+
+    var nodes = list.querySelectorAll(".fnode");
+    Array.prototype.forEach.call(nodes, function (nd) {
+      nd.addEventListener("click", function () {
+        render(parseInt(nd.getAttribute("data-i"), 10));
+      });
+    });
+
+    render(0);
+
+    // 底部两个结果按钮 → 切到对应节点
+    var ends = document.querySelectorAll(".fend button");
+    Array.prototype.forEach.call(ends, function (btn) {
+      btn.addEventListener("click", function () {
+        var target = btn.getAttribute("data-end") === "continue" ? 4 : 4;
+        render(target);
+        var f = FLOW[target];
+        panel.innerHTML =
+          '<div class="fp-idx">Decision</div>' +
+          '<div class="fp-title">' + (btn.getAttribute("data-end") === "continue" ? "继续讨论" : "退出讨论") + "</div>" +
+          '<div class="fp-desc">' +
+            (btn.getAttribute("data-end") === "continue"
+              ? "五个判断点全部通过，且仍有认知增量可以获取。继续讨论是有收益的——新证据、新定义、新标准、新逻辑，任何一项都值得继续。"
+              : "当前讨论已经无法产生新的信息：概念无法统一、标准无法协商、没有新事实、双方只重复观点。继续的边际收益接近零，退出是一个判断，不是一种退让。") +
+          "</div>" +
+          '<div class="fp-split">' +
+            '<div class="fp-box y"><h5>YES · 成立</h5><p>' + f.y + "</p></div>" +
+            '<div class="fp-box n"><h5>NO · 不成立</h5><p>' + f.n + "</p></div>" +
+          "</div>";
+      });
+    });
+  })();
+
+  /* =========================================================
+     5. Tolerance Slider
+     ========================================================= */
+  var LEVELS = [
+    {
+      name: "闲聊", en: "Casual Chat", goal: "目标是快速交流与情绪连接，效率优先，不追求可靠结论。",
+      stars: [1, 1, 1, 1], err: 100,
+      req: [
+        "可模糊，只要大致理解一致",
+        "无需显式标准，默认共识即可",
+        "可接受个人感受与印象",
+        "允许直觉、联想与略去中间推导"
+      ]
+    },
+    {
+      name: "一般交流", en: "General Talk", goal: "分享观点、建立共识。关键处需要说清，其余可依赖语境。",
+      stars: [2, 3, 1, 2], err: 80,
+      req: [
+        "语境已提供足够信息，允许隐含定义",
+        "可默认采用社会共识",
+        "可接受经验、常识与新闻",
+        "允许跳步与经验判断"
+      ]
+    },
+    {
+      name: "工作决策", en: "Work Decision", goal: "结论会影响行动，需要可追溯、可复盘。",
+      stars: [3, 3, 2, 3], err: 60,
+      req: [
+        "关键概念需说明，其余可模糊",
+        "关键判断需说明依据",
+        "关键事实需有来源",
+        "关键推论不能跳步"
+      ]
+    },
+    {
+      name: "技术评审", en: "Tech Review", goal: "结论影响工程质量与可逆成本，正确性优先。",
+      stars: [4, 4, 3, 4], err: 40,
+      req: [
+        "核心概念必须明确，边界可辨识",
+        "必须说明指标与适用范围",
+        "需可验证、可追溯的一手证据",
+        "推理链需完整，避免常见谬误"
+      ]
+    },
+    {
+      name: "学术研究", en: "Academic", goal: "建立可复用、经得起检验的结论，正确性优先于效率。",
+      stars: [4, 4, 5, 5], err: 20,
+      req: [
+        "必须给出操作性定义，可测量",
+        "必须说明指标、权重与选择理由",
+        "需系统数据，说明样本与偏差",
+        "需明确条件、反例与因果识别"
+      ]
+    },
+    {
+      name: "数学证明", en: "Mathematical Proof", goal: "几乎零容忍。任何一步不严谨，结论即不成立。",
+      stars: [5, 5, 5, 5], err: 5,
+      req: [
+        "定义必须完备、无歧义、可形式化",
+        "标准必须唯一且可形式化检验",
+        "仅接受可复现、可证明的证据",
+        "每一步都必须可形式化证明"
+      ]
+    }
+  ];
+  var DIM = ["概念定义", "标准约束", "事实依据", "逻辑遵循"];
+
+  (function buildTolerance() {
+    var range = document.getElementById("tolRange");
+    var ticks = document.getElementById("tolTicks");
+    var grid = document.getElementById("tolGrid");
+    var nameEl = document.getElementById("tolName");
+    var goalEl = document.getElementById("tolGoal");
+    var meter = document.getElementById("tolMeter");
+    var errEl = document.getElementById("tolErr");
+
+    var t = "";
+    for (var i = 0; i < LEVELS.length; i++) {
+      t += '<div class="tick" data-i="' + i + '">' + LEVELS[i].name + "</div>";
+    }
+    ticks.innerHTML = t;
+
+    function stars(n) {
+      var s = "";
+      for (var k = 0; k < 5; k++) {
+        s += k < n ? "<b>★</b>" : "<i>★</i>";
+      }
+      return '<span class="stars">' + s + "</span>";
+    }
+
+    function apply(idx) {
+      var L = LEVELS[idx];
+      nameEl.innerHTML = L.name + ' <span>' + L.en + "</span>";
+      goalEl.textContent = L.goal;
+
+      var g = "";
+      for (var d = 0; d < 4; d++) {
+        g +=
+          '<div class="tol-item">' +
+            '<div class="tol-item-h"><b>' + DIM[d] + "</b>" + stars(L.stars[d]) + "</div>" +
+            "<p>" + L.req[d] + "</p>" +
+          "</div>";
+      }
+      grid.innerHTML = g;
+
+      meter.style.width = L.err + "%";
+      errEl.textContent = L.err + "%";
+
+      var tk = ticks.querySelectorAll(".tick");
+      Array.prototype.forEach.call(tk, function (x, xi) {
+        x.classList.toggle("on", xi === idx);
+      });
+    }
+
+    range.addEventListener("input", function () {
+      apply(parseInt(range.value, 10));
+    });
+
+    Array.prototype.forEach.call(ticks.querySelectorAll(".tick"), function (x) {
+      x.addEventListener("click", function () {
+        range.value = x.getAttribute("data-i");
+        apply(parseInt(range.value, 10));
+      });
+    });
+
+    apply(parseInt(range.value, 10));
+  })();
+
+  /* =========================================================
+     6. Cognitive Gain
+     ========================================================= */
+  var GAIN_CHAIN = [
+    { t: "讨论", s: "Start" },
+    { t: "新事实", s: "New Evidence" },
+    { t: "新定义", s: "New Definition" },
+    { t: "新标准", s: "New Criterion" },
+    { t: "新逻辑", s: "New Logic" },
+    { t: "问题缩小", s: "Narrower Question" },
+    { t: "认知增加", s: "Cognitive Gain" }
+  ];
+  var GAIN_LIST = [
+    "学到了一个此前不知道的事实",
+    "发现自己的概念定义不够准确",
+    "意识到还存在另一种评价标准",
+    "找到了自己推理中的漏洞",
+    "明确了这个问题目前无法下结论",
+    "找到了真正分歧的那一个点"
+  ];
+
+  (function buildGain() {
+    var chain = document.getElementById("gainChain");
+    var h = "";
+    for (var i = 0; i < GAIN_CHAIN.length; i++) {
+      h += '<div class="gn"><b>' + GAIN_CHAIN[i].t + "</b><span>" + GAIN_CHAIN[i].s + "</span></div>";
+    }
+    chain.innerHTML = h;
+
+    var list = document.getElementById("gainList");
+    var l = "";
+    for (var k = 0; k < GAIN_LIST.length; k++) {
+      l += "<li><i>0" + (k + 1) + "</i><span>" + GAIN_LIST[k] + "</span></li>";
+    }
+    list.innerHTML = l;
+  })();
+
+  /* =========================================================
+     7. Exit Tree
+     ========================================================= */
+  var TREE = [
+    {
+      id: "q1", lv: 0, h: "Question 01", q: "还有新事实？",
+      y: { label: "YES", to: "end-continue", next: null },
+      n: { label: "NO", to: null, next: "q2" }
+    },
+    {
+      id: "q2", lv: 1, h: "Question 02", q: "还能统一概念？",
+      y: { label: "YES", to: "end-continue", next: null },
+      n: { label: "NO", to: null, next: "q3" }
+    },
+    {
+      id: "q3", lv: 2, h: "Question 03", q: "还能统一标准？",
+      y: { label: "YES", to: "end-continue", next: null },
+      n: { label: "NO", to: "end-stop", next: null }
+    }
+  ];
+
+  (function buildTree() {
+    var box = document.getElementById("tree");
+    var html = "";
+    for (var i = 0; i < TREE.length; i++) {
+      var n = TREE[i];
+      if (i > 0) html += '<div class="tlink"></div>';
+      html +=
+        '<div class="tnode lv' + n.lv + '" id="' + n.id + '">' +
+          '<div class="tnode-h">' + n.h + "</div>" +
+          '<div class="tnode-q">' + n.q + "</div>" +
+          '<div class="tbranches">' +
+            '<button class="tb y" type="button" data-br="y" data-from="' + n.id + '">' +
+              '<s>' + n.y.label + "</s>" + (n.y.to === "end-continue" ? "继续讨论" : "") +
+            "</button>" +
+            '<button class="tb n" type="button" data-br="n" data-from="' + n.id + '">' +
+              '<s>' + n.n.label + "</s>" + (n.n.to === "end-stop" ? "停止讨论" : "下一个问题") +
+            "</button>" +
+          "</div>" +
+        "</div>";
+    }
+
+    html +=
+      '<div class="tout" id="tout">' +
+        "<div>" +
+          '<div class="tout-l">Verdict</div>' +
+          '<div class="tout-v idle" id="toutV">等待判断</div>' +
+        "</div>" +
+        '<div class="tout-d" id="toutD">选择任意一条分支，看它把你带到哪里。三个问题全部走到 NO，就意味着：当前讨论不再具有信息增量。</div>' +
+      "</div>" +
+      '<div style="text-align:center"><button class="reset" id="treeReset" type="button">重置</button></div>';
+
+    box.innerHTML = html;
+
+    var nodes = box.querySelectorAll(".tnode");
+    var v = document.getElementById("toutV");
+    var d = document.getElementById("toutD");
+
+    function reset() {
+      Array.prototype.forEach.call(nodes, function (nd) {
+        nd.classList.remove("on", "hit");
+      });
+      Array.prototype.forEach.call(box.querySelectorAll(".tb"), function (b) {
+        b.classList.remove("sel");
+      });
+      nodes[0].classList.add("on");
+      v.className = "tout-v idle";
+      v.textContent = "等待判断";
+      d.textContent = "选择任意一条分支，看它把你带到哪里。三个问题全部走到 NO，就意味着：当前讨论不再具有信息增量。";
+    }
+
+    function activate(id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.classList.add("on", "hit");
+    }
+
+    Array.prototype.forEach.call(box.querySelectorAll(".tb"), function (b) {
+      b.addEventListener("click", function () {
+        reset();
+        var from = b.getAttribute("data-from");
+        var br = b.getAttribute("data-br");
+
+        // 高亮路径：从 q1 到当前节点
+        var order = ["q1", "q2", "q3"];
+        var idx = order.indexOf(from);
+        for (var i = 0; i <= idx; i++) activate(order[i]);
+
+        // 当前点击的分支
+        document.querySelector('.tb[data-from="' + from + '"][data-br="' + br + '"]').classList.add("sel");
+
+        var node = null;
+        for (var k = 0; k < TREE.length; k++) {
+          if (TREE[k].id === from) node = TREE[k];
+        }
+        var res = br === "y" ? node.y : node.n;
+
+        if (res.to === "end-continue") {
+          v.className = "tout-v go";
+          v.textContent = "→ 继续讨论";
+          d.textContent = "仍然存在可以增加认知的空间：新事实、可统一的概念、可协商的标准。继续讨论是有收益的。";
+        } else if (res.to === "end-stop") {
+          v.className = "tout-v stop";
+          v.textContent = "→ 停止讨论";
+          d.textContent = "没有新事实、概念无法统一、标准无法协商。继续的边际收益接近零——退出讨论是一个判断，不是一种退让。";
+        } else {
+          v.className = "tout-v idle";
+          v.textContent = "→ 继续判断";
+          d.textContent = "这一条暂时关上了，但还没到下结论的时候。进入下一个问题。";
+          activate(res.next);
+        }
+      });
+    });
+
+    document.getElementById("treeReset").addEventListener("click", reset);
+    reset();
+  })();
+
+  /* =========================================================
+     8. Checklist
+     ========================================================= */
+  var CHK = [
+    { t: "概念一致", s: "双方讨论的是同一个对象" },
+    { t: "标准一致", s: "采用同一套评价函数" },
+    { t: "事实可靠", s: "前提真实、来源可追溯" },
+    { t: "推理成立", s: "从前提到结论没有跳步" },
+    { t: "获得认知", s: "有人获得了新的认知" },
+    { t: "是否值得继续", s: "还有进一步增加认知的可能" }
+  ];
+  var GRADES = [
+    { min: 0, max: 0, g: "Not started", n: "勾选左侧项目，实时评估这场讨论的质量。" },
+    { min: 1, max: 33, g: "Fragile", n: "基础未对齐。此时继续论证通常只是在重复观点，先回到概念或标准。" },
+    { min: 34, max: 66, g: "Fair", n: "部分对齐。找出缺失的那一环，补齐后再继续。" },
+    { min: 67, max: 84, g: "Good", n: "主要环节已经成立。剩下的分歧多半来自价值排序，而非事实或逻辑。" },
+    { min: 85, max: 99, g: "Strong", n: "接近完备。可以结束，也可以带着明确的分歧点继续深入。" },
+    { min: 100, max: 100, g: "Complete", n: "六项全部满足。这是一场教科书级别的高质量讨论。" }
+  ];
+
+  (function buildChecklist() {
+    var list = document.getElementById("chkList");
+    var numEl = document.getElementById("scoreNum");
+    var bar = document.getElementById("scoreBar");
+    var gradeEl = document.getElementById("scoreGrade");
+    var noteEl = document.getElementById("scoreNote");
+
+    var svg = '<svg viewBox="0 0 12 12" fill="none"><path d="M2 6.2 L4.6 8.8 L10 3.2" stroke="#0B0D0E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    var h = "";
+    for (var i = 0; i < CHK.length; i++) {
+      h +=
+        '<div class="chk" data-i="' + i + '">' +
+          '<span class="chk-box">' + svg + "</span>" +
+          '<span class="chk-t"><b>' + CHK[i].t + "</b><span>" + CHK[i].s + "</span></span>" +
+        "</div>";
+    }
+    list.innerHTML = h;
+
+    var items = list.querySelectorAll(".chk");
+    var state = [false, false, false, false, false, false];
+    var current = 0;
+    var raf = null;
+
+    function countTo(target) {
+      if (raf) cancelAnimationFrame(raf);
+      var start = current;
+      var diff = target - start;
+      if (diff === 0) return;
+      var t0 = performance.now();
+      var dur = 620;
+      function step(now) {
+        var p = Math.min((now - t0) / dur, 1);
+        var eased = 1 - Math.pow(1 - p, 3);
+        var val = Math.round(start + diff * eased);
+        numEl.textContent = val;
+        if (p < 1) {
+          raf = requestAnimationFrame(step);
+        } else {
+          current = target;
+          raf = null;
+        }
+      }
+      raf = requestAnimationFrame(step);
+    }
+
+    function update() {
+      var n = 0;
+      for (var i = 0; i < state.length; i++) if (state[i]) n++;
+      var pct = Math.round((n / state.length) * 100);
+      bar.style.width = pct + "%";
+      countTo(pct);
+
+      var g = GRADES[0];
+      for (var k = 0; k < GRADES.length; k++) {
+        if (pct >= GRADES[k].min && pct <= GRADES[k].max) g = GRADES[k];
+      }
+      gradeEl.textContent = g.g;
+      noteEl.textContent = g.n;
+    }
+
+    Array.prototype.forEach.call(items, function (it) {
+      it.addEventListener("click", function () {
+        var i = parseInt(it.getAttribute("data-i"), 10);
+        state[i] = !state[i];
+        it.classList.toggle("on", state[i]);
+        update();
+      });
+    });
+
+    update();
+  })();
+
+  /* =========================================================
+     9. Scroll Reveal
+     ========================================================= */
+  (function reveal() {
+    var els = document.querySelectorAll(".reveal");
+    if (!("IntersectionObserver" in window)) {
+      Array.prototype.forEach.call(els, function (e) { e.classList.add("in"); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) {
+          en.target.classList.add("in");
+          io.unobserve(en.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -60px 0px" });
+    Array.prototype.forEach.call(els, function (e, i) {
+      e.style.transitionDelay = Math.min(i % 6, 5) * 60 + "ms";
+      io.observe(e);
+    });
+  })();
+
+  /* =========================================================
+     10. Scroll Spy + Top bar
+     ========================================================= */
+  (function spy() {
+    var bar = document.getElementById("topbar");
+    var links = document.querySelectorAll("#topnav a");
+    var dots = document.querySelectorAll("#dotnav a");
+    var secs = [];
+    Array.prototype.forEach.call(document.querySelectorAll("section[id]"), function (s) {
+      secs.push(s);
+    });
+
+    function onScroll() {
+      var y = window.pageYOffset || document.documentElement.scrollTop;
+      bar.classList.toggle("solid", y > 40);
+
+      var active = secs[0];
+      for (var i = 0; i < secs.length; i++) {
+        var top = secs[i].getBoundingClientRect().top;
+        if (top <= 180) active = secs[i];
+      }
+      var id = active ? active.id : "hero";
+
+      Array.prototype.forEach.call(links, function (a) {
+        a.classList.toggle("on", a.getAttribute("href") === "#" + id);
+      });
+      Array.prototype.forEach.call(dots, function (a) {
+        a.classList.toggle("on", a.getAttribute("data-sec") === id);
+      });
+    }
+
+    var ticking = false;
+    window.addEventListener("scroll", function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        onScroll();
+        ticking = false;
+      });
+    }, { passive: true });
+
+    onScroll();
+  })();
+
+})();
+</script>
+</body>
+</html>

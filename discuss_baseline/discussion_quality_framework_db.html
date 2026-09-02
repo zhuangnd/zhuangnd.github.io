@@ -1,0 +1,1710 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>讨论质量框架 · Discussion Quality Framework</title>
+<meta name="description" content="从概念、标准、事实、逻辑到认知增量，建立可执行的讨论分析框架。">
+<style>
+  /* ============================================================
+     Design Tokens
+     ============================================================ */
+  :root {
+    --bg: #111315;
+    --bg-soft: #16181b;
+    --glass: rgba(255,255,255,.06);
+    --glass-strong: rgba(255,255,255,.10);
+    --border: rgba(255,255,255,.10);
+    --border-strong: rgba(255,255,255,.18);
+    --primary: #F59E0B;
+    --primary-soft: rgba(245,158,11,.14);
+    --green: #22C55E;
+    --green-soft: rgba(34,197,94,.14);
+    --blue: #60A5FA;
+    --blue-soft: rgba(96,165,250,.14);
+    --red: #EF4444;
+    --red-soft: rgba(239,68,68,.14);
+    --text: #F5F5F4;
+    --text-dim: rgba(245,245,244,.66);
+    --text-faint: rgba(245,245,244,.42);
+    --radius: 18px;
+    --radius-sm: 12px;
+    --maxw: 1120px;
+    --ease: cubic-bezier(.22,.61,.36,1);
+    --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto,
+            "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Noto Sans SC",
+            "Microsoft YaHei", sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* Ambient background glows */
+  .bg-glow {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .bg-glow::before,
+  .bg-glow::after {
+    content: "";
+    position: absolute;
+    width: 60vw;
+    height: 60vw;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: .16;
+  }
+  .bg-glow::before {
+    top: -22vw;
+    right: -16vw;
+    background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+    animation: driftA 22s var(--ease) infinite alternate;
+  }
+  .bg-glow::after {
+    bottom: -26vw;
+    left: -18vw;
+    background: radial-gradient(circle, var(--blue) 0%, transparent 70%);
+    opacity: .10;
+    animation: driftB 26s var(--ease) infinite alternate;
+  }
+  @keyframes driftA { from { transform: translate(0,0) scale(1); } to { transform: translate(-6vw,8vw) scale(1.15); } }
+  @keyframes driftB { from { transform: translate(0,0) scale(1); } to { transform: translate(7vw,-6vw) scale(1.1); } }
+
+  /* Scroll progress */
+  #scrollProgress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    width: 100%;
+    background: linear-gradient(90deg, var(--primary), #fbbf24);
+    transform-origin: 0 0;
+    transform: scaleX(0);
+    z-index: 999;
+  }
+
+  /* ============================================================
+     Nav
+     ============================================================ */
+  nav.topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 28px;
+    background: rgba(17,19,21,.62);
+    backdrop-filter: blur(18px) saturate(150%);
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
+    border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  .topbar .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: .02em;
+  }
+  .topbar .brand .dot {
+    width: 9px; height: 9px;
+    border-radius: 3px;
+    background: var(--primary);
+    box-shadow: 0 0 12px var(--primary);
+  }
+  .topbar .brand small { color: var(--text-faint); font-weight: 500; margin-left: 2px; }
+  .topbar nav.links {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .topbar nav.links a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 13px;
+    padding: 6px 11px;
+    border-radius: 999px;
+    transition: color .2s, background .2s;
+  }
+  .topbar nav.links a:hover { color: var(--text); background: var(--glass-strong); }
+
+  /* ============================================================
+     Generic layout
+     ============================================================ */
+  section.block { padding: 96px 24px; }
+  .wrap { max-width: var(--maxw); margin: 0 auto; }
+
+  .kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--primary);
+    margin-bottom: 14px;
+  }
+  .kicker::before {
+    content: "";
+    width: 22px; height: 1px;
+    background: var(--primary);
+  }
+  h2.title {
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 800;
+    letter-spacing: -.01em;
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+  .subtitle {
+    color: var(--text-dim);
+    font-size: clamp(15px, 2vw, 17px);
+    max-width: 640px;
+  }
+  .section-head { margin-bottom: 44px; }
+
+  /* Reveal on scroll */
+  .reveal {
+    opacity: 0;
+    transform: translateY(26px);
+    transition: opacity .7s var(--ease), transform .7s var(--ease);
+  }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  /* Glass surface */
+  .glass {
+    background: linear-gradient(150deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+  }
+
+  /* ============================================================
+     Hero
+     ============================================================ */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 24px 80px;
+    position: relative;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.15fr .85fr;
+    gap: 56px;
+    align-items: center;
+    width: 100%;
+    max-width: var(--maxw);
+  }
+  .hero h1 {
+    font-size: clamp(34px, 5.4vw, 60px);
+    font-weight: 800;
+    letter-spacing: -.02em;
+    line-height: 1.06;
+  }
+  .hero h1 .en {
+    display: block;
+    background: linear-gradient(90deg, #fbbf24, var(--primary), #f97316);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-size: .62em;
+    letter-spacing: .04em;
+    margin-bottom: 12px;
+  }
+  .hero .hero-sub {
+    margin-top: 22px;
+    color: var(--text-dim);
+    font-size: clamp(16px, 2.2vw, 20px);
+    max-width: 560px;
+  }
+  .hero .hero-sub b { color: var(--text); font-weight: 700; }
+  .hero .hero-cta {
+    margin-top: 34px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 22px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: transform .2s var(--ease), box-shadow .2s, background .2s, border-color .2s;
+  }
+  .btn-primary {
+    background: var(--primary);
+    color: #1a1205;
+    box-shadow: 0 8px 28px rgba(245,158,11,.28);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 34px rgba(245,158,11,.36); }
+  .btn-ghost {
+    background: var(--glass);
+    border-color: var(--border-strong);
+    color: var(--text);
+  }
+  .btn-ghost:hover { background: var(--glass-strong); transform: translateY(-2px); }
+
+  /* Hero chain (right) */
+  .hero-chain {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+  .chain-node {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 16px 20px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--glass);
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity .6s var(--ease), transform .6s var(--ease),
+                box-shadow .6s, border-color .6s;
+  }
+  .chain-node.on {
+    opacity: 1;
+    transform: none;
+    border-color: rgba(245,158,11,.45);
+    box-shadow: 0 0 34px rgba(245,158,11,.18), inset 0 0 18px rgba(245,158,11,.05);
+  }
+  .chain-node .cn-en { font-weight: 800; font-size: 17px; letter-spacing: .02em; }
+  .chain-node .cn-zh { color: var(--text-dim); font-size: 13px; }
+  .chain-link {
+    width: 2px;
+    height: 34px;
+    margin: 0 auto;
+    background: linear-gradient(180deg, rgba(245,158,11,.6), rgba(245,158,11,.15));
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform .8s var(--ease);
+  }
+  .chain-link.flow { transform: scaleY(1); }
+
+  .hero-meta {
+    margin-top: 44px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .hero-meta .pill {
+    font-size: 12px;
+    color: var(--text-dim);
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--glass);
+  }
+
+  /* ============================================================
+     Overview
+     ============================================================ */
+  .overview-chain { margin: 10px 0 6px; }
+  .ov-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 0;
+  }
+  .ov-node {
+    flex: 1;
+    padding: 15px 18px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--glass);
+    cursor: pointer;
+    user-select: none;
+    transition: border-color .2s, background .2s, transform .2s var(--ease);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .ov-node:hover { transform: translateY(-2px); border-color: var(--border-strong); }
+  .ov-node.active { border-color: var(--primary); background: var(--primary-soft); }
+  .ov-node .n {
+    width: 30px; height: 30px;
+    flex: none;
+    display: grid;
+    place-items: center;
+    border-radius: 9px;
+    font-size: 12px;
+    font-weight: 800;
+    background: var(--glass-strong);
+    color: var(--text-dim);
+  }
+  .ov-node.active .n { background: var(--primary); color: #1a1205; }
+  .ov-node .t { font-weight: 700; font-size: 15px; }
+  .ov-node .t small { display: block; font-weight: 500; color: var(--text-faint); font-size: 11px; }
+  .ov-link {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--text-faint);
+    font-size: 11px;
+    line-height: 1;
+  }
+  .ov-link .bar { width: 1.5px; height: 30px; background: var(--border-strong); margin-bottom: 4px; }
+  .ov-detail {
+    margin-top: 26px;
+    padding: 24px 26px;
+    min-height: 96px;
+    transition: min-height .3s;
+  }
+  .ov-detail h4 { font-size: 18px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+  .ov-detail h4 .tag {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: var(--primary-soft);
+    color: var(--primary);
+    letter-spacing: .06em;
+  }
+  .ov-detail p { color: var(--text-dim); font-size: 14.5px; }
+  .ov-detail .empty { color: var(--text-faint); font-style: italic; }
+  .ov-final {
+    display: flex;
+    gap: 14px;
+    margin-top: 18px;
+  }
+  .ov-final .ov-node { flex: 1; justify-content: center; }
+  .ov-final .continue-node { border-color: rgba(34,197,94,.4); }
+  .ov-final .continue-node:hover { border-color: var(--green); }
+  .ov-final .stop-node { border-color: rgba(239,68,68,.4); }
+  .ov-final .stop-node:hover { border-color: var(--red); }
+
+  /* ============================================================
+     Baselines
+     ============================================================ */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 18px;
+  }
+  .card {
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform .25s var(--ease), border-color .25s, box-shadow .25s;
+  }
+  .card:hover { transform: translateY(-4px); border-color: var(--border-strong); }
+  .card.open { border-color: rgba(245,158,11,.5); box-shadow: 0 18px 50px rgba(0,0,0,.35); }
+  .card-head { padding: 22px 22px 20px; }
+  .card-num { font-size: 11px; font-weight: 800; letter-spacing: .2em; color: var(--text-faint); }
+  .card-title { display: flex; align-items: center; gap: 10px; margin: 6px 0 4px; }
+  .card-title h3 { font-size: 21px; font-weight: 800; }
+  .card-title .en { color: var(--text-faint); font-size: 13px; font-weight: 700; letter-spacing: .08em; }
+  .card-summary { color: var(--text-dim); font-size: 13.5px; }
+  .card-body {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height .45s var(--ease), opacity .4s var(--ease), padding .3s var(--ease);
+  }
+  .card.open .card-body { max-height: 1200px; opacity: 1; }
+  .card-inner { padding: 0 22px 24px; }
+  .card-sec { margin-bottom: 16px; }
+  .card-sec:last-child { margin-bottom: 0; }
+  .card-sec h5 {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .14em;
+    color: var(--primary);
+    margin-bottom: 7px;
+    text-transform: uppercase;
+  }
+  .card-sec p { font-size: 14px; color: var(--text-dim); }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    font-size: 12.5px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--glass);
+    color: var(--text);
+  }
+  .chip.warn { border-color: rgba(239,68,68,.4); color: #fca5a5; }
+  .card-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 22px;
+    border-top: 1px solid rgba(255,255,255,.06);
+    color: var(--text-faint);
+    font-size: 12.5px;
+  }
+  .card-foot .hint { display: flex; align-items: center; gap: 6px; }
+  .card-foot .arrow { transition: transform .3s var(--ease); color: var(--primary); font-weight: 800; }
+  .card.open .card-foot .arrow { transform: rotate(180deg); }
+
+  /* ============================================================
+     Flow (interactive)
+     ============================================================ */
+  .flow-layout {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 26px;
+    align-items: start;
+  }
+  .flow-main { display: flex; flex-direction: column; }
+  .flow-step { display: flex; gap: 16px; align-items: flex-start; }
+  .flow-rail { display: flex; flex-direction: column; align-items: center; flex: none; width: 44px; }
+  .flow-dot {
+    width: 44px; height: 44px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+    font-size: 15px;
+    border: 1px solid var(--border);
+    background: var(--glass);
+    cursor: pointer;
+    transition: all .2s var(--ease);
+  }
+  .flow-dot:hover { transform: scale(1.06); border-color: var(--primary); }
+  .flow-step.active .flow-dot { background: var(--primary); color: #1a1205; border-color: var(--primary); box-shadow: 0 0 22px rgba(245,158,11,.35); }
+  .flow-line { width: 2px; height: 34px; background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,.06)); }
+  .flow-step.active .flow-line { background: linear-gradient(180deg, var(--primary), rgba(245,158,11,.2)); }
+  .flow-card {
+    flex: 1;
+    padding: 16px 20px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--glass);
+    cursor: pointer;
+    transition: border-color .2s, background .2s, transform .2s var(--ease);
+    margin-bottom: 14px;
+  }
+  .flow-card:hover { transform: translateX(4px); border-color: var(--border-strong); }
+  .flow-step.active .flow-card { border-color: var(--primary); background: var(--primary-soft); }
+  .flow-card h4 { font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+  .flow-card h4 .yes-tag {
+    font-size: 10.5px; font-weight: 800; color: var(--green);
+    border: 1px solid rgba(34,197,94,.4); padding: 2px 8px; border-radius: 999px;
+  }
+  .flow-card p { color: var(--text-dim); font-size: 13.5px; margin-top: 4px; }
+  .flow-exit {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin: 0 0 14px 60px;
+    font-size: 12.5px;
+    color: #fca5a5;
+    border: 1px dashed rgba(239,68,68,.4);
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--red-soft);
+  }
+  .flow-outcome {
+    display: flex; gap: 12px; margin-top: 6px; margin-left: 60px;
+  }
+  .outcome-tag {
+    padding: 10px 18px; border-radius: var(--radius-sm);
+    font-weight: 800; font-size: 14px;
+    border: 1px solid transparent;
+  }
+  .outcome-tag.go { color: var(--green); border-color: rgba(34,197,94,.45); background: var(--green-soft); }
+  .outcome-tag.stop { color: #fca5a5; border-color: rgba(239,68,68,.45); background: var(--red-soft); }
+
+  .flow-detail {
+    position: sticky;
+    top: 96px;
+    padding: 26px;
+    min-height: 260px;
+  }
+  .flow-detail h4 { font-size: 19px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+  .flow-detail h4 .num { color: var(--primary); font-size: 13px; font-weight: 800; }
+  .flow-detail .body p { color: var(--text-dim); font-size: 14.5px; margin-bottom: 10px; }
+  .flow-detail .check {
+    display: flex; gap: 8px; align-items: flex-start;
+    color: var(--text-dim); font-size: 13.5px; margin-top: 8px;
+  }
+  .flow-detail .check::before { content: "✓"; color: var(--green); font-weight: 800; }
+  .flow-detail .placeholder { color: var(--text-faint); font-style: italic; }
+
+  /* ============================================================
+     Precision slider
+     ============================================================ */
+  .precision-card { padding: 40px; }
+  .p-scale { display: flex; justify-content: space-between; margin-bottom: 10px; }
+  .p-scale .pl { text-align: center; font-size: 13.5px; font-weight: 700; }
+  .p-scale .pl small { display: block; font-weight: 500; color: var(--text-faint); font-size: 11px; margin-top: 2px; }
+  input[type=range].p-range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--primary) 0%, rgba(245,158,11,.25) var(--fill, 50%), rgba(255,255,255,.10) var(--fill, 50%));
+    outline: none;
+  }
+  input[type=range].p-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 3px solid #1a1205;
+    box-shadow: 0 0 0 2px var(--primary), 0 4px 14px rgba(245,158,11,.5);
+    cursor: grab;
+  }
+  input[type=range].p-range::-moz-range-thumb {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--primary); border: 3px solid #1a1205; cursor: grab;
+  }
+  .p-current {
+    margin-top: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 16px 20px;
+    border-radius: var(--radius-sm);
+    background: var(--glass);
+    border: 1px solid var(--border);
+  }
+  .p-current .level { font-weight: 800; font-size: 19px; }
+  .p-current .level small { display: block; font-weight: 500; color: var(--text-dim); font-size: 13px; }
+  .p-tolerance { display: flex; align-items: center; gap: 12px; font-size: 12.5px; color: var(--text-dim); }
+  .p-tolerance .tbar {
+    width: 150px; height: 8px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.08);
+    overflow: hidden;
+  }
+  .p-tolerance .tbar i {
+    display: block; height: 100%;
+    background: linear-gradient(90deg, var(--primary), #f97316);
+    width: 100%;
+    transition: width .3s var(--ease);
+  }
+  .p-dims { margin-top: 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .p-dim {
+    padding: 18px 20px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--glass);
+  }
+  .p-dim .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+  .p-dim .name { font-weight: 700; font-size: 14.5px; display: flex; align-items: center; gap: 8px; }
+  .p-dim .req { font-size: 12px; color: var(--text-dim); text-align: right; }
+  .stars { font-size: 15px; letter-spacing: 3px; color: rgba(255,255,255,.14); white-space: nowrap; }
+  .stars .on { color: var(--primary); text-shadow: 0 0 10px rgba(245,158,11,.5); }
+  .p-note { margin-top: 22px; color: var(--text-dim); font-size: 13.5px; border-left: 3px solid var(--primary); padding-left: 14px; }
+  .p-note b { color: var(--text); }
+
+  /* ============================================================
+     Cognitive gain
+     ============================================================ */
+  .gain-quote {
+    font-size: clamp(22px, 3.4vw, 34px);
+    font-weight: 800;
+    line-height: 1.4;
+    max-width: 900px;
+    letter-spacing: -.01em;
+    margin-bottom: 50px;
+  }
+  .gain-quote .hl { color: var(--primary); }
+  .gain-flow { display: flex; flex-direction: column; align-items: stretch; }
+  .gain-step {
+    display: flex; align-items: center; gap: 16px;
+    padding: 14px 20px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--glass);
+  }
+  .gain-step .icon {
+    width: 34px; height: 34px; flex: none;
+    border-radius: 10px;
+    display: grid; place-items: center;
+    background: var(--glass-strong);
+    font-size: 15px;
+  }
+  .gain-step .gt { font-weight: 700; font-size: 15.5px; }
+  .gain-step .gd { color: var(--text-dim); font-size: 13px; margin-left: auto; text-align: right; }
+  .gain-line { width: 2px; height: 30px; margin: 0 auto; background: linear-gradient(180deg, var(--primary), rgba(245,158,11,.15)); }
+  .gain-types { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin-top: 46px; }
+  .gain-type { padding: 18px 20px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--glass); }
+  .gain-type h5 { font-size: 14.5px; font-weight: 800; color: var(--primary); margin-bottom: 6px; }
+  .gain-type p { font-size: 13.5px; color: var(--text-dim); }
+  .gain-final {
+    margin-top: 46px;
+    text-align: center;
+    padding: 40px 24px;
+    border-radius: var(--radius);
+    border: 1px solid rgba(245,158,11,.35);
+    background: linear-gradient(160deg, var(--primary-soft), rgba(245,158,11,.02));
+    font-size: clamp(18px, 2.6vw, 26px);
+    font-weight: 800;
+    line-height: 1.5;
+  }
+  .gain-final span { color: var(--primary); }
+
+  /* ============================================================
+     Exit decision tree
+     ============================================================ */
+  .dtree { display: flex; flex-direction: column; align-items: stretch; gap: 0; max-width: 760px; margin: 0 auto; }
+  .dt-node {
+    padding: 18px 24px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--glass);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .dt-node .q { font-weight: 800; font-size: 16.5px; flex: 1; min-width: 200px; }
+  .dt-node .q small { display: block; font-weight: 500; color: var(--text-dim); font-size: 12.5px; }
+  .dt-btn {
+    padding: 7px 16px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 800;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all .18s var(--ease);
+    background: transparent;
+    color: var(--text-dim);
+  }
+  .dt-btn.yes { border-color: rgba(34,197,94,.45); color: var(--green); }
+  .dt-btn.no { border-color: rgba(239,68,68,.45); color: #fca5a5; }
+  .dt-btn:hover { transform: translateY(-2px); }
+  .dt-btn.chosen-yes { background: var(--green); color: #062b14; }
+  .dt-btn.chosen-no { background: var(--red); color: #2a0606; }
+  .dt-branch {
+    display: flex; align-items: center; gap: 10px;
+    margin-left: 44px; padding: 4px 0;
+    color: var(--text-faint); font-size: 12px;
+  }
+  .dt-branch .lbl { width: 44px; font-weight: 800; letter-spacing: .1em; }
+  .dt-branch .to { color: var(--text-dim); font-weight: 600; }
+  .dt-branch .bar { flex: 1; height: 1px; background: var(--border-strong); }
+  .dt-line { width: 2px; height: 26px; margin: 0 auto; background: var(--border-strong); }
+  .dt-result {
+    margin-top: 30px;
+    text-align: center;
+    padding: 30px 24px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--glass);
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .dt-result .big { font-size: 24px; font-weight: 800; }
+  .dt-result .sub { color: var(--text-dim); font-size: 14px; }
+  .dt-result.go .big { color: var(--green); }
+  .dt-result.stop .big { color: #fca5a5; }
+  .dt-reset {
+    margin-top: 18px; align-self: center;
+    background: transparent; color: var(--text-faint);
+    border: 1px solid var(--border); padding: 8px 18px; border-radius: 999px;
+    font-size: 12.5px; cursor: pointer; transition: all .2s;
+  }
+  .dt-reset:hover { color: var(--text); border-color: var(--border-strong); }
+  .exit-statement {
+    margin-top: 60px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 18px;
+    text-align: center;
+  }
+  .exit-statement .part { padding: 22px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--glass); }
+  .exit-statement .part .big { font-size: 20px; font-weight: 800; }
+  .exit-statement .part.exit .big { color: #fca5a5; }
+  .exit-statement .part.equal { font-size: 30px; color: var(--text-faint); font-weight: 800; }
+  .exit-statement .part.meta .big { color: var(--primary); }
+  .exit-statement .part small { color: var(--text-dim); font-size: 12.5px; display: block; margin-top: 4px; }
+
+  /* ============================================================
+     Checklist
+     ============================================================ */
+  .check-layout { display: grid; grid-template-columns: 1.2fr .8fr; gap: 26px; align-items: start; }
+  .check-list { display: flex; flex-direction: column; gap: 12px; }
+  .check-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 16px 20px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--glass);
+    cursor: pointer;
+    transition: border-color .2s, background .2s, transform .2s var(--ease);
+  }
+  .check-item:hover { transform: translateX(4px); border-color: var(--border-strong); }
+  .check-item.checked { border-color: rgba(34,197,94,.45); background: var(--green-soft); }
+  .check-item input { display: none; }
+  .check-box {
+    width: 24px; height: 24px; flex: none;
+    border-radius: 8px;
+    border: 1.5px solid var(--border-strong);
+    display: grid; place-items: center;
+    transition: all .2s var(--ease);
+    font-size: 13px; color: transparent;
+  }
+  .check-item.checked .check-box { background: var(--green); border-color: var(--green); color: #062b14; }
+  .check-item .txt b { font-size: 15px; font-weight: 800; display: block; }
+  .check-item .txt span { font-size: 12.5px; color: var(--text-dim); }
+
+  .score-card {
+    position: sticky; top: 96px;
+    padding: 30px;
+    text-align: center;
+  }
+  .score-num { font-size: 64px; font-weight: 800; line-height: 1; letter-spacing: -.02em; }
+  .score-num small { font-size: 22px; color: var(--text-faint); font-weight: 700; }
+  .score-label { margin-top: 6px; font-size: 15px; font-weight: 800; letter-spacing: .06em; }
+  .score-bar { height: 8px; border-radius: 999px; background: rgba(255,255,255,.08); margin-top: 20px; overflow: hidden; }
+  .score-bar i { display: block; height: 100%; width: 0; border-radius: 999px; background: linear-gradient(90deg, var(--primary), #f97316); transition: width .5s var(--ease); }
+  .score-advice { margin-top: 20px; font-size: 13.5px; color: var(--text-dim); min-height: 60px; }
+  .score-advice b { color: var(--text); }
+  .score-advice.good b { color: var(--green); }
+  .score-advice.bad b { color: #fca5a5; }
+  .score-dots { display: flex; justify-content: center; gap: 6px; margin-top: 16px; }
+  .score-dots i { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.14); }
+  .score-dots i.on { background: var(--primary); box-shadow: 0 0 8px var(--primary); }
+
+  /* ============================================================
+     Summary
+     ============================================================ */
+  .summary-wrap { text-align: center; }
+  .summary-flow { display: inline-flex; flex-direction: column; align-items: center; gap: 0; margin-top: 10px; }
+  .sum-step { font-size: clamp(20px, 3vw, 30px); font-weight: 800; padding: 12px 30px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--glass); }
+  .sum-step.neg { color: #fca5a5; border-color: rgba(239,68,68,.35); }
+  .sum-step.pos { color: var(--green); }
+  .sum-step.key { color: var(--primary); border-color: rgba(245,158,11,.4); background: var(--primary-soft); }
+  .sum-link { color: var(--text-faint); font-size: 13px; letter-spacing: .1em; padding: 6px 0; }
+  .summary-tagline { margin-top: 40px; color: var(--text-dim); font-size: 15px; }
+  .summary-tagline b { color: var(--text); }
+
+  footer.foot {
+    padding: 40px 24px 60px;
+    text-align: center;
+    color: var(--text-faint);
+    font-size: 13px;
+    border-top: 1px solid rgba(255,255,255,.06);
+  }
+  footer.foot .f-brand { font-weight: 800; color: var(--text-dim); letter-spacing: .04em; margin-bottom: 6px; }
+
+  /* ============================================================
+     Responsive
+     ============================================================ */
+  @media (max-width: 980px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+    .flow-layout { grid-template-columns: 1fr; }
+    .flow-detail { position: static; }
+    .check-layout { grid-template-columns: 1fr; }
+    .score-card { position: static; }
+    .p-dims { grid-template-columns: 1fr; }
+    .exit-statement { grid-template-columns: 1fr; }
+    section.block { padding: 72px 20px; }
+  }
+  @media (max-width: 640px) {
+    nav.topbar nav.links { display: none; }
+    .ov-node { padding: 12px 14px; }
+    .ov-node .t { font-size: 13px; }
+    .precision-card { padding: 24px 18px; }
+    .flow-exit, .flow-outcome { margin-left: 30px; }
+    .dt-branch { margin-left: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+<div id="scrollProgress"></div>
+
+<nav class="topbar">
+  <div class="brand">
+    <span class="dot"></span>
+    DQF<small>· 讨论质量框架</small>
+  </div>
+  <nav class="links">
+    <a href="#overview">总览</a>
+    <a href="#baselines">五大基线</a>
+    <a href="#flow">讨论流程</a>
+    <a href="#precision">宽容度</a>
+    <a href="#gain">认知增量</a>
+    <a href="#exit">退出判断</a>
+    <a href="#checklist">Checklist</a>
+  </nav>
+</nav>
+
+<!-- ==================== HERO ==================== -->
+<header class="hero">
+  <div class="hero-grid">
+    <div class="reveal visible">
+      <h1>
+        <span class="en">Discussion Quality Framework</span>
+        讨论质量框架
+      </h1>
+      <p class="hero-sub">建立<strong>高质量讨论</strong>，而不是<strong>赢得讨论</strong>。<br>
+      从概念、标准、事实、逻辑到认知增量，建立可执行的讨论分析框架。</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#overview">开始使用</a>
+        <a class="btn btn-ghost" href="#baselines">了解五大基线</a>
+      </div>
+      <div class="hero-meta">
+        <span class="pill">Concept · 概念</span>
+        <span class="pill">Standard · 标准</span>
+        <span class="pill">Evidence · 事实</span>
+        <span class="pill">Logic · 逻辑</span>
+        <span class="pill">Cognitive Gain · 认知</span>
+      </div>
+    </div>
+    <div class="hero-chain" id="heroChain" aria-hidden="true">
+      <div class="chain-node">
+        <span class="cn-en">Concept</span><span class="cn-zh">概念定义</span>
+      </div>
+      <div class="chain-link"></div>
+      <div class="chain-node">
+        <span class="cn-en">Standard</span><span class="cn-zh">标准约束</span>
+      </div>
+      <div class="chain-link"></div>
+      <div class="chain-node">
+        <span class="cn-en">Evidence</span><span class="cn-zh">事实依据</span>
+      </div>
+      <div class="chain-link"></div>
+      <div class="chain-node">
+        <span class="cn-en">Logic</span><span class="cn-zh">逻辑遵循</span>
+      </div>
+      <div class="chain-link"></div>
+      <div class="chain-node">
+        <span class="cn-en">Cognitive Gain</span><span class="cn-zh">认知增量</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ==================== OVERVIEW ==================== -->
+<section class="block" id="overview">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">01 · Framework Overview</span>
+      <h2 class="title">框架总览</h2>
+      <p class="subtitle">一次讨论从"对象"到"结论"的完整链路。点击任意节点，查看它在这一步需要解决的问题。</p>
+    </div>
+    <div class="overview-chain reveal">
+      <div class="ov-row">
+        <div class="ov-node" data-ov="0">
+          <span class="n">0</span>
+          <span class="t">讨论<small>Discussion</small></span>
+        </div>
+        <span class="ov-link"><span class="bar"></span>▼</span>
+        <div class="ov-node" data-ov="1">
+          <span class="n">1</span>
+          <span class="t">概念定义<small>讨论对象一致</small></span>
+        </div>
+        <span class="ov-link"><span class="bar"></span>▼</span>
+        <div class="ov-node" data-ov="2">
+          <span class="n">2</span>
+          <span class="t">标准约束<small>评价规则一致</small></span>
+        </div>
+        <span class="ov-link"><span class="bar"></span>▼</span>
+        <div class="ov-node" data-ov="3">
+          <span class="n">3</span>
+          <span class="t">事实依据<small>前提是否真实</small></span>
+        </div>
+        <span class="ov-link"><span class="bar"></span>▼</span>
+        <div class="ov-node" data-ov="4">
+          <span class="n">4</span>
+          <span class="t">逻辑遵循<small>推导是否有效</small></span>
+        </div>
+        <span class="ov-link"><span class="bar"></span>▼</span>
+        <div class="ov-node" data-ov="5">
+          <span class="n">5</span>
+          <span class="t">认知增量<small>是否获得新理解</small></span>
+        </div>
+      </div>
+      <div class="ov-final">
+        <div class="ov-node continue-node" data-ov="6">
+          <span class="t">继续讨论</span>
+        </div>
+        <div class="ov-node stop-node" data-ov="7">
+          <span class="t">停止讨论</span>
+        </div>
+      </div>
+    </div>
+    <div class="ov-detail glass reveal">
+      <h4>点击左侧节点查看说明</h4>
+      <p class="empty">这套框架不是讨论技巧，而是一套降低认知噪声的约束条件：让讨论从"观点碰撞"变成"对象分析"。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== BASELINES ==================== -->
+<section class="block" id="baselines">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">02 · Five Baselines</span>
+      <h2 class="title">五大基线</h2>
+      <p class="subtitle">每一步分别防止一个不同层面的错误。点击卡片展开详情。</p>
+    </div>
+    <div class="cards-grid">
+
+      <article class="card glass reveal">
+        <div class="card-head">
+          <div class="card-num">01</div>
+          <div class="card-title"><h3>概念定义</h3><span class="en">Concept</span></div>
+          <p class="card-summary">确定讨论对象 —— 我们讨论的到底是什么？</p>
+        </div>
+        <div class="card-body">
+          <div class="card-inner">
+            <div class="card-sec">
+              <h5>为什么重要</h5>
+              <p>本质是确定讨论对象。很多争论不是观点不同，而是讨论的对象不同："文明是什么？""自由是什么？""效率高是什么意思？"没有统一定义，后面所有推理都建立在不同对象上。</p>
+            </div>
+            <div class="card-sec">
+              <h5>常见错误</h5>
+              <div class="chips"><span class="chip warn">偷换概念</span><span class="chip warn">语义混乱</span><span class="chip warn">对象不同步</span></div>
+            </div>
+            <div class="card-sec">
+              <h5>示例</h5>
+              <div class="chips"><span class="chip">文明</span><span class="chip">自由</span><span class="chip">公平</span><span class="chip">AI</span></div>
+              <p style="margin-top:10px">"AI 会取代程序员" —— AI 指什么（LLM？Agent？AGI？）；取代是什么意思（全部失业？岗位减少？工作方式改变？）；程序员范围（初级？高级？全部？）。</p>
+            </div>
+            <div class="card-sec">
+              <h5>何时需要严格</h5>
+              <p>学术讨论必须精确定义，必要时给出操作性定义；日常讨论可允许模糊，只要大致理解一致。</p>
+            </div>
+          </div>
+        </div>
+        <div class="card-foot"><span class="hint">点击展开 / 收起</span><span class="arrow">▾</span></div>
+      </article>
+
+      <article class="card glass reveal">
+        <div class="card-head">
+          <div class="card-num">02</div>
+          <div class="card-title"><h3>标准约束</h3><span class="en">Standard</span></div>
+          <p class="card-summary">确定评价函数 —— 依据什么来判断？</p>
+        </div>
+        <div class="card-body">
+          <div class="card-inner">
+            <div class="card-sec">
+              <h5>为什么重要</h5>
+              <p>第二步不是讨论事实，而是讨论"什么算成立"。标准不同时，双方都可能正确 —— 不是事实冲突，而是评价函数不同。没有评价函数，就不存在统一结论。</p>
+            </div>
+            <div class="card-sec">
+              <h5>常见错误</h5>
+              <div class="chips"><span class="chip warn">评价体系不同</span><span class="chip warn">标准隐含</span><span class="chip warn">权重不明</span></div>
+            </div>
+            <div class="card-sec">
+              <h5>示例</h5>
+              <div class="chips"><span class="chip">世界第一</span><span class="chip">NBA GOAT</span></div>
+              <p style="margin-top:10px">"世界第一"可用收入、奖项、技术水平、商业价值或历史影响力衡量；NBA 有人按 MVP/冠军/数据，有人按技术天花板/巅峰高度/比赛影响力。</p>
+            </div>
+            <div class="card-sec">
+              <h5>何时需要严格</h5>
+              <p>学术讨论必须说明评价指标、权重如何分配、为什么这样选择；日常讨论允许隐含标准。</p>
+            </div>
+          </div>
+        </div>
+        <div class="card-foot"><span class="hint">点击展开 / 收起</span><span class="arrow">▾</span></div>
+      </article>
+
+      <article class="card glass reveal">
+        <div class="card-head">
+          <div class="card-num">03</div>
+          <div class="card-title"><h3>事实依据</h3><span class="en">Evidence</span></div>
+          <p class="card-summary">保证前提真实 —— 事实本身可靠吗？</p>
+        </div>
+        <div class="card-body">
+          <div class="card-inner">
+            <div class="card-sec">
+              <h5>为什么重要</h5>
+              <p>即使定义一致、标准一致、逻辑正确，如果事实本身错了，结论依然会错。逻辑只能保证"前提为真则结论成立"，不能保证前提本身真实，因此事实依据应作为独立的一层。</p>
+            </div>
+            <div class="card-sec">
+              <h5>常见错误</h5>
+              <div class="chips"><span class="chip warn">假数据</span><span class="chip warn">证据不足</span><span class="chip warn">来源不可靠</span></div>
+            </div>
+            <div class="card-sec">
+              <h5>示例</h5>
+              <div class="chips"><span class="chip">GDP 增长</span><span class="chip">全球升温</span></div>
+              <p style="margin-top:10px">"中国 GDP 增长"不等于"每个人都更富有"；"全球平均气温上升"必须引用数据与研究，区分数据、样本、来源、偏差与统计方法。</p>
+            </div>
+            <div class="card-sec">
+              <h5>何时需要严格</h5>
+              <p>学术讨论要求可验证、可复现、可溯源的事实；日常讨论可接受个人经历、常识与新闻。</p>
+            </div>
+          </div>
+        </div>
+        <div class="card-foot"><span class="hint">点击展开 / 收起</span><span class="arrow">▾</span></div>
+      </article>
+
+      <article class="card glass reveal">
+        <div class="card-head">
+          <div class="card-num">04</div>
+          <div class="card-title"><h3>逻辑遵循</h3><span class="en">Logic</span></div>
+          <p class="card-summary">保证推理有效 —— 结论能由前提推出吗？</p>
+        </div>
+        <div class="card-body">
+          <div class="card-inner">
+            <div class="card-sec">
+              <h5>为什么重要</h5>
+              <p>第三步才真正进入推理。中间每一步都需要证明：不能跳步、不能偷换、不能循环论证、不能把相关当因果。逻辑遵循的本质是保证推理有效。</p>
+            </div>
+            <div class="card-sec">
+              <h5>常见错误</h5>
+              <div class="chips"><span class="chip warn">跳步</span><span class="chip warn">偷换概念</span><span class="chip warn">循环论证</span><span class="chip warn">相关当因果</span></div>
+            </div>
+            <div class="card-sec">
+              <h5>示例</h5>
+              <div class="chips"><span class="chip">GDP → 每个人更富有</span></div>
+              <p style="margin-top:10px">GDP 增长 → 收入增长？→ 居民收入增长？→ 所有居民？每一步都需要证明；"房价涨，租金大概率涨"是高效但不完整的推理。</p>
+            </div>
+            <div class="card-sec">
+              <h5>何时需要严格</h5>
+              <p>学术讨论必须完整严谨、避免逻辑谬误；日常讨论允许部分跳步和直觉推理。</p>
+            </div>
+          </div>
+        </div>
+        <div class="card-foot"><span class="hint">点击展开 / 收起</span><span class="arrow">▾</span></div>
+      </article>
+
+      <article class="card glass reveal">
+        <div class="card-head">
+          <div class="card-num">05</div>
+          <div class="card-title"><h3>认知增量</h3><span class="en">Cognitive Gain</span></div>
+          <p class="card-summary">评估讨论收益 —— 是否增加了认知？</p>
+        </div>
+        <div class="card-body">
+          <div class="card-inner">
+            <div class="card-sec">
+              <h5>为什么重要</h5>
+              <p>把讨论目标从"改变他人"转变为"增加认知"。讨论最大的价值不一定是得到答案，而是缩小问题。高质量讨论未必产生共识，但一定产生认知增量。</p>
+            </div>
+            <div class="card-sec">
+              <h5>常见错误</h5>
+              <div class="chips"><span class="chip warn">以输赢为目标</span><span class="chip warn">只重复观点</span><span class="chip warn">无信息增量</span></div>
+            </div>
+            <div class="card-sec">
+              <h5>示例</h5>
+              <div class="chips"><span class="chip">AI 到底好不好？</span></div>
+              <p style="margin-top:10px">讨论一小时后变成"我们真正分歧的是'效率优先'还是'就业优先'"—— 虽然没有统一观点，但问题被缩小了，这就是认知增量。</p>
+            </div>
+            <div class="card-sec">
+              <h5>何时需要严格</h5>
+              <p>高质量讨论结束时，双方都能准确表述：自己的观点、对方的观点、真正分歧在哪里、为什么目前无法统一。</p>
+            </div>
+          </div>
+        </div>
+        <div class="card-foot"><span class="hint">点击展开 / 收起</span><span class="arrow">▾</span></div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ==================== FLOW ==================== -->
+<section class="block" id="flow">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">03 · Discussion Flow</span>
+      <h2 class="title">讨论流程</h2>
+      <p class="subtitle">每一步都是一道关卡。任何一步不通过，后面的讨论都会失去意义。点击左侧节点查看说明。</p>
+    </div>
+    <div class="flow-layout reveal">
+      <div class="flow-main">
+        <div class="flow-step" data-flow="0">
+          <div class="flow-rail"><div class="flow-dot">1</div></div>
+          <div class="flow-card">
+            <h4>概念一致？<span class="yes-tag">YES ↓</span></h4>
+            <p>双方讨论的是同一个对象吗？</p>
+          </div>
+        </div>
+        <div class="flow-exit">NO → 退出讨论：先统一定义</div>
+        <div class="flow-step" data-flow="1">
+          <div class="flow-rail"><div class="flow-dot">2</div></div>
+          <div class="flow-card">
+            <h4>标准一致？<span class="yes-tag">YES ↓</span></h4>
+            <p>采用的是同一评价标准吗？</p>
+          </div>
+        </div>
+        <div class="flow-exit">NO → 退出讨论：先协商标准</div>
+        <div class="flow-step" data-flow="2">
+          <div class="flow-rail"><div class="flow-dot">3</div></div>
+          <div class="flow-card">
+            <h4>事实一致？<span class="yes-tag">YES ↓</span></h4>
+            <p>双方认可哪些事实、依据是否可靠？</p>
+          </div>
+        </div>
+        <div class="flow-exit">NO → 退出讨论：先补充证据</div>
+        <div class="flow-step" data-flow="3">
+          <div class="flow-rail"><div class="flow-dot">4</div></div>
+          <div class="flow-card">
+            <h4>逻辑成立？<span class="yes-tag">YES ↓</span></h4>
+            <p>推理是否有效、是否存在谬误？</p>
+          </div>
+        </div>
+        <div class="flow-exit">NO → 退出讨论：先修正推理</div>
+        <div class="flow-step" data-flow="4">
+          <div class="flow-rail"><div class="flow-dot">5</div></div>
+          <div class="flow-card">
+            <h4>产生认知？<span class="yes-tag">YES ↓</span></h4>
+            <p>是否获得了新的信息、理解或更清晰的问题？</p>
+          </div>
+        </div>
+        <div class="flow-exit">NO → 退出讨论：已无认知增量</div>
+        <div class="flow-outcome">
+          <span class="outcome-tag go">✓ 继续讨论</span>
+          <span class="outcome-tag stop">✕ 退出讨论</span>
+        </div>
+      </div>
+      <aside class="flow-detail glass">
+        <h4>节点说明</h4>
+        <div class="body">
+          <p class="placeholder">点击左侧任意节点，查看该步骤的作用与检查要点。</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== PRECISION SLIDER ==================== -->
+<section class="block" id="precision">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">04 · Discussion Precision</span>
+      <h2 class="title">讨论宽容度</h2>
+      <p class="subtitle">基线本身不变，变化的是允许偏离基线的程度。拖动滑块，实时查看不同场景下的精度要求。</p>
+    </div>
+    <div class="precision-card glass reveal">
+      <div class="p-scale">
+        <div class="pl">闲聊<small>Chat</small></div>
+        <div class="pl">工作讨论<small>Work</small></div>
+        <div class="pl">技术讨论<small>Technical</small></div>
+        <div class="pl">科研论文<small>Research</small></div>
+        <div class="pl">数学证明<small>Proof</small></div>
+      </div>
+      <input type="range" class="p-range" id="pRange" min="0" max="100" step="25" value="50" aria-label="讨论精度">
+      <div class="p-current">
+        <div class="level" id="pLevel">技术讨论<small>工作决策 · 技术评审</small></div>
+        <div class="p-tolerance">
+          <span>容忍误差</span>
+          <div class="tbar"><i id="pTol"></i></div>
+          <span id="pTolTxt">中等</span>
+        </div>
+      </div>
+      <div class="p-dims" id="pDims"></div>
+      <p class="p-note">原则：<b>讨论越重要、结论影响越大、可逆性越低</b>，越应提高对概念、标准、事实、逻辑的要求；越偏向交流与启发，可适当放宽，但<b>不能完全放弃</b>这些基线。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== COGNITIVE GAIN ==================== -->
+<section class="block" id="gain">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">05 · Cognitive Gain</span>
+      <h2 class="title">认知增量</h2>
+      <p class="subtitle">讨论最大的价值，不一定是得到答案，而是增加认知。</p>
+    </div>
+
+    <div class="gain-quote reveal">
+      讨论最大的价值，<span class="hl">不是得到答案，而是缩小问题、增加认知</span>。
+    </div>
+
+    <div class="gain-flow reveal">
+      <div class="gain-step"><span class="icon">💬</span><span class="gt">讨论</span><span class="gd">开始一场对话</span></div>
+      <div class="gain-line"></div>
+      <div class="gain-step"><span class="icon">📄</span><span class="gt">新事实</span><span class="gd">补充可信证据</span></div>
+      <div class="gain-line"></div>
+      <div class="gain-step"><span class="icon">🧭</span><span class="gt">新定义</span><span class="gd">澄清概念边界</span></div>
+      <div class="gain-line"></div>
+      <div class="gain-step"><span class="icon">⚖️</span><span class="gt">新标准</span><span class="gd">明确评价规则</span></div>
+      <div class="gain-line"></div>
+      <div class="gain-step"><span class="icon">🔗</span><span class="gt">新逻辑</span><span class="gd">修正推理结构</span></div>
+      <div class="gain-line"></div>
+      <div class="gain-step"><span class="icon">🎯</span><span class="gt">问题缩小</span><span class="gd">真正分歧点浮出</span></div>
+      <div class="gain-line"></div>
+      <div class="gain-step"><span class="icon">📈</span><span class="gt">认知增加</span><span class="gd">讨论产生价值</span></div>
+    </div>
+
+    <div class="gain-types reveal">
+      <div class="gain-type"><h5>学到新事实</h5><p>讨论中获得了之前不知道的信息。</p></div>
+      <div class="gain-type"><h5>发现定义不准确</h5><p>意识到自己的概念边界需要调整。</p></div>
+      <div class="gain-type"><h5>意识到另一种标准</h5><p>发现存在另一种合理的评价方式。</p></div>
+      <div class="gain-type"><h5>找到推理漏洞</h5><p>发现自己论证中存在的缺口。</p></div>
+      <div class="gain-type"><h5>明确无法下结论</h5><p>搞清楚问题当前为何无解。</p></div>
+      <div class="gain-type"><h5>定位真正分歧</h5><p>确认分歧在价值排序而非事实或逻辑。</p></div>
+    </div>
+
+    <div class="gain-final reveal">
+      「高质量讨论未必产生共识，<span>但一定产生认知增量</span>。」
+    </div>
+  </div>
+</section>
+
+<!-- ==================== EXIT DECISION ==================== -->
+<section class="block" id="exit">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">06 · Exit Decision</span>
+      <h2 class="title">是否退出讨论</h2>
+      <p class="subtitle">日常讨论往往无法判定结论对错，但可以判定讨论是否还有继续的价值。点击 YES / NO 走一遍判断。</p>
+    </div>
+
+    <div class="dtree reveal">
+      <div class="dt-node" data-dt="0">
+        <span class="q">还有新事实？<small>是否有新的证据可能加入</small></span>
+        <button class="dt-btn yes">YES → 继续</button>
+        <button class="dt-btn no">NO ↓</button>
+      </div>
+      <div class="dt-branch"><span class="lbl">YES</span><span class="to">继续讨论 —— 等待或寻找更多证据</span><span class="bar"></span></div>
+      <div class="dt-line"></div>
+      <div class="dt-node" data-dt="1">
+        <span class="q">还能统一概念？<small>能否就讨论对象达成一致</small></span>
+        <button class="dt-btn yes">YES → 继续</button>
+        <button class="dt-btn no">NO ↓</button>
+      </div>
+      <div class="dt-branch"><span class="lbl">YES</span><span class="to">继续讨论 —— 定义可以统一</span><span class="bar"></span></div>
+      <div class="dt-line"></div>
+      <div class="dt-node" data-dt="2">
+        <span class="q">还能统一标准？<small>能否接受共同的评价标准</small></span>
+        <button class="dt-btn yes">YES → 继续</button>
+        <button class="dt-btn no">NO ↓</button>
+      </div>
+      <div class="dt-branch"><span class="lbl">YES</span><span class="to">继续讨论 —— 标准可以协商</span><span class="bar"></span></div>
+      <div class="dt-line"></div>
+      <div class="dt-node" data-dt="3">
+        <span class="q">还能产生认知增量？<small>继续是否还有新的信息与理解</small></span>
+        <button class="dt-btn yes">YES → 继续</button>
+        <button class="dt-btn no">NO → 停止</button>
+      </div>
+
+      <div class="dt-result" id="dtResult">
+        <div class="big">选择路径开始判断</div>
+        <div class="sub">逐题点击 YES / NO，追踪你的决策路径。</div>
+      </div>
+      <button class="dt-reset" id="dtReset">重置路径</button>
+    </div>
+
+    <div class="exit-statement reveal">
+      <div class="part exit">
+        <div class="big">退出讨论</div>
+        <small>≠ 认输</small>
+      </div>
+      <div class="part equal">=</div>
+      <div class="part meta">
+        <div class="big">当前讨论已无认知增量</div>
+        <small>继续讨论的边际收益接近零，是一种理性决策</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CHECKLIST ==================== -->
+<section class="block" id="checklist">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">07 · Checklist</span>
+      <h2 class="title">讨论质量自检</h2>
+      <p class="subtitle">逐项勾选，实时生成讨论质量评分与建议。</p>
+    </div>
+    <div class="check-layout">
+      <div class="check-list reveal">
+        <label class="check-item" data-idx="0">
+          <input type="checkbox">
+          <span class="check-box">✓</span>
+          <span class="txt"><b>概念一致</b><span>双方讨论的是同一个对象，定义已统一</span></span>
+        </label>
+        <label class="check-item" data-idx="1">
+          <input type="checkbox">
+          <span class="check-box">✓</span>
+          <span class="txt"><b>标准一致</b><span>采用了同一评价标准，已明确判断依据</span></span>
+        </label>
+        <label class="check-item" data-idx="2">
+          <input type="checkbox">
+          <span class="check-box">✓</span>
+          <span class="txt"><b>事实可靠</b><span>关键事实可验证、来源可信</span></span>
+        </label>
+        <label class="check-item" data-idx="3">
+          <input type="checkbox">
+          <span class="check-box">✓</span>
+          <span class="txt"><b>推理成立</b><span>逻辑无跳步、无偷换、无循环论证</span></span>
+        </label>
+        <label class="check-item" data-idx="4">
+          <input type="checkbox">
+          <span class="check-box">✓</span>
+          <span class="txt"><b>获得认知</b><span>讨论产生了新的信息、理解或更清晰的问题</span></span>
+        </label>
+        <label class="check-item" data-idx="5">
+          <input type="checkbox">
+          <span class="check-box">✓</span>
+          <span class="txt"><b>值得继续</b><span>还有进一步增加认知的可能</span></span>
+        </label>
+      </div>
+      <aside class="score-card glass reveal">
+        <div class="score-num"><span id="scoreNum">0</span><small>%</small></div>
+        <div class="score-label" id="scoreLabel">Discussion Quality</div>
+        <div class="score-bar"><i id="scoreBar"></i></div>
+        <div class="score-advice" id="scoreAdvice">勾选 Checklist 各项，生成讨论质量评分。</div>
+        <div class="score-dots" id="scoreDots">
+          <i></i><i></i><i></i><i></i><i></i><i></i>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SUMMARY ==================== -->
+<section class="block" id="summary">
+  <div class="wrap summary-wrap">
+    <div class="section-head reveal" style="margin-bottom:20px">
+      <span class="kicker" style="justify-content:center">08 · Summary</span>
+      <h2 class="title">讨论的目的</h2>
+    </div>
+    <div class="summary-flow reveal">
+      <div class="sum-step neg">不是 赢</div>
+      <span class="sum-link">而是 ↓</span>
+      <div class="sum-step pos">理解</div>
+      <span class="sum-link">↓ 分析</span>
+      <div class="sum-step">分析</div>
+      <span class="sum-link">↓</span>
+      <div class="sum-step key">增加认知</div>
+      <span class="sum-link">↓</span>
+      <div class="sum-step pos">适时结束</div>
+    </div>
+    <p class="summary-tagline reveal">把讨论的目标从<b>改变他人</b>，转变为<b>增加认知</b>。<br>在无法增加认知时，理性地停止讨论。</p>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="f-brand">DISCUSSION QUALITY FRAMEWORK</div>
+  <div>建立高质量讨论，而不是赢得讨论 · 单文件离线运行</div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- 1. Scroll progress ---------- */
+  var progressBar = document.getElementById('scrollProgress');
+  function updateProgress() {
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    var p = max > 0 ? h.scrollTop / max : 0;
+    progressBar.style.transform = 'scaleX(' + p + ')';
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  window.addEventListener('resize', updateProgress);
+  updateProgress();
+
+  /* ---------- 2. Scroll reveal ---------- */
+  var revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    revealEls.forEach(function (el) { io.observe(el); });
+  } else {
+    revealEls.forEach(function (el) { el.classList.add('visible'); });
+  }
+
+  /* ---------- 3. Hero chain animation ---------- */
+  var heroChain = document.getElementById('heroChain');
+  var heroNodes = heroChain.querySelectorAll('.chain-node');
+  var heroLinks = heroChain.querySelectorAll('.chain-link');
+  var heroStarted = false;
+  function startHero() {
+    if (heroStarted) return;
+    heroStarted = true;
+    heroNodes.forEach(function (n, i) {
+      setTimeout(function () { n.classList.add('on'); }, 150 + i * 260);
+    });
+    heroLinks.forEach(function (l, i) {
+      setTimeout(function () { l.classList.add('flow'); }, 340 + i * 260);
+    });
+  }
+  if ('IntersectionObserver' in window) {
+    var ho = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) { startHero(); ho.disconnect(); } });
+    }, { threshold: 0.2 });
+    ho.observe(heroChain);
+  } else {
+    startHero();
+  }
+
+  /* ---------- 4. Overview nodes ---------- */
+  var ovData = [
+    { title: '讨论', tag: '起点', desc: '一切分析从这里开始。判断一次对话是否值得投入，先看能否回答接下来的每一步。' },
+    { title: '概念定义', tag: '对象', desc: '本质是确定讨论对象。若双方对象不同，所有后续推理都建立在不同对象上。例："AI 会取代程序员"需先定义 AI、取代、程序员。' },
+    { title: '标准约束', tag: '评价函数', desc: '本质是确定评价函数。标准不同时双方都可能正确——不是事实冲突，而是评价体系不同。没有评价函数，就不存在统一结论。' },
+    { title: '事实依据', tag: '前提', desc: '保证前提真实。即使定义、标准、逻辑都对，事实错了结论依然会错。逻辑只保证"前提为真则结论成立"，不能保证前提本身真实。' },
+    { title: '逻辑遵循', tag: '推理', desc: '保证推理有效。中间每一步都需要证明：不跳步、不偷换、不循环论证、不把相关当因果。' },
+    { title: '认知增量', tag: '收益', desc: '评估讨论是否产生了新的信息、新的理解或更清晰的问题。这是整个流程的"收益评估"。' },
+    { title: '继续讨论', tag: 'YES', desc: '定义可统一、标准可协商、新证据可能出现、逻辑可修正——继续讨论有收益。' },
+    { title: '停止讨论', tag: 'NO', desc: '价值观不同、标准不同且不接受修改、没有新事实、只重复观点、已进入情绪表达——继续的边际收益接近零。' }
+  ];
+  var ovDetail = document.querySelector('.ov-detail');
+  var ovNodes = document.querySelectorAll('.ov-node[data-ov]');
+  function renderOv(i) {
+    var d = ovData[i];
+    ovDetail.innerHTML =
+      '<h4>' + d.title + ' <span class="tag">' + d.tag + '</span></h4>' +
+      '<p>' + d.desc + '</p>';
+  }
+  ovNodes.forEach(function (n) {
+    n.addEventListener('click', function () {
+      ovNodes.forEach(function (x) { x.classList.remove('active'); });
+      n.classList.add('active');
+      renderOv(parseInt(n.getAttribute('data-ov'), 10));
+    });
+  });
+
+  /* ---------- 5. Baseline cards ---------- */
+  document.querySelectorAll('.card').forEach(function (card) {
+    card.addEventListener('click', function () {
+      var isOpen = card.classList.contains('open');
+      document.querySelectorAll('.card').forEach(function (c) {
+        c.classList.remove('open');
+      });
+      if (!isOpen) card.classList.add('open');
+    });
+  });
+
+  /* ---------- 6. Flow (interactive) ---------- */
+  var flowData = [
+    {
+      num: '01', title: '概念一致？',
+      body: '先确认双方讨论的是同一个对象。很多争论不是观点不同，而是对象不同——"公平"双方理解完全不同。',
+      checks: ['对象是否一致', '定义是否已统一', '必要时给出操作性定义']
+    },
+    {
+      num: '02', title: '标准一致？',
+      body: '确认双方采用同一评价标准。标准不同时双方都可能正确，先明确评价函数，否则不存在统一结论。',
+      checks: ['判断依据是否明确', '指标与权重是否一致', '适用范围是否说清']
+    },
+    {
+      num: '03', title: '事实一致？',
+      body: '确认双方认可哪些事实、依据是否可靠。事实不可靠则结论不可靠，需要可验证的证据。',
+      checks: ['关键事实可验证', '区分数据/样本/来源/偏差', '证据链是否完整']
+    },
+    {
+      num: '04', title: '逻辑成立？',
+      body: '检查推理是否有效。中间每一步都需要证明，不能跳步、不能偷换、不能循环论证、不能把相关当因果。',
+      checks: ['是否有跳步', '是否偷换概念', '是否混淆相关与因果']
+    },
+    {
+      num: '05', title: '产生认知？',
+      body: '评估是否获得了新的信息、新的理解或更清晰的问题。认知增量是整个流程的收益评估。',
+      checks: ['学到了新事实？', '发现了推理漏洞？', '问题是否被缩小？']
+    }
+  ];
+  var flowSteps = document.querySelectorAll('.flow-step');
+  var flowDetail = document.querySelector('.flow-detail .body');
+  function renderFlow(i) {
+    var d = flowData[i];
+    var html = '<h4><span class="num">' + d.num + '</span> ' + d.title + '</h4>' +
+      '<p>' + d.body + '</p>';
+    d.checks.forEach(function (c) {
+      html += '<div class="check">' + c + '</div>';
+    });
+    flowDetail.innerHTML = html;
+  }
+  flowSteps.forEach(function (step, i) {
+    step.addEventListener('click', function () {
+      flowSteps.forEach(function (s) { s.classList.remove('active'); });
+      step.classList.add('active');
+      renderFlow(i);
+    });
+  });
+
+  /* ---------- 7. Precision slider ---------- */
+  var levels = [
+    { name: '闲聊', sub: '快速交流 · 分享观点 · 娱乐', tol: 1, dims: { concept: 2, standard: 3, evidence: 1, logic: 2 } },
+    { name: '工作讨论', sub: '一般交流 · 建立共识', tol: 0.78, dims: { concept: 3, standard: 3, evidence: 3, logic: 3 } },
+    { name: '技术讨论', sub: '工作决策 · 技术评审', tol: 0.5, dims: { concept: 4, standard: 4, evidence: 4, logic: 4 } },
+    { name: '科研论文', sub: '学术研究 · 可验证可复现', tol: 0.24, dims: { concept: 5, standard: 5, evidence: 5, logic: 5 } },
+    { name: '数学证明', sub: '接近严格证明 · 几乎零容忍', tol: 0.06, dims: { concept: 5, standard: 5, evidence: 5, logic: 5 } }
+  ];
+  var dimMeta = [
+    { key: 'concept', name: '概念定义' },
+    { key: 'standard', name: '标准约束' },
+    { key: 'evidence', name: '事实依据' },
+    { key: 'logic', name: '逻辑遵循' }
+  ];
+  function reqFor(dimKey, stars) {
+    if (dimKey === 'concept') return stars <= 2 ? '可模糊' : stars === 3 ? '需明确' : stars === 4 ? '需精确定义' : '必须操作性定义';
+    if (dimKey === 'standard') return stars <= 2 ? '可隐含' : stars === 3 ? '需明确' : stars === 4 ? '需显式标准' : '必须说明指标与权重';
+    if (dimKey === 'evidence') return stars <= 2 ? '接受经验常识' : stars === 3 ? '需较可靠' : stars === 4 ? '需可验证' : '必须可复现、可溯源';
+    return stars <= 2 ? '允许跳步' : stars === 3 ? '需较完整' : stars === 4 ? '需严谨' : '几乎零容忍';
+  }
+  function starsHtml(n) {
+    var s = '';
+    for (var i = 1; i <= 5; i++) {
+      s += '<span class="' + (i <= n ? 'on' : '') + '">★</span>';
+    }
+    return s;
+  }
+  var pRange = document.getElementById('pRange');
+  var pLevel = document.getElementById('pLevel');
+  var pTol = document.getElementById('pTol');
+  var pTolTxt = document.getElementById('pTolTxt');
+  var pDims = document.getElementById('pDims');
+  var tolTxt = ['极大', '较大', '中等', '小', '极小'];
+  function renderDims() {
+    var idx = Math.round(pRange.value / 25);
+    var lv = levels[idx];
+    pLevel.innerHTML = lv.name + '<small>' + lv.sub + '</small>';
+    pTol.style.width = (lv.tol * 100) + '%';
+    pTolTxt.textContent = '容忍误差：' + tolTxt[idx];
+    pRange.style.setProperty('--fill', (idx * 25) + '%');
+    var html = '';
+    dimMeta.forEach(function (dm) {
+      var stars = lv.dims[dm.key];
+      html += '<div class="p-dim">' +
+        '<div class="row"><span class="name">' + dm.name + '</span><span class="req">' + reqFor(dm.key, stars) + '</span></div>' +
+        '<div class="stars">' + starsHtml(stars) + '</div>' +
+        '</div>';
+    });
+    pDims.innerHTML = html;
+  }
+  pRange.addEventListener('input', renderDims);
+  renderDims();
+
+  /* ---------- 8. Exit decision tree ---------- */
+  var dtNodes = document.querySelectorAll('.dt-node');
+  var dtResult = document.getElementById('dtResult');
+  var chosen = [];
+  function resetDt() {
+    chosen = [];
+    dtNodes.forEach(function (n) {
+      n.querySelectorAll('.dt-btn').forEach(function (b) { b.classList.remove('chosen-yes', 'chosen-no'); });
+    });
+    dtResult.className = 'dt-result';
+    dtResult.innerHTML = '<div class="big">选择路径开始判断</div><div class="sub">逐题点击 YES / NO，追踪你的决策路径。</div>';
+  }
+  dtNodes.forEach(function (n) {
+    n.querySelectorAll('.dt-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        n.querySelectorAll('.dt-btn').forEach(function (b) {
+          b.classList.remove('chosen-yes', 'chosen-no');
+        });
+        var isYes = btn.classList.contains('yes');
+        btn.classList.add(isYes ? 'chosen-yes' : 'chosen-no');
+        chosen[parseInt(n.getAttribute('data-dt'), 10)] = isYes;
+        var last = chosen.length - 1;
+        var d = chosen[last];
+        if (d === true) {
+          dtResult.className = 'dt-result go';
+          dtResult.innerHTML = '<div class="big">继续讨论</div><div class="sub">还有进一步增加认知的可能，继续有收益。</div>';
+        } else {
+          dtResult.className = 'dt-result stop';
+          dtResult.innerHTML = '<div class="big">停止讨论</div><div class="sub">继续讨论的边际收益接近零。退出 ≠ 认输，而是理性的认知决策。</div>';
+        }
+      });
+    });
+  });
+  document.getElementById('dtReset').addEventListener('click', resetDt);
+
+  /* ---------- 9. Checklist ---------- */
+  var checkItems = document.querySelectorAll('.check-item');
+  var scoreNum = document.getElementById('scoreNum');
+  var scoreBar = document.getElementById('scoreBar');
+  var scoreLabel = document.getElementById('scoreLabel');
+  var scoreAdvice = document.getElementById('scoreAdvice');
+  var scoreDots = document.getElementById('scoreDots');
+  var adviceByItem = [
+    '先确认双方讨论的是同一个对象，统一定义后再继续。',
+    '先明确采用同一评价标准，协商评价指标与权重。',
+    '先补充可验证、可溯源的证据，再基于事实讨论。',
+    '先检查推理过程：是否有跳步、偷换或循环论证。',
+    '先思考这场讨论是否产生了新的信息或理解。',
+    '先评估继续讨论是否还有进一步增加认知的可能。'
+  ];
+  var lastPct = 0;
+  function updateScore() {
+    var n = 0;
+    checkItems.forEach(function (it) {
+      if (it.querySelector('input').checked) { it.classList.add('checked'); n++; }
+      else { it.classList.remove('checked'); }
+    });
+    var pct = Math.round(n / checkItems.length * 100);
+    var label;
+    if (pct >= 84) label = '优秀 · Excellent';
+    else if (pct >= 67) label = '良好 · Good';
+    else if (pct >= 50) label = '一般 · Fair';
+    else if (pct > 0) label = '待提升 · Needs Work';
+    else label = '尚未开始 · Not Started';
+    scoreLabel.textContent = label;
+    scoreBar.style.width = pct + '%';
+    // animate number
+    var start = lastPct, end = pct, t0 = null;
+    function tick(t) {
+      if (!t0) t0 = t;
+      var p = Math.min((t - t0) / 380, 1);
+      var eased = 1 - Math.pow(1 - p, 3);
+      scoreNum.textContent = Math.round(start + (end - start) * eased);
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+    lastPct = pct;
+    // advice
+    var unchecked = [];
+    checkItems.forEach(function (it, i) {
+      if (!it.querySelector('input').checked) unchecked.push(i);
+    });
+    scoreAdvice.className = 'score-advice';
+    if (unchecked.length === 0) {
+      scoreAdvice.innerHTML = '<b>当前讨论值得继续</b>，且具备高质量基础：对象、标准、事实、逻辑、认知都已就位。';
+      scoreAdvice.classList.add('good');
+    } else {
+      var advice = unchecked.map(function (i) { return adviceByItem[i]; }).join(' ');
+      if (pct < 50) scoreAdvice.classList.add('bad');
+      scoreAdvice.innerHTML = '待补强：<b>' + advice + '</b>';
+    }
+    // dots
+    var dots = scoreDots.querySelectorAll('i');
+    dots.forEach(function (dot, i) {
+      dot.classList.toggle('on', i < n);
+    });
+  }
+  checkItems.forEach(function (it) {
+    it.querySelector('input').addEventListener('change', updateScore);
+  });
+  updateScore();
+})();
+</script>
+</body>
+</html>
