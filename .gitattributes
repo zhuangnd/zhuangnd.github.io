@@ -1,0 +1,10 @@
+# 本地预览服务在每次预览时会向被预览的 HTML 源码就地回写
+# data-page-node-id="<nanoid>" 标注属性（每个元素一个，约 +8KB）。
+# 该属性对渲染无作用，但会污染 diff 与提交历史。
+# 这里用 clean 过滤器在入库前剥离，工作区文件保持原样。
+#
+# 过滤器定义在本仓库的 local config 中（不随克隆传递，见下）：
+#   git config filter.strip-preview.clean  'sed -E "s/ data-page-node-id=\"[A-Za-z0-9_-]+\"//g"'
+#   git config filter.strip-preview.smudge cat
+#   git config filter.strip-preview.required false
+*.html filter=strip-preview
