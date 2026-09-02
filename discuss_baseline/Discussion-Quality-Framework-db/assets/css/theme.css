@@ -1,0 +1,148 @@
+/* ============================================================
+   theme.css — 设计令牌（Design Tokens）与基础样式
+   Discussion Quality Framework
+   风格：Modern Minimal · Liquid Glass · Dark · Orange Accent
+   ============================================================ */
+
+:root {
+  /* 背景与表面 */
+  --bg: #111315;
+  --bg-soft: #16181b;
+
+  /* 玻璃拟态 */
+  --glass: rgba(255, 255, 255, .06);
+  --glass-strong: rgba(255, 255, 255, .10);
+  --glass-hover: rgba(255, 255, 255, .12);
+
+  /* 描边 */
+  --border: rgba(255, 255, 255, .10);
+  --border-strong: rgba(255, 255, 255, .18);
+
+  /* 语义色 */
+  --primary: #F59E0B;
+  --primary-soft: rgba(245, 158, 11, .14);
+  --green: #22C55E;
+  --green-soft: rgba(34, 197, 94, .14);
+  --blue: #60A5FA;
+  --blue-soft: rgba(96, 165, 250, .14);
+  --red: #EF4444;
+  --red-soft: rgba(239, 68, 68, .14);
+
+  /* 文本 */
+  --text: #F5F5F4;
+  --text-dim: rgba(245, 245, 244, .66);
+  --text-faint: rgba(245, 245, 244, .42);
+
+  /* 尺寸 */
+  --radius: 18px;
+  --radius-sm: 12px;
+  --maxw: 1120px;
+
+  /* 动效 */
+  --ease: cubic-bezier(.22, .61, .36, 1);
+
+  /* 字体：Inter + Noto Sans SC（系统回退，离线可用） */
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto,
+          "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Noto Sans SC",
+          "Microsoft YaHei", sans-serif;
+}
+
+/* ---------- Reset 与基础 ---------- */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::selection { background: rgba(245, 158, 11, .35); color: #fff; }
+
+a { color: inherit; }
+
+/* ---------- 通用布局 ---------- */
+.wrap {
+  max-width: var(--maxw);
+  margin: 0 auto;
+}
+
+section.block {
+  padding: 96px 24px;
+  position: relative;
+}
+
+.section-head { margin-bottom: 44px; }
+
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 14px;
+}
+.kicker::before {
+  content: "";
+  width: 22px;
+  height: 1px;
+  background: var(--primary);
+}
+
+h2.title {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 800;
+  letter-spacing: -.01em;
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+
+.subtitle {
+  color: var(--text-dim);
+  font-size: clamp(15px, 2vw, 17px);
+  max-width: 680px;
+}
+
+/* ---------- 玻璃拟态表面 ---------- */
+.glass {
+  background: linear-gradient(150deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .03));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+}
+
+/* ---------- 按钮 ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: transform .2s var(--ease), box-shadow .2s, background .2s, border-color .2s;
+}
+.btn-primary {
+  background: var(--primary);
+  color: #1a1205;
+  box-shadow: 0 8px 28px rgba(245, 158, 11, .28);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 34px rgba(245, 158, 11, .36); }
+.btn-ghost {
+  background: var(--glass);
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+.btn-ghost:hover { background: var(--glass-strong); transform: translateY(-2px); }

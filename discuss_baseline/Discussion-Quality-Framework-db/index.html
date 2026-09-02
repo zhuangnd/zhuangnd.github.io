@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Discussion Quality Framework — 讨论质量框架：概念定义 · 标准约束 · 事实依据 · 逻辑遵循 · 认知增量">
+<title>Discussion Quality Framework · 讨论质量框架</title>
+<link rel="stylesheet" href="assets/css/theme.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/animation.css">
+</head>
+<body>
+
+<div id="scrollProgress"></div>
+<div class="bg-glow" aria-hidden="true"></div>
+
+<!-- ================= 顶栏导航 ================= -->
+<nav class="topbar">
+  <div class="brand">
+    <span class="dot"></span>
+    Discussion Quality Framework
+    <small>· 讨论质量框架</small>
+  </div>
+  <nav class="links">
+    <a href="#baseline">五大基线</a>
+    <a href="#flow">讨论流程</a>
+    <a href="#precision">讨论宽容度</a>
+    <a href="#analyzer">分析器</a>
+    <a href="#case">案例分析</a>
+    <a href="#exit">退出讨论</a>
+    <a href="#checklist">Checklist</a>
+  </nav>
+</nav>
+
+<!-- ================= Hero ================= -->
+<header class="hero">
+  <canvas id="particles"></canvas>
+  <div class="hero-grid wrap">
+    <div class="hero-copy">
+      <h1 class="hero-fade hero-fade-1">
+        <span class="en">DISCUSSION QUALITY FRAMEWORK</span>
+        讨论质量框架
+      </h1>
+      <p class="hero-sub hero-fade hero-fade-2">
+        不是"怎么赢"，而是<strong>怎么把讨论变成真正有质量的认知过程</strong>。
+        一条可执行的路径，用来判断：<b>什么时候应该继续，什么时候应该退出</b>。
+      </p>
+      <div class="hero-cta hero-fade hero-fade-3">
+        <a class="btn btn-primary" href="#baseline">了解五大基线</a>
+        <a class="btn btn-ghost" href="#checklist">自检清单</a>
+      </div>
+      <div class="hero-meta hero-fade hero-fade-3">
+        <span class="pill">概念定义</span>
+        <span class="pill">标准约束</span>
+        <span class="pill">事实依据</span>
+        <span class="pill">逻辑遵循</span>
+        <span class="pill">认知增量</span>
+      </div>
+    </div>
+    <div class="hero-chain" id="heroChain" aria-hidden="true">
+      <div class="chain-node"><span class="cn-en">开始</span></div>
+      <div class="chain-link"></div>
+      <div class="chain-node"><span class="cn-en">概念定义</span><span class="cn-zh">我们讨论什么？</span></div>
+      <div class="chain-link"></div>
+      <div class="chain-node"><span class="cn-en">标准约束</span><span class="cn-zh">依据什么判断？</span></div>
+      <div class="chain-link"></div>
+      <div class="chain-node"><span class="cn-en">事实依据</span><span class="cn-zh">事实可靠吗？</span></div>
+      <div class="chain-link"></div>
+      <div class="chain-node"><span class="cn-en">逻辑遵循</span><span class="cn-zh">推理成立吗？</span></div>
+      <div class="chain-link"></div>
+      <div class="chain-node"><span class="cn-en">认知增量</span><span class="cn-zh">是否值得继续？</span></div>
+    </div>
+  </div>
+</header>
+
+<!-- ================= 框架总览 ================= -->
+<section class="block" id="overview">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Framework</span>
+      <h2 class="title">一次高质量讨论的完整路径</h2>
+      <p class="subtitle">从"开始"到"继续或退出"的七步框架。点击任一环节查看说明。</p>
+    </div>
+    <div class="ov-row reveal">
+      <div class="ov-node active" data-ov="0"><span class="n">1</span><span class="t">讨论<small>起点</small></span></div>
+      <div class="ov-link"><span class="bar"></span></div>
+      <div class="ov-node" data-ov="1"><span class="n">2</span><span class="t">概念定义<small>对象</small></span></div>
+      <div class="ov-link"><span class="bar"></span></div>
+      <div class="ov-node" data-ov="2"><span class="n">3</span><span class="t">标准约束<small>评价函数</small></span></div>
+      <div class="ov-link"><span class="bar"></span></div>
+      <div class="ov-node" data-ov="3"><span class="n">4</span><span class="t">事实依据<small>前提</small></span></div>
+      <div class="ov-link"><span class="bar"></span></div>
+      <div class="ov-node" data-ov="4"><span class="n">5</span><span class="t">逻辑遵循<small>推理</small></span></div>
+      <div class="ov-link"><span class="bar"></span></div>
+      <div class="ov-node" data-ov="5"><span class="n">6</span><span class="t">认知增量<small>收益</small></span></div>
+    </div>
+    <div class="ov-row reveal">
+      <div class="ov-link"><span class="bar"></span></div>
+      <div class="ov-final">
+        <div class="ov-node continue-node" data-ov="6"><span class="t">✓ 继续讨论<small>有收益</small></span></div>
+        <div class="ov-node stop-node" data-ov="7"><span class="t">✕ 停止讨论<small>边际收益≈0</small></span></div>
+      </div>
+      <div class="ov-link"><span class="bar"></span></div>
+    </div>
+    <div class="ov-detail glass reveal" aria-live="polite">
+      <h4>讨论 <span class="tag">起点</span></h4>
+      <p>一切分析从这里开始。判断一次对话是否值得投入，先看能否回答接下来的每一步。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 五大基线卡片 ================= -->
+<section class="block" id="baseline">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Five Baselines</span>
+      <h2 class="title">五大基线</h2>
+      <p class="subtitle">一次讨论，检查五个维度。点击卡片展开完整说明。</p>
+    </div>
+    <div class="cards-grid" id="baselineGrid"></div>
+  </div>
+</section>
+
+<!-- ================= 讨论流程 ================= -->
+<section class="block" id="flow">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Flow</span>
+      <h2 class="title">讨论流程</h2>
+      <p class="subtitle">五道关卡，任一关失败即"退出讨论"；全部通过则"继续讨论"。点击流程图节点查看说明。</p>
+    </div>
+    <div class="flow-layout">
+      <div class="flow-svg-wrap reveal" id="flowSvg"></div>
+      <aside class="flow-detail glass reveal">
+        <h4><span class="num">●</span> 点击节点</h4>
+        <div class="body" id="flowDetailBody">
+          <p>点击左侧流程图的任一环节，这里会显示该关卡要检查什么、如何判断。</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 讨论宽容度 ================= -->
+<section class="block" id="precision">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Precision Slider</span>
+      <h2 class="title">讨论宽容度</h2>
+      <p class="subtitle">不同场景对"定义、标准、证据、逻辑"的严格程度要求不同。拖动滑块，查看各维度的最低要求如何变化。</p>
+    </div>
+    <div class="precision-card glass reveal">
+      <div class="p-scale">
+        <div class="pl">闲聊<small>快速交流</small></div>
+        <div class="pl">工作讨论<small>建立共识</small></div>
+        <div class="pl">技术讨论<small>技术评审</small></div>
+        <div class="pl">科研论文<small>可验证</small></div>
+        <div class="pl">数学证明<small>严格证明</small></div>
+      </div>
+      <input type="range" class="p-range" id="pRange" min="0" max="100" value="50" step="25" aria-label="讨论宽容度">
+      <div class="p-current">
+        <div class="level" id="pLevel">技术讨论<small>工作决策 · 技术评审</small></div>
+        <div class="p-tolerance">
+          <span id="pTolTxt">容忍误差：中等</span>
+          <span class="tbar"><i id="pTol"></i></span>
+        </div>
+      </div>
+      <div class="p-dims" id="pDims"></div>
+      <p class="p-note"><b>核心规则：</b>讨论越接近"数学证明"，对四要素的要求越高、容忍误差越小；日常闲聊则可大幅放宽。先用宽容度对齐场景，再决定严格程度。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 讨论分析器 ================= -->
+<section class="block" id="analyzer">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Discussion Analyzer</span>
+      <h2 class="title">讨论分析器</h2>
+      <p class="subtitle">粘贴一段话，快速评估它在五个维度上的讨论质量。</p>
+    </div>
+    <div class="analyzer-layout">
+      <div class="analyzer-input reveal">
+        <textarea id="analyzeInput" placeholder="例如：直播带货都是骗人的，我不信这种东西。&#10;&#10;或尝试：我们先把"公平"定义为"机会均等"，再讨论政策，按投入产出比与可验证的就业数据来比较两种方案，因为单一指标无法衡量整体影响。">直播带货都是骗人的，我不信这种东西。</textarea>
+        <div class="hint">提示：⌘ + Enter 快速分析 · 输出为规则启发式结果，仅作参考</div>
+        <div style="margin-top:14px">
+          <button class="btn btn-primary" id="analyzeBtn">分析这段话</button>
+        </div>
+      </div>
+      <div class="analyzer-result glass reveal" id="analyzerResult" aria-live="polite">
+        <div class="head"><h4>分析结果</h4><span class="verdict mid">等待输入</span></div>
+        <p style="color:var(--text-faint);font-size:14px;margin-top:10px">输入上方文字并点击分析，这里会显示五个维度的星级与建议。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 案例分析 ================= -->
+<section class="block" id="case">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Case Study</span>
+      <h2 class="title">案例分析</h2>
+      <p class="subtitle">用五大基线拆解几个常见讨论场景，看看分歧到底出在哪一层。</p>
+    </div>
+    <div class="case-tabs reveal">
+      <button class="case-tab active" data-case="nba">NBA GOAT</button>
+      <button class="case-tab" data-case="ai">AI 取代程序员</button>
+      <button class="case-tab" data-case="live">直播带货</button>
+      <button class="case-tab" data-case="freedom">自由</button>
+      <button class="case-tab" data-case="civilization">文明</button>
+    </div>
+    <div class="case-body">
+      <div class="case-dims glass reveal" id="caseDims"></div>
+      <div class="case-panel glass reveal" id="casePanel"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 认知增量 ================= -->
+<section class="block" id="gain">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Cognitive Gain</span>
+      <h2 class="title">认知增量</h2>
+    </div>
+    <p class="gain-quote reveal">讨论最大的价值不一定是得到答案，而是<em class="hl">缩小问题</em>。</p>
+    <div class="gain-flow reveal">
+      <div class="gain-step"><span class="icon">◉</span><span class="gt">开始前</span><span class="gd">先明确：我们想解决什么问题？</span></div>
+      <div class="gain-line"></div>
+      <div class="gain-step"><span class="icon">↔</span><span class="gt">讨论中</span><span class="gd">追踪：是否出现新事实、新理解、新框架？</span></div>
+      <div class="gain-line"></div>
+      <div class="gain-step"><span class="icon">◎</span><span class="gt">结束时</span><span class="gd">评估：能否准确表述双方观点与真正分歧？</span></div>
+    </div>
+    <div class="gain-types">
+      <div class="gain-type reveal"><h5>信息增量</h5><p>获得新的、可验证的事实或数据。</p></div>
+      <div class="gain-type reveal"><h5>理解增量</h5><p>更准确地理解对方观点及其依据。</p></div>
+      <div class="gain-type reveal"><h5>问题增量</h5><p>真正的问题被缩小、被更清晰地表述。</p></div>
+    </div>
+    <div class="gain-final reveal">高质量讨论未必产生共识，但<em>一定</em>产生 <span>认知增量</span>。</div>
+  </div>
+</section>
+
+<!-- ================= 是否退出讨论（决策树） ================= -->
+<section class="block" id="exit">
+  <div class="wrap">
+    <div class="section-head reveal" style="text-align:center">
+      <span class="kicker">Exit Decision Tree</span>
+      <h2 class="title">是否退出讨论？</h2>
+      <p class="subtitle" style="margin:0 auto">逐题回答，找到你的决策路径。</p>
+    </div>
+    <div class="dtree">
+      <div class="dt-node reveal" data-dt="0">
+        <span class="q">双方对象一致吗？<small>概念定义是否已对齐</small></span>
+        <button class="dt-btn yes">YES</button>
+        <button class="dt-btn no">NO</button>
+      </div>
+      <div class="dt-line"></div>
+      <div class="dt-node reveal" data-dt="1">
+        <span class="q">标准一致吗？<small>评价函数是否已对齐</small></span>
+        <button class="dt-btn yes">YES</button>
+        <button class="dt-btn no">NO</button>
+      </div>
+      <div class="dt-line"></div>
+      <div class="dt-node reveal" data-dt="2">
+        <span class="q">事实可靠吗？<small>关键事实是否可验证</small></span>
+        <button class="dt-btn yes">YES</button>
+        <button class="dt-btn no">NO</button>
+      </div>
+      <div class="dt-line"></div>
+      <div class="dt-node reveal" data-dt="3">
+        <span class="q">逻辑成立吗？<small>推理是否有效、无跳步</small></span>
+        <button class="dt-btn yes">YES</button>
+        <button class="dt-btn no">NO</button>
+      </div>
+      <div class="dt-line"></div>
+      <div class="dt-node reveal" data-dt="4">
+        <span class="q">还能产生认知吗？<small>继续是否有边际收益</small></span>
+        <button class="dt-btn yes">YES</button>
+        <button class="dt-btn no">NO</button>
+      </div>
+      <div class="dt-line"></div>
+      <div class="dt-result reveal" id="dtResult">
+        <div class="big">选择路径开始判断</div>
+        <div class="sub">逐题点击 YES / NO，追踪你的决策路径。</div>
+      </div>
+      <button class="dt-reset" id="dtReset">↺ 重置</button>
+    </div>
+    <div class="exit-statement">
+      <div class="part exit"><div class="big">退出 ≠ 认输</div><small>而是理性的认知决策</small></div>
+      <div class="part equal">=</div>
+      <div class="part meta"><div class="big">对讨论的元认知</div><small>知道何时继续、何时停止</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= Checklist ================= -->
+<section class="block" id="checklist">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Checklist</span>
+      <h2 class="title">讨论质量自检清单</h2>
+      <p class="subtitle">逐条勾选，实时计算你的讨论质量得分。</p>
+    </div>
+    <div class="check-layout">
+      <div class="check-list" id="checkList"></div>
+      <div class="score-card glass reveal">
+        <div class="score-num" id="scoreNum">0<small>/6</small></div>
+        <div class="score-label" id="scoreLabel">尚未开始</div>
+        <div class="score-bar"><i id="scoreBar"></i></div>
+        <div class="score-dots" id="scoreDots"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="score-advice mid" id="scoreAdvice"><b>尚未开始</b>　逐条勾选你已做到的检查项，开始评估这场讨论的质量。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= Summary ================= -->
+<section class="block" id="summary">
+  <div class="wrap summary-wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Summary</span>
+      <h2 class="title">核心结论</h2>
+    </div>
+    <div class="summary-flow reveal">
+      <div class="sum-step neg">定义不清 → 停止</div>
+      <div class="sum-link">↓</div>
+      <div class="sum-step neg">标准不同 → 先协商</div>
+      <div class="sum-link">↓</div>
+      <div class="sum-step">事实不明 → 先核实</div>
+      <div class="sum-link">↓</div>
+      <div class="sum-step pos">逻辑完整 → 继续深入</div>
+      <div class="sum-link">↓</div>
+      <div class="sum-step key">认知增量 = 讨论的价值</div>
+    </div>
+    <p class="summary-tagline reveal"><b>讨论的目标不是"说服"，而是"理解"。</b> 把讨论从"输赢"转向"认知"。</p>
+  </div>
+</section>
+
+<!-- ================= 页脚 ================= -->
+<footer class="foot">
+  <img src="assets/svg/divider.svg" alt="" style="width:360px;max-width:70%;margin:0 auto 22px;display:block;opacity:.8">
+  <div class="f-brand">DISCUSSION QUALITY FRAMEWORK</div>
+  <div>概念定义 · 标准约束 · 事实依据 · 逻辑遵循 · 认知增量</div>
+  <div style="margin-top:6px">零依赖 · 单文件可运行 · 仅供认知与沟通学习使用</div>
+</footer>
+
+<script src="assets/js/app.js"></script>
+<script src="assets/js/cards.js"></script>
+<script src="assets/js/flow.js"></script>
+<script src="assets/js/analyzer.js"></script>
+<script src="assets/js/checklist.js"></script>
+</body>
+</html>
