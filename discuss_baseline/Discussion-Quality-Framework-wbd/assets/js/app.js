@@ -593,7 +593,7 @@
   ];
 
   function initTimeline() {
-    var box = document.getElementById('timeline');
+    var box = document.getElementById('timelineBody');
     if (!box) return;
     box.innerHTML = TIMELINE.map(function (s, i) {
       return '' +
