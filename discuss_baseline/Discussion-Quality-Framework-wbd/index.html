@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Discussion Quality Framework — 从概念、标准、事实、逻辑到认知增量，建立可执行的讨论分析框架。">
+<meta name="color-scheme" content="dark light">
+<title>Discussion Quality Framework · 讨论质量框架</title>
+
+<link rel="icon" href="assets/icons/icon-standard.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/theme.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/animation.css">
+</head>
+
+<body>
+
+<!-- ==================== 导航 ==================== -->
+<header class="nav" id="nav">
+  <div class="nav__inner">
+    <a class="nav__brand" href="#hero">
+      <span class="nav__mark">DQF</span>
+      <span class="nav__title">Discussion Quality <span>Framework</span></span>
+    </a>
+
+    <nav class="nav__links" id="navLinks" aria-label="章节导航">
+      <a class="nav__link" href="#overview">总览</a>
+      <a class="nav__link" href="#baselines">五大基线</a>
+      <a class="nav__link" href="#flow">讨论流程</a>
+      <a class="nav__link" href="#precision">精度等级</a>
+      <a class="nav__link" href="#analyzer">讨论诊断</a>
+      <a class="nav__link" href="#cases">案例分析</a>
+      <a class="nav__link" href="#gain">认知增量</a>
+      <a class="nav__link" href="#exit">退出判断</a>
+      <a class="nav__link" href="#checklist">自检清单</a>
+    </nav>
+
+    <div class="nav__tools">
+      <span class="nav__pill" id="navPill" title="当前讨论精度等级">一般交流</span>
+      <button class="icon-btn" id="themeBtn" type="button" aria-label="切换明暗主题">
+        <svg id="iconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.6 6.6 0 0 0 9.8 9.8Z"/>
+        </svg>
+        <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+          <circle cx="12" cy="12" r="4.2"/>
+          <path d="M12 1.8v2.4M12 19.8v2.4M4.5 4.5l1.7 1.7M17.8 17.8l1.7 1.7M1.8 12h2.4M19.8 12h2.4M4.5 19.5l1.7-1.7M17.8 6.2l1.7-1.7"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ==================== 1 · Hero ==================== -->
+<section class="hero" id="hero">
+  <canvas class="hero__bg" id="heroCanvas" aria-hidden="true"></canvas>
+  <div class="hero__grid" aria-hidden="true"></div>
+  <div class="hero__glow hero__glow--a" aria-hidden="true"></div>
+  <div class="hero__glow hero__glow--b" aria-hidden="true"></div>
+
+  <div class="wrap hero__inner">
+    <div class="hero__text">
+      <span class="hero__badge"><b>V2</b> Thinking Framework Series · 第 01 篇</span>
+      <h1 class="hero__title">Discussion<br><em>Quality</em> Framework</h1>
+      <p class="hero__cn">讨论质量框架</p>
+      <p class="hero__sub">
+        从概念、标准、事实、逻辑到认知增量，建立一套可执行的讨论分析框架。
+        它的目的不是赢得讨论，而是<strong>让讨论产生认知</strong>。
+      </p>
+      <div class="hero__cta">
+        <a class="btn btn--primary" href="#overview">开始了解框架</a>
+        <a class="btn" href="#analyzer">诊断一段讨论</a>
+      </div>
+    </div>
+
+    <div class="chain" id="heroChain" aria-label="框架主链路">
+      <div class="chain__item">
+        <span class="chain__dot"><img src="assets/icons/icon-concept.svg" alt=""></span>
+        <span class="chain__txt"><span class="chain__en">Concept</span><span class="chain__cn">概念定义 · 讨论的是什么</span></span>
+      </div>
+      <div class="chain__link" aria-hidden="true"></div>
+      <div class="chain__item">
+        <span class="chain__dot"><img src="assets/icons/icon-standard.svg" alt=""></span>
+        <span class="chain__txt"><span class="chain__en">Standard</span><span class="chain__cn">标准约束 · 依据什么判断</span></span>
+      </div>
+      <div class="chain__link" aria-hidden="true"></div>
+      <div class="chain__item">
+        <span class="chain__dot"><img src="assets/icons/icon-evidence.svg" alt=""></span>
+        <span class="chain__txt"><span class="chain__en">Evidence</span><span class="chain__cn">事实依据 · 证据是否可靠</span></span>
+      </div>
+      <div class="chain__link" aria-hidden="true"></div>
+      <div class="chain__item">
+        <span class="chain__dot"><img src="assets/icons/icon-logic.svg" alt=""></span>
+        <span class="chain__txt"><span class="chain__en">Logic</span><span class="chain__cn">逻辑遵循 · 推理是否有效</span></span>
+      </div>
+      <div class="chain__link" aria-hidden="true"></div>
+      <div class="chain__item">
+        <span class="chain__dot"><img src="assets/icons/icon-gain.svg" alt=""></span>
+        <span class="chain__txt"><span class="chain__en">Cognitive Gain</span><span class="chain__cn">认知增量 · 是否获得了新认知</span></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 2 · Framework Overview ==================== -->
+<section class="section" id="overview">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Framework Overview</span>
+      <h2 class="sec-title">一条链路，六个判断点</h2>
+      <p class="sec-lede">
+        讨论不是一次性表达观点，而是一串有先后顺序的检查。前一步不成立，后一步就失去意义。
+        点击任意节点，查看它在链路中的位置、要回答的问题，以及失败后会发生什么。
+      </p>
+    </div>
+
+    <div class="ov">
+      <div class="ov__rail rv rv-stagger" id="ovRail"></div>
+
+      <div class="ov__panel rv" id="ovPanel"></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider" aria-hidden="true"></div>
+
+<!-- ==================== 3 · 五大基线 ==================== -->
+<section class="section" id="baselines">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">The Five Baselines</span>
+      <h2 class="sec-title">五大基线</h2>
+      <p class="sec-lede">
+        每一条基线对应一类错误：概念定义防偷换概念，标准约束防评价体系错位，
+        事实依据防前提失真，逻辑遵循防推理跳步，认知增量防无效消耗。
+        点击卡片展开完整说明，卡片底部会实时显示你在右侧选定的精度等级下的要求。
+      </p>
+    </div>
+
+    <div class="cards rv rv-stagger" id="cardsGrid"></div>
+  </div>
+</section>
+
+<div class="divider" aria-hidden="true"></div>
+
+<!-- ==================== 4 · Discussion Flow ==================== -->
+<section class="section" id="flow">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Discussion Flow</span>
+      <h2 class="sec-title">讨论流程：五道闸门</h2>
+      <p class="sec-lede">
+        把框架翻译成可执行的判断顺序。每一道闸门回答一个是非题：
+        答 YES 继续向下，答 NO 走右侧支路——要么回头修这一层，要么退出讨论。
+      </p>
+    </div>
+
+    <div class="flow">
+      <div class="flow__stage rv" id="flowStage">
+        <div class="flow__fallback" id="flowFallback" hidden>
+          D3 未能加载，流程图不可用。请确认 <code>assets/js/vendor/d3.min.js</code> 存在。
+        </div>
+        <svg class="flow__svg" id="flowSvg" role="img" aria-label="讨论流程图"></svg>
+        <span class="flow__hint">点击节点查看该步含义 · NO 分支为红色虚线</span>
+      </div>
+
+      <div class="flow__panel glass rv" id="flowPanel"></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider" aria-hidden="true"></div>
+
+<!-- ==================== 5 · 讨论精度等级 ==================== -->
+<section class="section" id="precision">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Discussion Precision</span>
+      <h2 class="sec-title">精度等级：基线不变，宽容度可变</h2>
+      <p class="sec-lede">
+        不同场景不是采用不同规则，而是采用不同的<strong>精度要求</strong>。
+        越往右，概念越不能模糊、标准越不能隐含、事实越不能凭印象、推理越不能跳步。
+        拖动滑块，页面上与该要求相关的位置会同步变化。
+      </p>
+    </div>
+
+    <div class="prec">
+      <div class="prec__ctrl rv">
+        <div class="prec__top">
+          <span class="prec__name" id="precName">一般交流</span>
+          <span class="prec__idx" id="precIdx">Lv.2 / 7</span>
+        </div>
+
+        <div class="slider">
+          <input type="range" id="precRange" min="0" max="6" step="1" value="1"
+                 aria-label="讨论精度等级">
+          <div class="slider__ticks" id="precTicks"></div>
+        </div>
+
+        <div class="prec__rows" id="precRows"></div>
+
+        <div class="tol">
+          <div class="tol__top">
+            <span>误差容忍</span>
+            <span class="mono" id="tolVal">62%</span>
+          </div>
+          <div class="tol__bar"><div class="tol__fill" id="tolFill" style="width:62%"></div></div>
+        </div>
+      </div>
+
+      <div class="prec__notes rv rv-stagger" id="precNotes"></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider" aria-hidden="true"></div>
+
+<!-- ==================== 6 · Discussion Analyzer ==================== -->
+<section class="section" id="analyzer">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Discussion Analyzer</span>
+      <h2 class="sec-title">讨论诊断器</h2>
+      <p class="sec-lede">
+        粘贴一段讨论内容，按六个维度做结构化扫描。
+        <strong>这不是 AI 判断</strong>，而是一套透明、可检查的规则：
+        每个得分都附带命中的具体信号词，你可以逐条核对它是否误判。
+      </p>
+    </div>
+
+    <div class="ana">
+      <div class="ana__in rv">
+        <textarea class="ana__ta" id="anaInput"
+          placeholder="粘贴一段讨论内容……&#10;&#10;例如：&#10;直播带货都是骗人的。我朋友上次买的东西根本没法用，网上都说这个行业迟早要完。"></textarea>
+
+        <div class="ana__bar">
+          <button class="btn btn--primary" id="anaRun" type="button">分析这段讨论</button>
+          <button class="btn btn--sm" id="anaDemo" type="button">填入示例</button>
+          <button class="btn btn--sm btn--ghost" id="anaClear" type="button">清空</button>
+          <span class="spacer"></span>
+          <span class="ana__meta mono" id="anaMeta">0 字</span>
+        </div>
+
+        <div class="radar__stage">
+          <svg class="radar__svg" id="anaRadar" role="img" aria-label="诊断结果雷达图"></svg>
+        </div>
+      </div>
+
+      <div class="ana__out rv" id="anaOut">
+        <div class="ana__empty">
+          输入内容后点击「分析这段讨论」&#10;或在下方案例中选择一个场景
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider" aria-hidden="true"></div>
+
+<!-- ==================== 7 · Discussion Radar ==================== -->
+<section class="section" id="radar">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Discussion Radar</span>
+      <h2 class="sec-title">讨论雷达：五个维度一眼看懂</h2>
+      <p class="sec-lede">
+        把一场讨论的五个维度画在同一张图上。
+        形状越接近外圈、越接近正五边形，讨论质量越高；某一角塌陷，就能立刻定位问题出在哪一层。
+      </p>
+    </div>
+
+    <div class="radar">
+      <div class="radar__stage rv">
+        <svg class="radar__svg" id="radarSvg" role="img" aria-label="讨论质量雷达图"></svg>
+      </div>
+
+      <div class="radar__ctrl rv">
+        <div class="radar__sliders" id="radarSliders"></div>
+        <div class="radar__presets" id="radarPresets"></div>
+        <p class="chk__tip" id="radarTip"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider" aria-hidden="true"></div>
+
+<!-- ==================== 8 · Case Study ==================== -->
+<section class="section" id="cases">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Case Study</span>
+      <h2 class="sec-title">案例分析：框架怎么用</h2>
+      <p class="sec-lede">
+        同样的争吵，用框架拆一遍，往往会发现分歧根本不在事实层面。
+        切换下方案例，看五个维度各自得分、真正的分歧点在哪里，以及这场讨论还值不值得继续。
+      </p>
+    </div>
+
+    <div class="cases__tabs rv" id="caseTabs"></div>
+    <div class="case rv" id="caseBody"></div>
+  </div>
+</section>
+
+<div class="divider" aria-hidden="true"></div>
+
+<!-- ==================== 9 · 认知增量 ==================== -->
+<section class="section" id="gain">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Cognitive Gain</span>
+      <h2 class="sec-title">认知增量：讨论真正的收益</h2>
+    </div>
+
+    <p class="gain__lead rv">
+      讨论最大的价值，不一定是<b>得到答案</b>，而是<b>增加认知</b>。
+    </p>
+
+    <div class="gain__chain rv rv-stagger" id="gainChain"></div>
+
+    <div class="sec-head rv" style="margin-top:var(--sp-8)">
+      <h3 class="sec-title" style="font-size:var(--fs-h3)">什么算认知增量</h3>
+      <p class="sec-lede" style="margin-bottom:var(--sp-5)">
+        新的认知不等于改变立场。下面任意一条成立，这场讨论就已经有收益了。
+      </p>
+    </div>
+
+    <div class="gain__grid rv rv-stagger" id="gainGrid"></div>
+
+    <div class="quote rv">
+      <p>高质量讨论<em>未必产生共识</em>，但一定产生<em>认知增量</em>。</p>
+      <small>Discussion Quality Framework · 核心命题</small>
+    </div>
+  </div>
+</section>
+
+<div class="divider" aria-hidden="true"></div>
+
+<!-- ==================== 10 · 退出讨论判断 ==================== -->
+<section class="section" id="exit">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Exit Decision</span>
+      <h2 class="sec-title">是否退出讨论：一个决策树</h2>
+      <p class="sec-lede">
+        日常讨论往往无法判定谁对谁错，但可以判定<strong>是否还有继续的价值</strong>。
+        按顺序回答三个问题，只要有一个是 YES，就还有讨论空间。
+      </p>
+    </div>
+
+    <div class="exit__tree rv rv-stagger" id="exitTree"></div>
+    <div class="exit__result rv" id="exitResult"></div>
+
+    <div class="exit__formula rv">
+      <span class="x">退出讨论 = 认输</span>
+      <span class="op">≠</span>
+      <span>退出讨论 = 没有新的认知增量</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider" aria-hidden="true"></div>
+
+<!-- ==================== 11 · Discussion Timeline ==================== -->
+<section class="section" id="timeline">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Discussion Timeline</span>
+      <h2 class="sec-title">讨论演化：一场好讨论长什么样</h2>
+      <p class="sec-lede">
+        真实讨论很少一路顺畅。下面是一次典型的高质量讨论的演化路径——
+        它经历了概念混乱、标准统一、事实不足、补充数据，最后才走到认知增加。
+      </p>
+    </div>
+
+    <div class="tl rv rv-stagger" id="timeline"></div>
+  </div>
+</section>
+
+<div class="divider" aria-hidden="true"></div>
+
+<!-- ==================== 12 · Checklist ==================== -->
+<section class="section" id="checklist">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">Self Checklist</span>
+      <h2 class="sec-title">讨论自检清单</h2>
+      <p class="sec-lede">
+        讨论进行到一半或结束后，用这六条快速过一遍。勾选项会实时算出讨论质量评分。
+      </p>
+    </div>
+
+    <div class="chk">
+      <div class="chk__list rv rv-stagger" id="chkList"></div>
+
+      <div class="chk__score rv">
+        <div class="chk__ring">
+          <svg width="172" height="172" viewBox="0 0 172 172">
+            <circle class="bg" cx="86" cy="86" r="74"></circle>
+            <circle class="fg" id="chkRing" cx="86" cy="86" r="74"
+                    stroke-dasharray="464.96" stroke-dashoffset="464.96"></circle>
+          </svg>
+          <div class="chk__num"><span id="chkNum">0</span><sup>%</sup></div>
+        </div>
+        <div class="chk__grade" id="chkGrade">Not started</div>
+        <p class="chk__tip" id="chkTip">勾选左侧条目开始评估</p>
+        <button class="btn btn--sm btn--ghost chk__reset" id="chkReset" type="button">重置</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 13 · Thinking Principles ==================== -->
+<section class="section prin" id="principles">
+  <div class="wrap">
+    <div class="sec-head rv" style="text-align:center">
+      <span class="eyebrow" style="justify-content:center">Thinking Principles</span>
+      <h2 class="sec-title">思维原则</h2>
+    </div>
+
+    <div class="prin__list rv rv-stagger" id="prinList"></div>
+
+    <p class="chk__tip rv" style="margin-top:var(--sp-7)">
+      Discussion Quality Framework · Thinking Framework Series 第 01 篇
+    </p>
+  </div>
+</section>
+
+</main>
+
+<!-- ==================== 页脚 ==================== -->
+<footer class="foot">
+  <div class="wrap foot__in">
+    <p>Discussion Quality Framework · 零依赖静态站点，可直接离线运行</p>
+    <div class="foot__links">
+      <a href="#hero">回到顶部</a>
+      <a href="#analyzer">讨论诊断</a>
+      <a href="#checklist">自检清单</a>
+    </div>
+  </div>
+</footer>
+
+<button class="totop" id="toTop" type="button" aria-label="回到顶部">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 20V5M5.5 11.5 12 5l6.5 6.5"/>
+  </svg>
+</button>
+
+<!-- ==================== 脚本 ==================== -->
+<!-- 顺序：D3 → 各功能模块（仅注册，不执行）→ app.js（编排 + 公共工具）-->
+<script src="assets/js/vendor/d3.min.js"></script>
+<script src="assets/js/cards.js"></script>
+<script src="assets/js/flow.js"></script>
+<script src="assets/js/analyzer.js"></script>
+<script src="assets/js/radar.js"></script>
+<script src="assets/js/cases.js"></script>
+<script src="assets/js/checklist.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

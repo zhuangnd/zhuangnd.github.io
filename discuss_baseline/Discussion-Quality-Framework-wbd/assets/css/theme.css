@@ -1,0 +1,191 @@
+/* =============================================================
+   DQF · theme.css
+   -------------------------------------------------------------
+   设计令牌（Design Tokens）唯一来源。
+   所有颜色 / 字体 / 间距 / 圆角 / 阴影 / 层级都在这里定义，
+   其他样式表只消费变量，不写死数值。
+
+   主题策略：Dark 为默认；Light 通过 <html data-theme="light"> 覆盖。
+   首次访问跟随系统 prefers-color-scheme，用户手动切换后写入
+   localStorage（由 app.js 负责）。
+   ============================================================= */
+
+:root {
+  color-scheme: dark;
+
+  /* ---------- 中性底色 ---------- */
+  --bg:              #111315;
+  --bg-elev:         #16181b;
+  --bg-sunken:       #0c0d0f;
+  --bg-grid:         rgba(255, 255, 255, .022);
+
+  /* ---------- 玻璃层 ---------- */
+  --glass:           rgba(255, 255, 255, .06);
+  --glass-strong:    rgba(255, 255, 255, .09);
+  --glass-hover:     rgba(255, 255, 255, .12);
+  --glass-sunken:    rgba(0, 0, 0, .22);
+
+  /* ---------- 描边 ---------- */
+  --border:          rgba(255, 255, 255, .10);
+  --border-strong:   rgba(255, 255, 255, .18);
+  --border-faint:    rgba(255, 255, 255, .06);
+
+  /* ---------- 文本 ---------- */
+  --text:            #f2f4f7;
+  --text-soft:       #b7bdc6;
+  --text-dim:        #7c8490;
+  --text-faint:      #545b64;
+  --text-invert:     #0d0f11;
+
+  /* ---------- 语义色 ---------- */
+  --accent:          #f59e0b;
+  --accent-soft:     rgba(245, 158, 11, .13);
+  --accent-line:     rgba(245, 158, 11, .32);
+  --accent-glow:     rgba(245, 158, 11, .20);
+
+  --green:           #22c55e;
+  --green-soft:      rgba(34, 197, 94, .13);
+  --green-line:      rgba(34, 197, 94, .30);
+
+  --blue:            #60a5fa;
+  --blue-soft:       rgba(96, 165, 250, .13);
+  --blue-line:       rgba(96, 165, 250, .30);
+
+  --red:             #ef4444;
+  --red-soft:        rgba(239, 68, 68, .13);
+  --red-line:        rgba(239, 68, 68, .32);
+
+  --purple:          #a78bfa;
+  --purple-soft:     rgba(167, 139, 250, .13);
+
+  /* ---------- 五基线主色（用于图标 / 标签 / 雷达轴） ---------- */
+  --c-concept:       #60a5fa;
+  --c-standard:      #f59e0b;
+  --c-evidence:      #22c55e;
+  --c-logic:         #a78bfa;
+  --c-gain:          #f472b6;
+
+  /* ---------- 字体 ---------- */
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+               "PingFang SC", "Hiragino Sans GB", "Noto Sans SC",
+               "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "SF Mono", "JetBrains Mono", ui-monospace, SFMono-Regular,
+               Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* ---------- 字号（流式） ---------- */
+  --fs-hero:    clamp(2.4rem, 6.2vw, 4.6rem);
+  --fs-h2:      clamp(1.7rem, 3.4vw, 2.6rem);
+  --fs-h3:      clamp(1.05rem, 1.6vw, 1.25rem);
+  --fs-body:    clamp(.9rem, 1.05vw, .975rem);
+  --fs-sm:      .845rem;
+  --fs-xs:      .775rem;
+  --fs-micro:   .7rem;
+
+  /* ---------- 间距 ---------- */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+  --sp-9: 96px;
+
+  /* ---------- 圆角 ---------- */
+  --r-sm:   8px;
+  --r-md:   12px;
+  --r-lg:   18px;
+  --r-xl:   26px;
+  --r-pill: 999px;
+
+  /* ---------- 阴影 ---------- */
+  --sh-sm:   0 1px 2px rgba(0, 0, 0, .28);
+  --sh-md:   0 8px 24px rgba(0, 0, 0, .34);
+  --sh-lg:   0 24px 64px rgba(0, 0, 0, .44);
+  --sh-glow: 0 0 0 1px var(--accent-line), 0 8px 32px rgba(245, 158, 11, .12);
+
+  /* ---------- 模糊 ---------- */
+  --blur:        saturate(180%) blur(20px);
+  --blur-light:  saturate(150%) blur(10px);
+
+  /* ---------- 布局 ---------- */
+  --max-w:      1200px;
+  --nav-h:      58px;
+
+  /* ---------- 动效曲线 ---------- */
+  --ease:       cubic-bezier(.22, .61, .36, 1);
+  --ease-out:   cubic-bezier(.16, 1, .3, 1);
+  --dur-fast:   .16s;
+  --dur:        .28s;
+  --dur-slow:   .62s;
+
+  /* ---------- 层级 ---------- */
+  --z-base:   1;
+  --z-nav:    100;
+  --z-pop:    200;
+  --z-top:    900;
+}
+
+/* =============================================================
+   Light Theme
+   -------------------------------------------------------------
+   不是把 Dark 简单反转，而是重新挑一套在浅底上同样克制的灰阶。
+   玻璃层改为半透明白 + 更强的模糊，描边压深以保证卡片边界清晰。
+   ============================================================= */
+html[data-theme="light"] {
+  color-scheme: light;
+
+  --bg:              #f6f7f8;
+  --bg-elev:         #ffffff;
+  --bg-sunken:       #eceef0;
+  --bg-grid:         rgba(0, 0, 0, .022);
+
+  --glass:           rgba(255, 255, 255, .72);
+  --glass-strong:    rgba(255, 255, 255, .88);
+  --glass-hover:     rgba(255, 255, 255, .96);
+  --glass-sunken:    rgba(0, 0, 0, .035);
+
+  --border:          rgba(16, 20, 26, .10);
+  --border-strong:   rgba(16, 20, 26, .18);
+  --border-faint:    rgba(16, 20, 26, .06);
+
+  --text:            #14181d;
+  --text-soft:       #4a525c;
+  --text-dim:        #6b7480;
+  --text-faint:      #97a0ab;
+  --text-invert:     #ffffff;
+
+  --accent:          #d97706;
+  --accent-soft:     rgba(217, 119, 6, .10);
+  --accent-line:     rgba(217, 119, 6, .28);
+  --accent-glow:     rgba(217, 119, 6, .14);
+
+  --green:           #16a34a;
+  --green-soft:      rgba(22, 163, 74, .10);
+  --green-line:      rgba(22, 163, 74, .26);
+
+  --blue:            #2563eb;
+  --blue-soft:       rgba(37, 99, 235, .10);
+
+  --red:             #dc2626;
+  --red-soft:        rgba(220, 38, 38, .10);
+  --red-line:        rgba(220, 38, 38, .26);
+
+  --purple:          #7c3aed;
+  --purple-soft:     rgba(124, 58, 237, .10);
+
+  --c-concept:       #2563eb;
+  --c-standard:      #d97706;
+  --c-evidence:      #16a34a;
+  --c-logic:         #7c3aed;
+  --c-gain:          #db2777;
+
+  --sh-sm:   0 1px 2px rgba(16, 20, 26, .06);
+  --sh-md:   0 8px 24px rgba(16, 20, 26, .09);
+  --sh-lg:   0 24px 64px rgba(16, 20, 26, .12);
+  --sh-glow: 0 0 0 1px var(--accent-line), 0 8px 32px rgba(217, 119, 6, .10);
+
+  --blur:        saturate(180%) blur(18px);
+  --blur-light:  saturate(140%) blur(8px);
+}
