@@ -207,7 +207,8 @@ a { color: inherit; text-decoration: none; }
 }
 .nav__links::-webkit-scrollbar { display: none; }
 .nav__link {
-  padding: 6px 11px;
+  /* 章节链接 11 项，内容宽 786px；11px 内边距会挤出最后一项，收到 9px（→747px） */
+  padding: 6px 9px;
   border-radius: var(--r-pill);
   font-size: var(--fs-xs);
   color: var(--text-dim);
@@ -1224,6 +1225,12 @@ a { color: inherit; text-decoration: none; }
 .backto svg { width: 15px; height: 15px; }
 
 /* ------------------------------ 响应式 ------------------------------ */
+/* 11 项章节链接在 ≤1200px 放不下：先压内边距，再隐藏精度胶囊让位给导航 */
+@media (max-width: 1200px) {
+  .nav__link { padding: 6px 7px; }
+  .nav__pill { display: none; }
+}
+
 @media (max-width: 1040px) {
   .hero__inner,
   .ov,
