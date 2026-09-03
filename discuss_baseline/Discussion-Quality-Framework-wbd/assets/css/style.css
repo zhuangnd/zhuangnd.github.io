@@ -981,10 +981,10 @@ a { color: inherit; text-decoration: none; }
 .quote small { display: block; margin-top: var(--sp-4); font-size: var(--fs-xs); color: var(--text-dim); }
 
 /* ------------------------------ 退出判断 ------------------------------ */
-.exit__tree { display: grid; gap: var(--sp-3); max-width: 760px; margin-inline: auto var(--sp-7); }
+.exit__tree { display: grid; gap: var(--sp-3); max-width: 760px; margin-inline: auto; }
 .exit__q {
   display: grid;
-  grid-template-columns: 30px 1fr;
+  grid-template-columns: 26px 1fr;
   gap: var(--sp-3);
   align-items: start;
   padding: 15px 18px;
@@ -1027,6 +1027,8 @@ a { color: inherit; text-decoration: none; }
 
 .exit__result {
   max-width: 760px;
+  margin-inline: auto;
+  margin-top: var(--sp-5);
   padding: 16px 18px;
   border-radius: var(--r-md);
   border: 1px solid var(--border);
