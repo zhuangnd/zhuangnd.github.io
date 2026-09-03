@@ -689,8 +689,26 @@
     });
   }
 
+  // 窄屏下导航条放不下 11 项，激活项常常在视野外。
+  // 章节切换时把它横向滚到中央（首尾项不强行居中，否则会滚出一片空白）
+  function centerNavLink(box, a) {
+    if (!box || !a) return;
+    if (box.scrollWidth <= box.clientWidth + 1) return; // 未溢出就无需滚动
+    var r = a.getBoundingClientRect();
+    var br = box.getBoundingClientRect();
+    var target = box.scrollLeft + (r.left - br.left) - (br.width - r.width) / 2;
+    var max = box.scrollWidth - box.clientWidth;
+    target = Math.max(0, Math.min(target, max));
+    if (Math.abs(target - box.scrollLeft) < 2) return;
+    var smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (box.scrollTo) box.scrollTo({ left: target, behavior: smooth ? 'smooth' : 'auto' });
+    else box.scrollLeft = target;
+  }
+
   function initNav() {
     var nav = document.getElementById('nav');
+    var box = document.getElementById('navLinks');
+    var activeIdx = -2; // 初值取 -2，保证首次 onScroll 也能触发居中
     var links = DQF.$$('#navLinks .nav__link');
     var sections = links
       .map(function (a) { return document.querySelector(a.getAttribute('href')); })
@@ -712,6 +730,11 @@
       links.forEach(function (a, i) {
         a.classList.toggle('is-active', i === best);
       });
+      // 仅在章节切换时居中，避免与用户手动横滚打架
+      if (best !== activeIdx) {
+        activeIdx = best;
+        centerNavLink(box, links[best]);
+      }
 
       // 已经滚回来源小节（含手动滚回）→ 收起返回按钮
       checkBack();
