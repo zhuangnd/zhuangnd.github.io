@@ -221,9 +221,6 @@ a { color: inherit; text-decoration: none; }
 
 .nav__tools { display: flex; align-items: center; gap: var(--sp-2); flex-shrink: 0; }
 
-/* 窄屏专属的悬浮菜单入口，桌面隐藏（窄屏样式见 ≤720px 断点） */
-.nav__fab { display: none; }
-
 .nav__pill {
   padding: 4px 11px;
   border-radius: var(--r-pill);
@@ -1250,83 +1247,7 @@ a { color: inherit; text-decoration: none; }
 @media (max-width: 720px) {
   :root { --nav-h: 52px; }
   .nav__title span { display: none; }
-  /* 窄屏（≤720px）导航：横向链接条放不下，改为左侧悬浮竖列菜单。
-     注意 .nav 的 backdrop-filter 会成为 fixed 子元素的包含块，而 .nav 只有
-     --nav-h 高，#navLinks 的 fixed 会被困进 52px 的框里。窄屏必须解除，
-     改用不透明背景补偿（52px 的条上毛玻璃效果本就不明显）。 */
-  .nav {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    background: color-mix(in srgb, var(--bg) 90%, transparent);
-  }
-  .nav__links {
-    position: fixed;
-    left: 12px;
-    bottom: 62px;
-    width: 132px;
-    /* 70vh 保证 11 项（约 427px）在 375×667 上不需滚动即可看全；
-       更矮的屏（如 568）自动收窄并内部滚动 */
-    max-height: 70vh;
-    flex-direction: column;
-    gap: 1px;
-    margin-left: 0;
-    padding: 6px;
-    overflow-x: hidden;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    border-radius: 14px;
-    border: 1px solid var(--border);
-    background: color-mix(in srgb, var(--bg) 88%, transparent);
-    -webkit-backdrop-filter: var(--blur);
-    backdrop-filter: var(--blur);
-    box-shadow: 0 14px 38px rgba(0, 0, 0, .3);
-    opacity: 0;
-    /* visibility 一起过渡：否则收起态虽不可见，键盘 Tab 仍会聚焦到链接上 */
-    visibility: hidden;
-    transform: translateY(10px) scale(.97);
-    transform-origin: left bottom;
-    pointer-events: none;
-    transition: opacity var(--dur) var(--ease),
-                transform var(--dur) var(--ease),
-                visibility 0s linear var(--dur);
-    z-index: var(--z-pop);
-  }
-  .nav__links::-webkit-scrollbar { display: none; }
-  .nav__links.is-open {
-    opacity: 1;
-    transform: none;
-    visibility: visible;
-    pointer-events: auto;
-    transition-delay: 0s;
-  }
-  .nav__link { padding: 7px 10px; font-size: var(--fs-sm); }
-  .nav__link.is-active { box-shadow: inset 2px 0 0 var(--accent); }
-
-  /* 常驻入口圆钮：左下角，避开右下角的 .totop / .backto */
-  .nav__fab {
-    position: fixed;
-    left: 14px;
-    bottom: 16px;
-    width: 38px;
-    height: 38px;
-    display: grid;
-    place-items: center;
-    border-radius: 50%;
-    border: 1px solid var(--border);
-    background: var(--glass);
-    -webkit-backdrop-filter: var(--blur);
-    backdrop-filter: var(--blur);
-    color: var(--text-soft);
-    opacity: .82;
-    z-index: var(--z-pop);
-    transition: opacity var(--dur) var(--ease),
-                color var(--dur-fast) var(--ease),
-                border-color var(--dur-fast) var(--ease);
-  }
-  .nav__fab.is-on { opacity: 1; color: var(--accent); border-color: var(--accent-line); }
-  .nav__fab svg { width: 17px; height: 17px; }
+  .nav__links { display: none; }
   .nav__pill { display: none; }
   .hero { min-height: auto; }
   .gain__chain { flex-direction: column; }

@@ -689,88 +689,6 @@
     });
   }
 
-  /* =========================================================
-     八·补 窄屏悬浮章节导航
-     ≤720px 时 #navLinks 变成左侧悬浮竖列菜单：
-     - 滚动时自动展开，停滚 1.5s 收起
-     - 左下角圆钮可手动开合，手动开启后不再自动收起
-     滚动唤起重用 initNav 的 onScroll，不另开监听器
-     ========================================================= */
-  var mobNavBump = null;
-
-  function initMobileNav() {
-    var fab = document.getElementById('navFab');
-    var links = document.getElementById('navLinks');
-    if (!fab || !links) return;
-
-    var mq = window.matchMedia('(max-width: 720px)');
-    var timer = null;
-    var pinned = false; // 手动开启：跳过自动收起
-    var im = document.getElementById('iconMenu');
-    var ic = document.getElementById('iconClose');
-
-    function setOpen(on) {
-      links.classList.toggle('is-open', on);
-      fab.classList.toggle('is-on', on);
-      fab.setAttribute('aria-expanded', on ? 'true' : 'false');
-      if (im) im.style.display = on ? 'none' : '';
-      if (ic) ic.style.display = on ? '' : 'none';
-    }
-
-    function close() {
-      clearTimeout(timer);
-      timer = null;
-      pinned = false;
-      setOpen(false);
-    }
-
-    function hideLater(ms) {
-      clearTimeout(timer);
-      timer = setTimeout(function () { if (!pinned) close(); }, ms);
-    }
-
-    // 由 initNav 的 onScroll 调用
-    mobNavBump = function () {
-      if (!mq.matches) return;
-      if (!links.classList.contains('is-open')) setOpen(true);
-      hideLater(1500);
-    };
-
-    fab.addEventListener('click', function () {
-      var on = !links.classList.contains('is-open');
-      pinned = on;
-      clearTimeout(timer);
-      setOpen(on);
-    });
-
-    // 小屏上面板内部需要滚动时，别让用户在翻找章节的过程中菜单被收走。
-    // 元素 scroll 不冒泡到 window，所以必须单独续期
-    links.addEventListener('scroll', function () {
-      if (mq.matches) hideLater(1500);
-    }, { passive: true });
-
-    // 点章节后留 700ms 看高亮切换，再收起
-    links.addEventListener('click', function (e) {
-      if (!e.target.closest('.nav__link')) return;
-      pinned = false;
-      hideLater(700);
-    });
-
-    // 手动展开时点空白处收起
-    document.addEventListener('click', function (e) {
-      if (!pinned) return;
-      if (e.target.closest('#navLinks') || e.target.closest('#navFab')) return;
-      close();
-    });
-
-    mq.addEventListener('change', function (e) {
-      if (e.matches) return;
-      clearTimeout(timer);
-      pinned = false;
-      setOpen(false);
-    });
-  }
-
   function initNav() {
     var nav = document.getElementById('nav');
     var links = DQF.$$('#navLinks .nav__link');
@@ -800,11 +718,6 @@
     }
 
     window.addEventListener('scroll', onScroll, { passive: true });
-    // 唤起单独挂在 scroll 事件上：initNav 末尾的 onScroll() 是初始化调用，
-    // 若在其内部唤起，页面一加载菜单就会自己弹出来
-    window.addEventListener('scroll', function () {
-      if (mobNavBump) mobNavBump();
-    }, { passive: true });
     onScroll();
 
     var totop = document.getElementById('toTop');
@@ -876,7 +789,6 @@
      ========================================================= */
   function boot() {
     initTheme();
-    initMobileNav();
     initNav();
     initBackTo();
     initHeroCanvas();
