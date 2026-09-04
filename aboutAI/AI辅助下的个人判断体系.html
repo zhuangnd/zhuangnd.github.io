@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>边界外移，核心稳定 · AI 辅助下的个人判断体系探索</title>
+<style>
+:root{
+  --bg:#E8ECF0;
+  --card:#FFFFFF;
+  --paper:#FAF7F0;
+  --paper-line:#EFE9DE;
+  --ink:#131B23;
+  --ink-2:#54616E;
+  --ink-3:#67737F;
+  --accent:#2C6E9B;
+  --accent-soft:#E4EEF6;
+  --accent-line:#B9D4E7;
+  --line:rgba(19,27,35,.11);
+  --line-2:rgba(19,27,35,.055);
+  --font:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",sans-serif;
+  --serif:"Songti SC","Source Han Serif SC","Noto Serif CJK SC",Georgia,serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --r:16px;
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-snap-type:y proximity}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--font);font-size:15px;line-height:1.78;
+  -webkit-font-smoothing:antialiased;letter-spacing:.01em;
+}
+h1,h2,h3,h4,p,ul,ol,figure{margin:0}
+ul,ol{padding:0;list-style:none}
+
+/* ---------- 顶部进度 ---------- */
+.prog{position:fixed;top:0;left:0;right:0;height:2px;z-index:60;pointer-events:none}
+.prog i{display:block;height:100%;width:0;background:var(--accent);transition:width .18s linear}
+
+/* ---------- 骨架 ---------- */
+.stage{display:grid;grid-template-columns:250px minmax(0,1fr);max-width:1240px;margin:0 auto}
+.deck{min-width:0}
+
+/* ---------- 左侧同心导航 ---------- */
+.core{
+  position:sticky;top:0;height:100vh;z-index:30;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+}
+.core__fig{width:190px;height:190px}
+.core__name{
+  font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--ink-3);
+  text-align:center;min-height:16px;transition:color .35s var(--ease);
+}
+.core__name.is-on{color:var(--accent)}
+.core__scale{display:flex;flex-direction:column;gap:5px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--ink-3)}
+.core__scale span{display:flex;align-items:center;gap:7px;transition:color .35s var(--ease);cursor:default}
+.core__scale span::before{content:"";width:14px;height:0;border-top:1px solid currentColor;opacity:.5}
+.core__scale span.is-on{color:var(--accent)}
+
+/* 同心图通用 */
+.rg{fill:none;stroke:rgba(19,27,35,.30);stroke-width:1;transition:stroke .45s var(--ease),stroke-width .45s var(--ease)}
+.rg--dash{stroke-dasharray:3 5}
+.rg.is-on{stroke:var(--accent);stroke-width:1.8}
+.rg-lb{fill:var(--ink-3);font-size:11px;font-family:var(--font);transition:fill .45s var(--ease)}
+.rg-lb.is-on{fill:var(--accent)}
+.rg-core{fill:var(--accent-soft);stroke:var(--accent-line);stroke-width:1}
+.rg-tx{fill:var(--accent);font-size:13px;font-family:var(--font)}
+
+/* Hero 主视觉入场 */
+@keyframes rgIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+.hero__fig{animation:rgIn 1.1s var(--ease) both}
+.hero__fig circle,.hero__fig text{transform-box:fill-box;transform-origin:center}
+
+/* ---------- 卡片 ---------- */
+.card{
+  min-height:100vh;display:flex;align-items:center;
+  padding:70px 44px;scroll-snap-align:start;position:relative;
+}
+.card__in{width:100%;max-width:700px;margin:0 auto}
+.card__no{
+  position:absolute;top:52px;right:44px;
+  font-family:var(--mono);font-size:44px;font-weight:400;line-height:1;
+  color:var(--ink);opacity:.07;letter-spacing:-.02em;
+}
+.tag{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.tag__k{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;color:var(--accent);
+  background:var(--accent-soft);border:1px solid var(--accent-line);
+  padding:3px 9px;border-radius:99px;
+}
+.tag__v{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:var(--ink-3)}
+.card__t{
+  font-size:clamp(21px,2.7vw,29px);font-weight:500;line-height:1.4;
+  letter-spacing:-.01em;margin-bottom:14px;
+}
+.card__t em{font-style:normal;color:var(--ink-3);font-weight:400;font-size:.72em;margin:0 .28em}
+.card__lede{font-size:16px;color:var(--ink-2);line-height:1.8;margin-bottom:26px;max-width:640px}
+.card__lede b{font-weight:500;color:var(--ink)}
+
+/* ---------- Hero ---------- */
+.hero{background:transparent}
+.hero__fig{width:min(300px,62vw);height:auto;display:block;margin:0 auto 34px}
+.hero__t{
+  font-size:clamp(31px,5.4vw,54px);font-weight:500;line-height:1.22;
+  letter-spacing:-.025em;text-align:center;margin-bottom:16px;
+}
+.hero__t span{display:block}
+.hero__t .a{color:var(--accent)}
+.hero__t .b{color:var(--ink-3)}
+.hero__sub{text-align:center;font-size:15px;color:var(--ink-2);max-width:520px;margin:0 auto 26px}
+.hero__meta{
+  display:flex;justify-content:center;gap:0;flex-wrap:wrap;
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--ink-3);
+}
+.hero__meta span{padding:0 14px;border-left:1px solid var(--line)}
+.hero__meta span:first-child{border-left:0}
+
+/* ---------- 全局图导览 ---------- */
+.map{display:grid;gap:0;border-top:1px solid var(--line)}
+.map__r{
+  display:grid;grid-template-columns:104px 1fr;gap:20px;align-items:baseline;
+  padding:17px 0;border-bottom:1px solid var(--line-2);
+}
+.map__lv{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:var(--ink-3);display:flex;align-items:center;gap:9px}
+.map__lv i{width:16px;height:0;border-top:1px solid var(--accent);flex:0 0 auto}
+.map__lv i.dash{border-top-style:dashed;border-color:var(--ink-3)}
+.map__lv i.solid2{border-top-width:2px}
+.map__lv i.dot{width:8px;height:8px;border:0;border-radius:50%;background:var(--accent)}
+.map__b strong{display:block;font-size:15.5px;font-weight:500;margin-bottom:3px}
+.map__b p{font-size:13.5px;color:var(--ink-2);line-height:1.65}
+
+/* ---------- 对照（实线 vs 虚线） ---------- */
+.duo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;margin-bottom:20px}
+.duo__c{border-radius:var(--r);padding:20px 22px;background:var(--card)}
+.duo__c--solid{border:1px solid var(--accent-line);background:var(--accent-soft)}
+.duo__c--dash{border:1.5px dashed rgba(19,27,35,.34);background:transparent}
+.duo__k{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--ink-3);margin-bottom:9px}
+.duo__c--solid .duo__k{color:var(--accent)}
+.duo__c h4{font-size:16.5px;font-weight:500;margin-bottom:7px}
+.duo__c p{font-size:13.5px;color:var(--ink-2);line-height:1.7}
+.note{
+  border-left:2px solid var(--accent);padding:11px 0 11px 16px;
+  font-size:14px;color:var(--ink-2);line-height:1.75;background:transparent;
+}
+.note b{font-weight:500;color:var(--ink)}
+
+/* ---------- 收缩 vs 扩张 ---------- */
+.axis{display:grid;gap:0;margin-bottom:20px}
+.axis__r{display:grid;grid-template-columns:88px minmax(0,1fr);gap:18px;padding:15px 0;border-bottom:1px solid var(--line-2)}
+.axis__r:first-child{border-top:1px solid var(--line)}
+.axis__k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--ink-3);padding-top:3px}
+.axis__v{font-size:14.5px;line-height:1.72}
+.axis__v b{font-weight:500}
+.axis__v s{text-decoration:none;color:var(--ink-3);font-size:13.5px;display:block;margin-top:3px}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+.chips i{
+  font-style:normal;font-size:12px;padding:3px 10px;border-radius:99px;
+  border:1px solid var(--line);color:var(--ink-2);
+}
+.ideal{
+  margin-top:4px;padding:18px 22px;border-radius:var(--r);
+  background:var(--accent-soft);border:1px solid var(--accent-line);text-align:center;
+}
+.ideal b{display:block;font-size:17px;font-weight:500;color:var(--accent);letter-spacing:.02em}
+.ideal span{display:block;font-size:13px;color:var(--ink-2);margin-top:4px}
+
+/* ---------- 角色转变 ---------- */
+.flow{display:grid;grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr);align-items:center;margin-bottom:22px}
+.flow__e{padding:18px 20px;border:1px solid var(--line);border-radius:var(--r);background:var(--card)}
+.flow__e.to{border-color:var(--accent-line);background:var(--accent-soft)}
+.flow__e p{font-size:13px;color:var(--ink-3);margin-top:4px;line-height:1.6}
+.flow__e.to p{color:var(--ink-2)}
+.flow__e b{font-size:16px;font-weight:500;display:block}
+.flow__a{text-align:center;color:var(--ink-3);font-size:17px}
+.pts{display:grid;gap:11px}
+.pt{display:grid;grid-template-columns:20px minmax(0,1fr);gap:12px;align-items:baseline}
+.pt i{font-style:normal;font-family:var(--mono);font-size:11px;color:var(--accent);padding-top:5px}
+.pt p{font-size:14.5px;line-height:1.72;color:var(--ink-2)}
+.pt p b{font-weight:500;color:var(--ink)}
+
+/* ---------- 判断体系四层 ---------- */
+.stack{display:grid;gap:0;counter-reset:lv}
+.lv{display:grid;grid-template-columns:30px minmax(0,1fr);gap:16px;padding:16px 0;border-bottom:1px solid var(--line-2)}
+.lv:first-child{border-top:1px solid var(--line)}
+.lv:last-child{border-bottom:1px solid var(--line)}
+.lv__n{
+  font-family:var(--mono);font-size:12px;color:var(--accent);
+  padding-top:5px;letter-spacing:.04em;
+}
+.lv__b strong{display:block;font-size:15.5px;font-weight:500;margin-bottom:3px}
+.lv__b p{font-size:13.5px;color:var(--ink-2);line-height:1.68}
+.lv__b .ord{font-family:var(--mono);font-size:12.5px;color:var(--ink);letter-spacing:.02em}
+
+/* ---------- 逻辑与数据 ---------- */
+.ld{display:grid;gap:14px;margin-bottom:6px}
+.ld__c{border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;background:var(--card)}
+.ld__c h4{font-size:15.5px;font-weight:500;margin-bottom:6px;display:flex;align-items:center;gap:9px}
+.ld__c h4::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--accent);flex:0 0 auto}
+.ld__c p{font-size:13.8px;color:var(--ink-2);line-height:1.72}
+
+/* ---------- 六条规则 ---------- */
+.rules{display:grid;gap:0;counter-reset:rl}
+.rule{
+  display:grid;grid-template-columns:38px minmax(0,1fr);gap:16px;align-items:baseline;
+  padding:15px 0;border-bottom:1px solid var(--line-2);
+}
+.rule:first-child{border-top:1px solid var(--line)}
+.rule:last-child{border-bottom:1px solid var(--line)}
+.rule__n{font-family:var(--mono);font-size:13px;color:var(--accent);letter-spacing:.02em}
+.rule__t{font-size:14.8px;line-height:1.7}
+.rule__t s{display:block;text-decoration:none;font-size:13px;color:var(--ink-3);margin-top:2px}
+
+/* ---------- 缺口 ---------- */
+.gap{display:grid;grid-template-columns:minmax(0,1fr) 40px minmax(0,1fr);align-items:stretch;gap:0;margin-bottom:20px}
+.gap__c{padding:20px;border-radius:var(--r)}
+.gap__c.now{border:1px dashed rgba(19,27,35,.34);background:transparent}
+.gap__c.next{border:1px solid var(--accent-line);background:var(--accent-soft)}
+.gap__k{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--ink-3);margin-bottom:8px}
+.gap__c.next .gap__k{color:var(--accent)}
+.gap__c b{display:block;font-size:16.5px;font-weight:500;margin-bottom:6px}
+.gap__c p{font-size:13.3px;color:var(--ink-2);line-height:1.68}
+.gap__mid{display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-size:15px}
+.howto{border-top:1px solid var(--line);padding-top:16px;display:grid;gap:10px}
+.howto__r{display:grid;grid-template-columns:16px minmax(0,1fr);gap:12px;align-items:baseline}
+.howto__r i{font-style:normal;width:5px;height:5px;border-radius:50%;background:var(--ink-3);margin-top:9px}
+.howto__r p{font-size:14px;color:var(--ink-2);line-height:1.7}
+.howto__r p b{font-weight:500;color:var(--ink)}
+
+/* ---------- 手稿 ---------- */
+.card--paper{background:var(--paper)}
+.card--paper .card__in{max-width:720px}
+.ms{
+  background:var(--card);border:1px solid var(--paper-line);border-radius:4px;
+  padding:30px 34px;position:relative;
+  box-shadow:0 1px 0 rgba(19,27,35,.04);
+}
+.ms__hd{
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--ink-3);
+  padding-bottom:12px;border-bottom:1px solid var(--paper-line);margin-bottom:20px;
+  display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+}
+.todo{display:grid;gap:0}
+.todo__r{padding:15px 0;border-bottom:1px solid var(--paper-line)}
+.todo__r:last-child{border-bottom:0;padding-bottom:0}
+.todo__r h4{font-size:15.5px;font-weight:500;margin-bottom:7px;display:flex;gap:10px;align-items:baseline}
+.todo__r h4 i{font-style:normal;font-family:var(--mono);font-size:11.5px;color:var(--accent);flex:0 0 auto}
+.todo__r ul{display:grid;gap:5px}
+.todo__r li{font-size:13.6px;color:var(--ink-2);line-height:1.68;padding-left:15px;position:relative}
+.todo__r li::before{content:"";position:absolute;left:0;top:11px;width:6px;height:1px;background:var(--ink-3)}
+.slip{
+  margin-top:22px;padding:14px 18px;border-radius:3px;
+  background:#FDF6E3;border:1px solid #EFE0BE;
+  font-family:var(--serif);font-size:14px;line-height:1.75;color:#5C4A22;
+}
+.slip b{font-weight:500}
+.q{
+  margin-top:20px;padding:22px 24px;border-radius:var(--r);
+  background:var(--card);border:1px solid var(--paper-line);
+  font-family:var(--serif);font-size:17px;line-height:1.72;color:var(--ink);
+}
+.q__mark{font-family:var(--serif);font-size:34px;line-height:.6;color:var(--accent-line);display:block;margin-bottom:8px}
+.q__st{
+  display:inline-flex;align-items:center;gap:7px;margin-top:14px;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--ink-3);
+}
+.q__st::before{content:"";width:6px;height:6px;border-radius:50%;border:1px solid var(--ink-3)}
+.origin{
+  margin-top:26px;font-family:var(--serif);font-size:14px;line-height:1.8;
+  color:var(--ink-3);padding-left:16px;border-left:2px solid var(--paper-line);
+}
+.end{
+  margin-top:30px;text-align:center;font-family:var(--mono);
+  font-size:10.5px;letter-spacing:.18em;color:var(--ink-3);
+}
+
+/* ---------- 入场动画 ---------- */
+.rv{opacity:0;transform:translateY(18px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.rv.is-in{opacity:1;transform:none}
+.rv-s{opacity:0;transform:translateY(14px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.rv-s.is-in{opacity:1;transform:none}
+
+/* ---------- 响应式 ---------- */
+@media (max-width:1000px){
+  .stage{grid-template-columns:1fr}
+  .core{
+    height:auto;flex-direction:row;justify-content:flex-start;gap:14px;
+    padding:9px 20px;background:rgba(232,236,240,.93);
+    -webkit-backdrop-filter:saturate(1.6) blur(10px);backdrop-filter:saturate(1.6) blur(10px);
+    border-bottom:1px solid var(--line-2);
+  }
+  .core__fig{width:34px;height:34px;flex:0 0 auto}
+  .core__name{text-align:left;min-height:0;font-size:11.5px}
+  .core__scale{display:none}
+  .card{padding:44px 20px;scroll-margin-top:58px}
+  .card__no{top:20px;right:20px;font-size:32px}
+  .card:first-of-type{padding-top:54px}
+}
+@media (max-width:640px){
+  .duo,.flow,.gap{grid-template-columns:1fr}
+  .flow__a,.gap__mid{transform:rotate(90deg);height:26px}
+  .map__r{grid-template-columns:1fr;gap:6px}
+  .card{padding:38px 16px}
+  .card__no{font-size:26px;top:16px;right:16px}
+  .ms{padding:22px 18px}
+  .hero__meta span{padding:0 9px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-snap-type:none}
+  .rv,.rv-s{opacity:1;transform:none;transition:none}
+  .rg,.rg-lb,.core__name,.core__scale span{transition:none}
+}
+</style>
+</head>
+<body>
+
+<div class="prog"><i id="bar"></i></div>
+
+<div class="stage">
+
+  <aside class="core">
+    <svg class="core__fig" id="coreFig" viewBox="0 0 200 200" role="img" aria-label="同心结构导航：由外向内依次为愿望结构、AI 扩展层、判断体系、六条规则">
+      <circle class="rg rg--dash" id="rg0" cx="100" cy="100" r="88"/>
+      <circle class="rg" id="rg1" cx="100" cy="100" r="68"/>
+      <circle class="rg" id="rg2" cx="100" cy="100" r="47"/>
+      <circle class="rg" id="rg3" cx="100" cy="100" r="26"/>
+      <text class="rg-lb" id="lb0" x="100" y="30" text-anchor="middle">愿望结构</text>
+      <text class="rg-lb" id="lb1" x="100" y="52" text-anchor="middle">AI 扩展层</text>
+      <text class="rg-lb" id="lb2" x="100" y="74" text-anchor="middle">判断体系</text>
+      <text class="rg-lb" id="lb3" x="100" y="104" text-anchor="middle">规则</text>
+    </svg>
+    <div class="core__name" id="coreName"></div>
+    <div class="core__scale" id="coreScale">
+      <span data-r="0">愿望结构</span>
+      <span data-r="1">AI 扩展层</span>
+      <span data-r="2">判断体系</span>
+      <span data-r="3">六条规则</span>
+    </div>
+  </aside>
+
+  <main class="deck">
+
+    <!-- Hero -->
+    <section class="card hero">
+      <div class="card__in">
+        <svg class="hero__fig" viewBox="0 0 300 300" role="img" aria-label="同心结构：外圈虚线为愿望结构，向内依次为 AI 扩展层、判断体系，核心为六条规则">
+          <circle class="rg rg--dash" cx="150" cy="150" r="134"/>
+          <circle class="rg" cx="150" cy="150" r="104"/>
+          <circle class="rg" cx="150" cy="150" r="72"/>
+          <circle class="rg-core" cx="150" cy="150" r="41"/>
+          <text class="rg-lb" x="150" y="38" text-anchor="middle" font-size="13">愿望结构</text>
+          <text class="rg-lb" x="150" y="70" text-anchor="middle" font-size="13">AI 扩展层</text>
+          <text class="rg-lb" x="150" y="102" text-anchor="middle" font-size="13">判断体系</text>
+          <text class="rg-tx" x="150" y="155" text-anchor="middle">六条规则</text>
+        </svg>
+        <h1 class="hero__t">
+          <span class="b">边界外移</span>
+          <span class="a">核心稳定</span>
+        </h1>
+        <p class="hero__sub">一份关于「AI 时代如何组织自己的判断」的结构化笔记 —— 从外围能力一路收拢到内核规则，末尾停在一个尚未回答的问题上。</p>
+        <div class="hero__meta">
+          <span>四层同心</span>
+          <span>六条规则</span>
+          <span>四个待消化</span>
+          <span>一个未答之问</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 00 全局图 -->
+    <section class="card" id="c00">
+      <div class="card__in">
+        <div class="tag"><span class="tag__k">全局</span><span class="tag__v">由外向内 · 四层</span></div>
+        <h2 class="card__t">先看地图，再逐层进入</h2>
+        <p class="card__lede">整份笔记可以画成<b>四个同心圈</b>。最外面一圈是虚线 —— 它可以坍塌、可以重建；越往里越硬，到最中心是不能动的六条规则。</p>
+        <div class="map rv">
+          <div class="map__r">
+            <div class="map__lv"><i class="dash"></i>最外 · 虚线</div>
+            <div class="map__b"><strong>愿望结构</strong><p>目标、方向、意愿。「我要有强判断体系」就属于这一层 —— 它不是判断，是愿望。</p></div>
+          </div>
+          <div class="map__r">
+            <div class="map__lv"><i></i>外圈 · 实线</div>
+            <div class="map__b"><strong>AI 扩展层</strong><p>记忆、计算、信息调取。这一层正在被 AI 快速向外推，而人的角色从工具使用者变成认知系统组织者。</p></div>
+          </div>
+          <div class="map__r">
+            <div class="map__lv"><i class="solid2"></i>内圈 · 实线</div>
+            <div class="map__b"><strong>判断体系</strong><p>目标价值 / 规则证据 / 风险态度 / 修正机制 —— 四层内部结构，逻辑优先于数据，数据优先于经验与权威。</p></div>
+          </div>
+          <div class="map__r">
+            <div class="map__lv"><i class="dot"></i>核心 · 实心</div>
+            <div class="map__b"><strong>六条规则</strong><p>可执行的判断原则。目前偏向防御性校验，缺口在「主动可证伪性」—— 这是全篇唯一的自我批评。</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 01 最外层 -->
+    <section class="card" id="c01" data-ring="0">
+      <span class="card__no">01</span>
+      <div class="card__in">
+        <div class="tag"><span class="tag__k">最外层 · 虚线</span><span class="tag__v">可坍塌 · 可重建</span></div>
+        <h2 class="card__t">结构连续性 <em>vs</em> 愿望结构</h2>
+        <p class="card__lede">进入体系之前，先分清两种「结构」。它们长得像，但一种能承重，一种不能。</p>
+        <div class="duo rv-s">
+          <div class="duo__c duo__c--solid">
+            <div class="duo__k">实线 · 承重</div>
+            <h4>结构连续性</h4>
+            <p>稳定的逻辑、规则和思考路径。判断力真正建立在这一层之上，可以推演、可以检验。</p>
+          </div>
+          <div class="duo__c duo__c--dash">
+            <div class="duo__k">虚线 · 不承重</div>
+            <h4>愿望结构</h4>
+            <p>目标、方向、意愿。例如「我要有强判断体系」—— 它描述想去哪，不描述怎么判断。</p>
+          </div>
+        </div>
+        <div class="note rv-s"><b>警惕：</b>区分二者，避免把愿望当成判断内容。虚线可以坍塌、可以重建；把它当实线用，整个体系就悬空了。</div>
+      </div>
+    </section>
+
+    <!-- 02 外圈 · 能力边界 -->
+    <section class="card" id="c02" data-ring="1">
+      <span class="card__no">02</span>
+      <div class="card__in">
+        <div class="tag"><span class="tag__k">外圈 · 实线</span><span class="tag__v">AI 扩展层</span></div>
+        <h2 class="card__t">内部在收缩，外部在扩张</h2>
+        <p class="card__lede">年龄增长带来能力收缩，而 AI 恰好补在收缩的那一侧。<b>边界的重心因此发生了转移。</b></p>
+        <div class="axis rv-s">
+          <div class="axis__r">
+            <div class="axis__k">收缩</div>
+            <div class="axis__v"><b>年龄增长导致能力收缩</b><s>记忆、计算速度、信息检索这些原本靠自己扛的部分，会随时间衰减。</s></div>
+          </div>
+          <div class="axis__r">
+            <div class="axis__k">扩张</div>
+            <div class="axis__v"><b>AI 扩展外部能力</b>
+              <div class="chips"><i>记忆</i><i>计算</i><i>信息调取</i></div>
+            </div>
+          </div>
+          <div class="axis__r">
+            <div class="axis__k">转移</div>
+            <div class="axis__v"><b>边界重心从「能力」转向「价值判断 + 决策能力」</b><s>能被外包的都外包了，剩下的才是人真正要守的。</s></div>
+          </div>
+        </div>
+        <div class="ideal rv-s"><b>边界外移 + 核心稳定</b><span>外部可操作性不断增加，内部核心保持稳定与不可替代 —— 这是理想状态。</span></div>
+      </div>
+    </section>
+
+    <!-- 03 外圈 · 角色转变 -->
+    <section class="card" id="c03" data-ring="1">
+      <span class="card__no">03</span>
+      <div class="card__in">
+        <div class="tag"><span class="tag__k">外圈 · 实线</span><span class="tag__v">认知角色 + AI 的性质</span></div>
+        <h2 class="card__t">从工具使用者，到认知系统组织者</h2>
+        <p class="card__lede">边界外移不只是「多了个帮手」，而是<b>角色本身变了</b> —— 核心不再是会用工具，而是会组织判断流程。</p>
+        <div class="flow rv-s">
+          <div class="flow__e">
+            <b>工具使用者</b>
+            <p>关心「怎么用它完成这件事」</p>
+          </div>
+          <div class="flow__a">&#8594;</div>
+          <div class="flow__e to">
+            <b>认知系统组织者</b>
+            <p>关心「如何组织自己的判断和思考流程」</p>
+          </div>
+        </div>
+        <div class="pts rv-s">
+          <div class="pt"><i>01</i><p><b>AI 是思维层面的外部放大器，而非替代人类。</b></p></div>
+          <div class="pt"><i>02</i><p>它<b>提供结构而非情感</b> —— 不讨好、不妥协、不迎合。这恰好是训练判断力需要的性质。</p></div>
+          <div class="pt"><i>03</i><p>可用于<b>训练问题提出和逻辑组织能力</b>。<b>问题提出者角色关键：问题结构决定讨论深度。</b></p></div>
+          <div class="pt"><i>04</i><p>通过和 AI 对话进行<b>自我检验和思路梳理</b>，AI 提供结构反馈，形成闭环。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 内圈 · 判断体系四层 -->
+    <section class="card" id="c04" data-ring="2">
+      <span class="card__no">04</span>
+      <div class="card__in">
+        <div class="tag"><span class="tag__k">内圈 · 实线</span><span class="tag__v">判断体系</span></div>
+        <h2 class="card__t">判断体系本身的四层结构</h2>
+        <p class="card__lede">往里走到承重的部分。一个判断体系由四层构成，从上到下依次变硬。</p>
+        <div class="stack rv-s">
+          <div class="lv">
+            <div class="lv__n">01</div>
+            <div class="lv__b"><strong>目标 / 价值层</strong><p>方向、优先级、愿望 —— 也是最容易混进「愿望结构」的一层，需要持续警惕。</p></div>
+          </div>
+          <div class="lv">
+            <div class="lv__n">02</div>
+            <div class="lv__b"><strong>规则 / 证据层</strong><p><span class="ord">逻辑 &gt; 数据 &gt; 经验 / 权威</span> —— 严格的优先级次序，越靠前越硬。</p></div>
+          </div>
+          <div class="lv">
+            <div class="lv__n">03</div>
+            <div class="lv__b"><strong>风险态度</strong><p>面对不确定性、冲突的处理方式 —— 决定了体系在压力下会不会变形。</p></div>
+          </div>
+          <div class="lv">
+            <div class="lv__n">04</div>
+            <div class="lv__b"><strong>修正 / 反馈机制</strong><p>何时推翻或调整判断 —— 体系的自我修复装置，也是下一层的缺口所在。</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 内圈 · 逻辑与数据 -->
+    <section class="card" id="c05" data-ring="2">
+      <span class="card__no">05</span>
+      <div class="card__in">
+        <div class="tag"><span class="tag__k">内圈 · 实线</span><span class="tag__v">逻辑与数据</span></div>
+        <h2 class="card__t">逻辑优先，但前提是它的软肋</h2>
+        <p class="card__lede">逻辑排在数据和经验之前，这没有争议 —— 但<b>逻辑链最脆弱的一环从来不在推理，而在前提</b>。</p>
+        <div class="ld rv-s">
+          <div class="ld__c">
+            <h4>逻辑优先，但前提必须正确</h4>
+            <p>再严密的推演也救不了一个错的前提。检验逻辑时，先检验它的起点。</p>
+          </div>
+          <div class="ld__c">
+            <h4>数据先检查真实性和偏差</h4>
+            <p>数据不是免检的证人。进验证环节之前，先问它从哪来、样本偏在哪。</p>
+          </div>
+          <div class="ld__c">
+            <h4>普适性依赖前提覆盖范围</h4>
+            <p>一条逻辑能推广多远，取决于它的前提覆盖多广 —— 超出覆盖范围就是越界。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 核心 · 六条规则 -->
+    <section class="card" id="c06" data-ring="3">
+      <span class="card__no">06</span>
+      <div class="card__in">
+        <div class="tag"><span class="tag__k">核心 · 实心</span><span class="tag__v">六条规则</span></div>
+        <h2 class="card__t">六条可以照着执行的规则</h2>
+        <p class="card__lede">走到最里面。这是整份笔记沉淀下来的、可操作的部分。</p>
+        <div class="rules rv-s">
+          <div class="rule"><div class="rule__n">R1</div><div class="rule__t">逻辑优先，但依赖前提<s>先检验起点，再检验推理</s></div></div>
+          <div class="rule"><div class="rule__n">R2</div><div class="rule__t">数据作为验证工具，但先检查真实性与样本偏差<s>数据不自带豁免权</s></div></div>
+          <div class="rule"><div class="rule__n">R3</div><div class="rule__t">经验和权威等价，非天然信任<s>两者都不构成免检理由</s></div></div>
+          <div class="rule"><div class="rule__n">R4</div><div class="rule__t">愿望结构与判断体系分离<s>别把「想成为」当成「已判断」</s></div></div>
+          <div class="rule"><div class="rule__n">R5</div><div class="rule__t">结构连续性为核心，允许坍塌但可重建<s>实线可以断，但不能没有重建路径</s></div></div>
+          <div class="rule"><div class="rule__n">R6</div><div class="rule__t">判断体系应包含显式修正机制<s>明确写下：何时放弃或调整这个逻辑模型</s></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07 核心缺口 -->
+    <section class="card" id="c07" data-ring="3">
+      <span class="card__no">07</span>
+      <div class="card__in">
+        <div class="tag"><span class="tag__k">核心 · 缺口</span><span class="tag__v">全篇唯一的自我批评</span></div>
+        <h2 class="card__t">会防守，但还不会主动证伪</h2>
+        <p class="card__lede">体系目前偏向<b>防御性校验</b> —— 能挡住错误输入，却不主动去找自己的错。这是笔记自己承认的缺口。</p>
+        <div class="gap rv-s">
+          <div class="gap__c now">
+            <div class="gap__k">现状</div>
+            <b>防御性校验</b>
+            <p>检查输入是否可靠、推理是否合规。有效，但只防外敌。</p>
+          </div>
+          <div class="gap__mid">&#8594;</div>
+          <div class="gap__c next">
+            <div class="gap__k">待增强</div>
+            <b>主动可证伪性</b>
+            <p>主动去设计能推翻自己的检验，而不是等别人来推翻。</p>
+          </div>
+        </div>
+        <div class="howto rv-s">
+          <div class="howto__r"><i></i><p><b>在模型建立阶段就设计失败出口</b> —— 不是等它出错，而是先写清楚「什么情况下我承认它错了」。</p></div>
+          <div class="howto__r"><i></i><p><b>避免逻辑模型被自我认同绑架</b> —— 一个模型用了越久、改了越多，越难承认它整体是错的。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 08 手稿 · 待消化 -->
+    <section class="card card--paper" id="c08">
+      <div class="card__in">
+        <div class="tag"><span class="tag__k">手稿</span><span class="tag__v">待消化 · 四点</span></div>
+        <h2 class="card__t">还没想清楚的部分</h2>
+        <p class="card__lede">笔记的最后一节是四个<b>尚未解决</b>的问题 —— 这里保持原样，不做回答。</p>
+        <div class="ms rv-s">
+          <div class="ms__hd"><span>四、待消化与下一步思考点</span><span>原文未展开</span></div>
+          <div class="todo">
+            <div class="todo__r">
+              <h4><i>01</i>可重建性 vs 核心方向</h4>
+              <ul>
+                <li>如何保持核心方向（「强判断体系」）不被外界动摇</li>
+                <li>同时允许规则和判断可重建</li>
+              </ul>
+            </div>
+            <div class="todo__r">
+              <h4><i>02</i>显性化规则</h4>
+              <ul>
+                <li>如何把隐性判断规则外显化</li>
+                <li>如何在现实决策中验证规则的稳定性</li>
+              </ul>
+            </div>
+            <div class="todo__r">
+              <h4><i>03</i>主动证伪机制</h4>
+              <ul>
+                <li>在模型建立阶段设计失败出口</li>
+                <li>避免逻辑模型被自我认同绑架</li>
+              </ul>
+            </div>
+            <div class="todo__r">
+              <h4><i>04</i>实践场景选择</h4>
+              <ul>
+                <li>从小的真实判断开始拆解</li>
+                <li>提炼隐性规则，形成规则模板</li>
+                <li>验证规则在其他场景是否稳健</li>
+              </ul>
+            </div>
+          </div>
+          <div class="slip"><b>旁注：</b>这四点全部是「如何做」而非「是什么」——说明体系的结构部分已经想清楚了，卡在执行层面。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 09 手稿 · 未答追问 -->
+    <section class="card card--paper" id="c09">
+      <div class="card__in">
+        <div class="tag"><span class="tag__k">手稿</span><span class="tag__v">未答之问</span></div>
+        <h2 class="card__t">笔记停在一个问题上</h2>
+        <p class="card__lede">这份笔记的由来和结尾，都是一次<b>没有等到回答</b>的对话。</p>
+        <div class="ms rv-s">
+          <div class="ms__hd"><span>笔记的由来</span><span>对话开场</span></div>
+          <p class="origin">「如果你愿意，我可以帮你把这次对话整理成一个可保存、可复盘的结构化笔记，下次你再来，我们可以直接接着这个结构继续。」</p>
+          <div class="q">
+            <span class="q__mark">&#8220;</span>
+            你希望我在笔记里加上<b>「具体例子和拆解方法」模板</b>吗？这样下次可以直接套用。
+            <span class="q__st">状态：未回应</span>
+          </div>
+          <div class="slip"><b>旁注：</b>这份笔记本身就是「结构连续性」的一次实践 —— 它被设计成可保存、可复用、可接着往下写的起点，而不是一份结论。</div>
+        </div>
+        <div class="end">本页内容全部来自原文 · 未添加论点</div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+(function () {
+  var cards = [].slice.call(document.querySelectorAll('.card'));
+  var bar = document.getElementById('bar');
+  var coreName = document.getElementById('coreName');
+  var scaleItems = [].slice.call(document.querySelectorAll('#coreScale span'));
+  var rings = [0, 1, 2, 3].map(function (i) {
+    return { c: document.getElementById('rg' + i), l: document.getElementById('lb' + i) };
+  });
+  var NAMES = ['愿望结构', 'AI 扩展层', '判断体系', '六条规则'];
+
+  /* 入场动画 */
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
+      });
+    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.12 });
+    [].slice.call(document.querySelectorAll('.rv, .rv-s')).forEach(function (el) { io.observe(el); });
+  } else {
+    [].slice.call(document.querySelectorAll('.rv, .rv-s')).forEach(function (el) { el.classList.add('is-in'); });
+  }
+
+  /* 当前卡片 → 同心图高亮 + 进度条 */
+  var current = -2;
+  function pick() {
+    var mid = window.innerHeight * 0.42, best = null, bestD = Infinity;
+    cards.forEach(function (c) {
+      var dd = Math.abs(c.getBoundingClientRect().top - mid);
+      if (dd < bestD) { bestD = dd; best = c; }
+    });
+    if (!best) return;
+
+    var ring = best.dataset.ring;
+    var ri = ring === undefined ? -1 : parseInt(ring, 10);
+    if (ri === current) return;
+    current = ri;
+
+    rings.forEach(function (r, i) {
+      var on = (ri === i);
+      if (r.c) r.c.classList.toggle('is-on', on);
+      if (r.l) r.l.classList.toggle('is-on', on);
+    });
+    scaleItems.forEach(function (s, i) { s.classList.toggle('is-on', ri === i); });
+    coreName.textContent = ri >= 0 ? NAMES[ri] : '';
+    coreName.classList.toggle('is-on', ri >= 0);
+  }
+
+  function prog() {
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    var p = max > 0 ? h.scrollTop / max : 0;
+    bar.style.width = (p * 100).toFixed(2) + '%';
+  }
+
+  var raf = 0;
+  function onScroll() {
+    if (raf) return;
+    raf = requestAnimationFrame(function () { raf = 0; pick(); prog(); });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  pick(); prog();
+})();
+</script>
+</body>
+</html>
