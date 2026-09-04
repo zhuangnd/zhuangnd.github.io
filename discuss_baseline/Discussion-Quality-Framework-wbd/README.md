@@ -148,6 +148,37 @@ Discussion-Quality-Framework-wbd/
 
 ---
 
+## 预览产生的 `data-page-node-id` 噪音
+
+用 `present_files` 预览本页后，**源文件会被就地注入** `data-page-node-id="<nanoid>"`（每个元素一个，约 +8KB）。这是宿主预览管线（static-html 制品）为页面节点锚定而写入的，与本项目代码无关，实测确认：
+
+- 即使预览的是 `/tmp` 下的副本，工作区的源文件同样被注入
+- 即使把源文件改成只读（`chmod 444`），宿主也会把权限改回 `644` 后写入
+- 该属性对渲染无任何作用，纯粹是 diff 噪音
+
+项目侧无法阻止注入，改为在入库前拦截，两道防线：
+
+| 防线 | 位置 | 特点 |
+|------|------|------|
+| clean 过滤器 | `.gitattributes` + 仓库 local config | 已在用；换机器/新克隆会失效 |
+| **pre-commit 钩子** | `.githooks/pre-commit` | **随仓库提交**，启用一次后永久生效 |
+
+启用钩子（每个克隆执行一次）：
+
+```bash
+git config core.hooksPath .githooks
+```
+
+想让工作区立刻干净，跑一次：
+
+```bash
+sh tools/clean-preview-attrs.sh
+```
+
+钩子只改写暂存区的 blob，不会把其它未暂存的改动一并提交；同时会同步清理工作区副本，避免提交后 `git status` 仍显示差异。
+
+---
+
 ## 浏览器支持
 
 - Chrome / Edge 90+

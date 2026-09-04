@@ -7,4 +7,8 @@
 #   git config filter.strip-preview.clean  'sed -E "s/ data-page-node-id=\"[A-Za-z0-9_-]+\"//g"'
 #   git config filter.strip-preview.smudge cat
 #   git config filter.strip-preview.required false
+#
+# 注意：换机器或新克隆时若漏配上面三条，required=false 会让过滤器静默降级为直通，
+# 噪音就会溜进提交。因此另有 .githooks/pre-commit 作为随仓库提交的第二道防线
+# （启用：git config core.hooksPath .githooks），两者互为双保险。
 *.html filter=strip-preview

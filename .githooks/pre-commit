@@ -1,0 +1,51 @@
+#!/bin/sh
+# 提交前剥离预览服务注入的 data-page-node-id 标注属性。
+#
+# 背景
+# ----
+# WorkBuddy 的 present_files 预览管线（static-html 制品）在渲染 HTML 时，会给
+# 磁盘上的源码文件里每个元素就地回写 data-page-node-id="<nanoid>"，用于页面
+# 节点锚定（可视化编辑）。实测确认：
+#   - 注入由宿主进程完成，与页面代码无关
+#   - 即使预览的是 /tmp 下的副本，工作区里的源文件同样会被注入
+#   - 即使把源文件改成只读（chmod 444），宿主也会把权限改回 644 后写入
+# 因此「阻止注入」在项目侧无解，只能做入库前的最后一道拦截。
+#
+# 与 .gitattributes 的 clean 过滤器互为双保险
+# ----------------------------------------
+#   - clean 过滤器依赖仓库 local config，换机器或新克隆都会失效
+#     （required=false 时静默降级为直通，噪音会溜进提交）
+#   - 本钩子随仓库提交，只要启用 core.hooksPath 就一定生效
+#
+# 启用：git config core.hooksPath .githooks
+
+set -e
+
+STRIP='s/ data-page-node-id="[A-Za-z0-9_-]+"//g'
+
+# 只改写暂存区（索引）里的 blob，避免把工作区中其它未暂存的改动一并提交
+git diff -z --cached --name-only --diff-filter=ACM -- '*.html' '*.htm' |
+while IFS= read -r -d '' f; do
+  [ -f "$f" ] || continue
+
+  mode=$(git ls-files -s -- "$f" | awk '{print $1}')
+  [ -n "$mode" ] || mode=100644
+
+  tmp=$(mktemp "${TMPDIR:-/tmp}/dqfstrip.XXXXXX")
+  git show ":$f" > "$tmp"
+  sed -E "$STRIP" "$tmp" > "$tmp.out"
+
+  if ! cmp -s "$tmp" "$tmp.out"; then
+    hash=$(git hash-object -w "$tmp.out")
+    git update-index --cacheinfo "$mode,$hash,$f"
+
+    # 同步清理工作区副本，否则提交后 git status 仍会显示该文件被修改。
+    # 用 `cat 重定向` 而不是 `mv`，以保留原文件的权限与 inode（不打断编辑器）。
+    sed -E "$STRIP" "$f" > "$tmp.wt" && cat "$tmp.wt" > "$f"
+    echo "pre-commit: 已剥离 $f 的 data-page-node-id"
+  fi
+
+  rm -f "$tmp" "$tmp.out" "$tmp.wt"
+done
+
+exit 0
