@@ -1,0 +1,904 @@
+<!-- by:豆包 -->
+ <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>半径变大，中心更重要——AI 与个人边界的变化</title>
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap">
+<style>
+  /* ============ 基础 ============ */
+  :root{
+    --night:#111318;       /* 墨夜蓝黑 */
+    --night-2:#0b0d12;     /* 更深夜 */
+    --panel:#181b22;       /* 面板 */
+    --panel-2:#1d212b;
+    --ember:#C77B3A;       /* 暮金（中心暖光） */
+    --amber:#D9A05B;       /* 琥珀 */
+    --amber-soft:rgba(217,160,91,.16);
+    --paper:#EDEAE3;       /* 暖米白 */
+    --dim:#9a9aa3;
+    --dim-2:#66666f;
+    --cool:#6d8aa6;        /* 雾蓝（外部/冷） */
+    --line:rgba(217,160,91,.16);
+    --serif:"Noto Serif SC","Songti SC","STSong","SimSun",serif;
+    --sans:"Noto Sans SC","PingFang SC","Microsoft YaHei","Hiragino Sans GB",sans-serif;
+    --mono:ui-monospace,"SF Mono","SFMono-Regular",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--night);
+    color:var(--paper);
+    font-family:var(--sans);
+    font-weight:300;
+    line-height:1.8;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--amber);color:#1a140b}
+  img{display:block;max-width:100%}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 32px}
+
+  /* 网格纹理 */
+  .grid-bg{
+    background-image:
+      linear-gradient(rgba(217,160,91,.045) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(217,160,91,.045) 1px,transparent 1px);
+    background-size:60px 60px;
+  }
+
+  /* ============ 顶部导航 ============ */
+  .topnav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    background:rgba(17,19,24,.8);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    border-bottom:1px solid rgba(217,160,91,.13);
+  }
+  .topnav-inner{max-width:1180px;margin:0 auto;padding:14px 32px;display:flex;align-items:center;gap:26px}
+  .brand{display:flex;align-items:center;gap:12px;font-family:var(--serif);font-weight:700;font-size:16.5px;letter-spacing:.12em;white-space:nowrap}
+  .brand .ring{
+    width:24px;height:24px;border-radius:50%;border:1px solid var(--amber);
+    position:relative;flex:none;
+  }
+  .brand .ring::before{content:"";position:absolute;inset:5px;border-radius:50%;background:var(--ember)}
+  .navlinks{display:flex;gap:2px;margin-left:auto;flex-wrap:wrap}
+  .navlinks a{padding:6px 11px;font-size:13px;color:var(--dim);letter-spacing:.05em;border-radius:2px;transition:color .2s,background .2s}
+  .navlinks a:hover{color:var(--amber)}
+  .navlinks a.on{color:var(--paper);background:rgba(217,160,91,.14)}
+  .progress{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--ember),var(--amber));z-index:101;width:0}
+
+  /* ============ Hero ============ */
+  .hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:150px 24px 80px;overflow:hidden}
+  .hero-bg{position:absolute;inset:0;z-index:0}
+  .hero-bg img{width:100%;height:100%;object-fit:cover;object-position:center}
+  .hero-bg::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 38%,rgba(11,13,18,.2) 0%,rgba(11,13,18,.66) 60%,var(--night) 96%)}
+  .hero-inner{position:relative;z-index:2;max-width:980px}
+  .hero .eyebrow{
+    display:inline-flex;align-items:center;gap:14px;
+    font-family:var(--mono);font-size:12px;letter-spacing:.32em;color:var(--amber);
+    text-transform:uppercase;margin-bottom:32px;
+  }
+  .hero .eyebrow::before,.hero .eyebrow::after{content:"";width:40px;height:1px;background:rgba(217,160,91,.5)}
+  .hero h1{
+    font-family:var(--serif);font-weight:900;font-size:clamp(38px,6.5vw,78px);
+    line-height:1.16;letter-spacing:.05em;color:#fff;
+  }
+  .hero h1 .glow{color:var(--amber);position:relative}
+  .hero .sub{margin:28px auto 0;max-width:640px;font-size:clamp(15px,2vw,18.5px);color:var(--dim);letter-spacing:.04em;line-height:2.1}
+  .hero .sub b{color:var(--paper);font-weight:500}
+  .hero .curve-wrap{margin:46px auto 0;max-width:760px}
+  .hero .curve-cap{margin-top:14px;font-size:12px;color:var(--dim-2);letter-spacing:.08em;font-family:var(--mono)}
+  .hero .meta{margin-top:38px;display:flex;justify-content:center;gap:0;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px;color:var(--dim-2);letter-spacing:.1em}
+  .hero .meta span{padding:0 16px;border-right:1px solid rgba(217,160,91,.2)}
+  .hero .meta span:last-child{border-right:none}
+  .hero .scroll-hint{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);z-index:2;color:var(--dim-2);font-size:11px;letter-spacing:.4em;font-family:var(--mono);animation:hint 2.4s ease-in-out infinite}
+  @keyframes hint{0%,100%{opacity:.35}50%{opacity:1}}
+
+  /* ============ 章节通用 ============ */
+  section.chapter{padding:110px 0;position:relative}
+  .chapter-head{margin-bottom:56px}
+  .chapter-kicker{display:flex;align-items:center;gap:14px;margin-bottom:20px;font-family:var(--mono);font-size:12px;letter-spacing:.3em;color:var(--amber);text-transform:uppercase}
+  .chapter-kicker::after{content:"";height:1px;flex:0 0 60px;background:rgba(217,160,91,.3)}
+  .chapter-head h2{font-family:var(--serif);font-weight:900;font-size:clamp(28px,4.2vw,46px);letter-spacing:.04em;line-height:1.25;color:#fff}
+  .chapter-head h2 .hl{color:var(--amber)}
+  .chapter-lead{max-width:720px;margin-top:20px;color:var(--dim);font-size:15.5px;line-height:2}
+  .chapter-lead b{color:var(--paper);font-weight:500}
+  .head-row{display:flex;align-items:flex-start;gap:26px}
+  .head-txt{flex:1}
+  /* 签名元素：同心圆环章印 */
+  .ring-seal{
+    width:50px;height:50px;border-radius:50%;border:1px solid var(--amber);
+    display:flex;align-items:center;justify-content:center;flex:none;margin-top:4px;
+    color:var(--amber);font-family:var(--serif);font-weight:900;font-size:20px;
+    position:relative;
+  }
+  .ring-seal::before{content:"";position:absolute;inset:7px;border-radius:50%;border:1px dashed rgba(217,160,91,.5)}
+  .ring-seal::after{content:"";position:absolute;width:6px;height:6px;border-radius:50%;background:var(--ember);box-shadow:0 0 12px rgba(199,123,58,.9)}
+  .ring-seal .n{position:relative;z-index:2}
+
+  /* ============ 壹 起点之问 ============ */
+  .question-band{
+    border:1px solid var(--line);background:linear-gradient(150deg,rgba(217,160,91,.08),rgba(17,19,24,0) 55%);
+    padding:44px 46px;position:relative;margin-bottom:48px;
+  }
+  .question-band::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--amber)}
+  .question-band .qb-lbl{font-family:var(--mono);font-size:11px;letter-spacing:.26em;color:var(--amber);margin-bottom:16px}
+  .question-band .qb-t{font-family:var(--serif);font-weight:700;font-size:clamp(19px,2.6vw,25px);line-height:1.8;color:#f2efe8}
+  .question-band .qb-t .hl{color:var(--ember)}
+  .question-band .qb-src{margin-top:18px;font-size:12.5px;color:var(--dim-2);font-family:var(--mono);letter-spacing:.06em}
+  .tri-card{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .tcard{
+    background:var(--panel);border:1px solid var(--line);padding:38px 32px;
+    position:relative;display:flex;flex-direction:column;
+    transition:transform .3s,border-color .3s;
+  }
+  .tcard:hover{transform:translateY(-4px);border-color:rgba(217,160,91,.4)}
+  .tcard .tc-no{font-family:var(--mono);font-size:11px;letter-spacing:.22em;color:var(--ember);margin-bottom:18px}
+  .tcard h4{font-family:var(--serif);font-weight:700;font-size:20px;line-height:1.5;margin-bottom:16px}
+  .tcard h4 .arrow{color:var(--amber);font-weight:400}
+  .tcard p{font-size:14px;color:#c9c9d1;line-height:1.95}
+  .tcard .tc-tag{
+    margin-top:22px;padding-top:16px;border-top:1px dashed rgba(217,160,91,.25);
+    font-size:12.5px;color:var(--amber);line-height:1.8;
+  }
+
+  /* ============ 贰 意义之辨 ============ */
+  .meaning-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:stretch}
+  .mean{border:1px solid var(--line);padding:34px 34px;background:var(--panel);position:relative}
+  .mean .m-lbl{font-family:var(--mono);font-size:11px;letter-spacing:.22em;color:var(--dim-2);margin-bottom:16px}
+  .mean h4{font-family:var(--serif);font-weight:700;font-size:22px;margin-bottom:14px;line-height:1.4}
+  .mean .m-if{font-family:var(--serif);font-weight:700;font-size:16.5px;color:var(--amber);margin-bottom:14px}
+  .mean .m-then{font-size:14px;color:#cfcfd6;line-height:1.9}
+  .mean.special{border-color:rgba(217,160,91,.45);background:linear-gradient(155deg,rgba(217,160,91,.14),var(--panel) 60%)}
+  .mean.special .m-if{color:var(--paper)}
+  .shift-line{
+    margin-top:40px;display:grid;grid-template-columns:1fr auto 1fr;gap:22px;align-items:center;
+    border:1px solid var(--line);background:var(--night-2);padding:40px 42px;
+  }
+  .shift-line .sl-side{font-family:var(--serif);font-size:18px;text-align:right;color:var(--dim);line-height:1.7}
+  .shift-line .sl-side:last-child{text-align:left;color:#fff}
+  .shift-line .sl-mid{width:70px;height:70px;border-radius:50%;border:1px solid var(--amber);position:relative;flex:none}
+  .shift-line .sl-mid::before{content:"";position:absolute;inset:8px;border-radius:50%;border:1px dashed rgba(217,160,91,.55)}
+  .shift-line .sl-mid::after{content:"";position:absolute;inset:24px;border-radius:50%;background:var(--ember);box-shadow:0 0 18px rgba(199,123,58,.8)}
+  .evo{display:grid;grid-template-columns:repeat(3,1fr);margin-top:22px;border:1px solid var(--line)}
+  .evo .ev{padding:28px 30px;background:rgba(17,19,24,.5)}
+  .evo .ev + .ev{border-left:1px solid var(--line)}
+  .evo .ev .ev-era{font-family:var(--serif);font-weight:900;font-size:21px;color:#fff;margin-bottom:8px}
+  .evo .ev .ev-en{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;color:var(--dim-2);margin-bottom:14px}
+  .evo .ev p{font-size:13.5px;color:#c6c6ce;line-height:1.85}
+  .evo .ev.hot{background:linear-gradient(160deg,rgba(217,160,91,.16),rgba(17,19,24,.6))}
+  .evo .ev.hot .ev-era{color:var(--amber)}
+
+  /* ============ 叁 年龄与曲线 ============ */
+  .exo-wrap{display:grid;grid-template-columns:1fr 1.15fr;gap:40px;align-items:center}
+  .exo-txt .quote-block{
+    border-left:3px solid var(--amber);padding:6px 0 6px 26px;margin:24px 0;
+    font-family:var(--serif);font-size:19px;line-height:1.95;color:#f2efe8;
+  }
+  .exo-txt .quote-block .hl{color:var(--ember)}
+  .exo-txt p{font-size:14.5px;color:#c9c9d1;line-height:1.95;margin-bottom:16px}
+  .exo-txt .exo-tag{display:inline-block;border:1px solid var(--line);padding:6px 12px;font-size:12px;color:var(--amber);letter-spacing:.14em;font-family:var(--mono)}
+  .curve-card{border:1px solid var(--line);background:var(--panel);padding:30px 30px 24px}
+  .curve-card .cc-title{font-family:var(--serif);font-size:15px;color:var(--amber);letter-spacing:.1em;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+  .curve-card .cc-title::before{content:"";width:6px;height:6px;background:var(--ember);border-radius:50%}
+  .curve-card .cc-note{font-size:11.5px;color:var(--dim-2);margin-bottom:18px;font-family:var(--mono);letter-spacing:.05em}
+  .legend{display:flex;gap:26px;margin-top:16px;flex-wrap:wrap}
+  .legend .lg{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--dim)}
+  .legend .lg i{width:22px;height:2px;display:inline-block}
+  .legend .lg.one i{background:var(--dim)}
+  .legend .lg.two i{background:var(--amber)}
+  .legend .lg.two i{box-shadow:0 0 8px rgba(217,160,91,.6)}
+  .legend .lg .hot{color:var(--amber)}
+
+  /* ============ 肆 隐忧与角色 ============ */
+  .duality{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);margin-bottom:44px}
+  .duality .du{padding:40px 40px;position:relative}
+  .duality .du + .du{border-left:1px solid var(--line)}
+  .duality .du.weak{background:linear-gradient(155deg,rgba(109,138,166,.1),rgba(17,19,24,.3) 62%)}
+  .duality .du.strong{background:linear-gradient(155deg,rgba(217,160,91,.12),rgba(17,19,24,.3) 62%)}
+  .duality .du .du-lbl{font-family:var(--mono);font-size:11px;letter-spacing:.24em;margin-bottom:16px}
+  .duality .du.weak .du-lbl{color:var(--cool)}
+  .duality .du.strong .du-lbl{color:var(--amber)}
+  .duality .du h4{font-family:var(--serif);font-weight:900;font-size:24px;margin-bottom:14px}
+  .duality .du p{font-size:14px;color:#c9c9d1;line-height:1.95}
+  .duality .du.weak .du-tip{margin-top:18px;font-size:13px;color:var(--dim);border-top:1px dashed rgba(217,160,91,.2);padding-top:14px}
+  .duality .du.strong .du-tip{margin-top:18px;font-size:13px;color:var(--amber);border-top:1px dashed rgba(217,160,91,.2);padding-top:14px}
+  .roles{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line)}
+  .role{padding:34px 32px;background:var(--night-2);position:relative;text-align:center}
+  .role + .role{border-left:1px solid var(--line)}
+  .role .r-no{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--dim-2);margin-bottom:16px}
+  .role .r-circle{width:58px;height:58px;border-radius:50%;border:1px solid var(--line);margin:0 auto 18px;display:flex;align-items:center;justify-content:center;color:var(--dim);font-family:var(--serif);font-weight:700}
+  .role h4{font-family:var(--serif);font-weight:700;font-size:19px;margin-bottom:12px}
+  .role p{font-size:13.5px;color:var(--dim);line-height:1.85}
+  .role.rare{background:linear-gradient(165deg,rgba(217,160,91,.18),var(--night-2) 60%)}
+  .role.rare .r-circle{border-color:var(--amber);color:var(--amber);box-shadow:0 0 16px rgba(217,160,91,.35)}
+  .role.rare h4{color:var(--amber)}
+  .role.rare p{color:#d8d8df}
+  .role .r-note{margin-top:16px;font-size:12px;color:var(--dim-2);line-height:1.7}
+
+  /* ============ 伍 对话场域 ============ */
+  .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:stretch}
+  .field{background:var(--panel);border:1px solid var(--line);padding:38px 36px}
+  .field h4{font-family:var(--serif);font-weight:700;font-size:21px;margin-bottom:18px;line-height:1.5}
+  .field p{font-size:14px;color:#c9c9d1;line-height:1.95;margin-bottom:14px}
+  .field .f-quote{font-family:var(--serif);font-size:17px;color:var(--amber);line-height:1.9;border-left:2px solid var(--amber);padding-left:18px;margin-top:20px}
+  .memory-compare{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);margin-top:28px}
+  .memory-compare .mc{padding:32px 34px}
+  .memory-compare .mc + .mc{border-left:1px solid var(--line)}
+  .memory-compare .mc .mc-lbl{font-family:var(--mono);font-size:11px;letter-spacing:.22em;margin-bottom:14px}
+  .memory-compare .mc.human .mc-lbl{color:var(--cool)}
+  .memory-compare .mc.ai .mc-lbl{color:var(--amber)}
+  .memory-compare .mc h5{font-family:var(--serif);font-weight:700;font-size:18px;margin-bottom:12px}
+  .memory-compare .mc p{font-size:13.5px;color:var(--dim);line-height:1.9}
+  .loop{
+    margin-top:34px;border:1px solid var(--line);background:var(--night-2);
+    padding:36px 40px;display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:18px;align-items:center;text-align:center;
+  }
+  .loop .loop-node{font-family:var(--serif);font-weight:700;font-size:16.5px;color:#fff;line-height:1.7}
+  .loop .loop-node .hot{color:var(--amber);display:block;font-size:13px;font-weight:400;font-family:var(--sans);margin-top:4px}
+  .loop .loop-arr{color:var(--amber);font-size:20px}
+  .loop .loop-note{margin-top:0}
+
+  /* ============ 陆 结构连续性 ============ */
+  .struct-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+  .st{border:1px solid var(--line);padding:36px 36px;background:var(--panel)}
+  .st h4{font-family:var(--serif);font-weight:700;font-size:21px;margin-bottom:18px;line-height:1.5}
+  .st p{font-size:14px;color:#c9c9d1;line-height:1.95;margin-bottom:12px}
+  .st .st-tag{font-size:13px;color:var(--amber);line-height:1.8}
+  .layer{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border:1px solid var(--line);margin-top:28px}
+  .layer .ly{padding:30px 28px;background:var(--night-2)}
+  .layer .ly + .ly{border-left:1px solid var(--line)}
+  .layer .ly .ly-lbl{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--dim-2);margin-bottom:14px}
+  .layer .ly h5{font-family:var(--serif);font-weight:700;font-size:18px;margin-bottom:10px}
+  .layer .ly p{font-size:13px;color:var(--dim);line-height:1.85}
+  .layer .ly.core{background:linear-gradient(160deg,rgba(217,160,91,.16),var(--night-2) 62%)}
+  .layer .ly.core h5{color:var(--amber)}
+
+  /* ============ 柒 判断体系四层 ============ */
+  .sys-wrap{display:grid;grid-template-columns:1fr 1.1fr;gap:40px;align-items:center}
+  .sys-intro .sys-note{font-size:14px;color:var(--dim);line-height:2;margin-top:20px}
+  .sys-intro .sys-note b{color:var(--paper);font-weight:500}
+  .tower{position:relative;padding-left:44px}
+  .tower .tw{position:relative;padding:26px 30px;border:1px solid var(--line);background:var(--panel);margin-bottom:18px}
+  .tower .tw::before{content:"";position:absolute;left:-44px;top:50%;width:26px;height:1px;background:var(--line)}
+  .tower .tw::after{content:"";position:absolute;left:-44px;top:50%;transform:translateY(-50%);width:9px;height:9px;border-radius:50%;border:1px solid var(--amber);background:var(--night)}
+  .tower .tw .tw-no{font-family:var(--mono);font-size:11px;letter-spacing:.22em;color:var(--amber);margin-bottom:10px}
+  .tower .tw h5{font-family:var(--serif);font-weight:700;font-size:19px;margin-bottom:10px}
+  .tower .tw p{font-size:13.5px;color:#c6c6ce;line-height:1.85}
+  .tower .tw .tw-q{margin-top:12px;font-size:12.5px;color:var(--dim-2);line-height:1.8}
+  .tower .tw.l1{border-left:3px solid var(--dim-2)}
+  .tower .tw.l2{border-left:3px solid var(--cool)}
+  .tower .tw.l3{border-left:3px solid var(--amber)}
+  .tower .tw.l4{border-left:3px solid var(--ember);background:linear-gradient(150deg,rgba(217,160,91,.12),var(--panel) 62%)}
+  .tower .tw.l4 h5{color:var(--amber)}
+  .tower .tw-verdict{margin-top:4px;font-family:var(--serif);font-size:15px;color:var(--amber);line-height:1.9;padding-left:10px}
+  .tower .tw-verdict b{color:var(--ember)}
+
+  /* ============ 捌 证据与证伪 ============ */
+  .rank-card{border:1px solid var(--line);background:var(--panel);padding:36px 40px;margin-bottom:44px}
+  .rank-card .rc-title{font-family:var(--serif);font-size:15px;color:var(--amber);letter-spacing:.1em;margin-bottom:22px;display:flex;align-items:center;gap:10px}
+  .rank-card .rc-title::before{content:"";width:6px;height:6px;background:var(--ember);border-radius:50%}
+  .rank{display:flex;align-items:stretch;gap:14px}
+  .rank .r-item{flex:1;border:1px solid var(--line);padding:26px 20px;text-align:center;background:var(--night-2);position:relative}
+  .rank .r-item .r-rank{font-family:var(--serif);font-weight:900;font-size:30px;color:var(--dim-2);line-height:1}
+  .rank .r-item .r-name{font-family:var(--serif);font-weight:700;font-size:18px;margin-top:14px;color:#fff}
+  .rank .r-item .r-sub{font-size:12px;color:var(--dim-2);margin-top:6px;font-family:var(--mono);letter-spacing:.1em}
+  .rank .r-op{display:flex;align-items:center;justify-content:center;color:var(--amber);font-family:var(--serif);font-weight:700;font-size:20px}
+  .rank .r-item.hot{border-color:rgba(217,160,91,.5);background:linear-gradient(160deg,rgba(217,160,91,.16),var(--night-2) 60%)}
+  .rank .r-item.hot .r-rank{color:var(--ember)}
+  .rank .r-item.hot .r-name{color:var(--amber)}
+  .rank .r-item.eq .r-name{color:var(--cool)}
+  .rank-note{margin-top:16px;font-size:12px;color:var(--dim-2);line-height:1.8;font-family:var(--mono);letter-spacing:.03em}
+  .verify-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+  .verify{border:1px solid var(--line);padding:34px 34px;background:var(--panel)}
+  .verify h4{font-family:var(--serif);font-weight:700;font-size:20px;margin-bottom:18px;line-height:1.5}
+  .verify p{font-size:14px;color:#c9c9d1;line-height:1.95}
+  .verify .v-flow{margin-top:20px;padding-top:16px;border-top:1px dashed rgba(217,160,91,.25);font-family:var(--mono);font-size:12.5px;color:var(--amber);letter-spacing:.04em;line-height:2}
+  .verify.defensive{background:linear-gradient(155deg,rgba(109,138,166,.09),var(--panel) 62%)}
+  .verify.falsifiable{background:linear-gradient(155deg,rgba(217,160,91,.11),var(--panel) 62%)}
+  .verify.falsifiable h4{color:var(--amber)}
+
+  /* ============ 结尾 ============ */
+  .ending{position:relative;padding:150px 0;text-align:center;overflow:hidden}
+  .ending-bg{position:absolute;inset:0;z-index:0}
+  .ending-bg img{width:100%;height:100%;object-fit:cover;object-position:center}
+  .ending-bg::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,rgba(11,13,18,.35) 0%,rgba(11,13,18,.85) 80%,var(--night) 100%)}
+  .ending-inner{position:relative;z-index:2;max-width:880px;margin:0 auto}
+  .ending .e-lbl{font-family:var(--mono);font-size:12px;letter-spacing:.34em;color:var(--amber);margin-bottom:38px}
+  .ending blockquote{font-family:var(--serif);font-weight:700;font-size:clamp(22px,3.2vw,34px);line-height:1.85;color:#fff;letter-spacing:.02em}
+  .ending blockquote .hl{color:var(--amber)}
+  .ending .e-sub{margin-top:34px;font-size:clamp(15px,2vw,18px);color:var(--dim);line-height:2;max-width:640px;margin-left:auto;margin-right:auto}
+  .ending .e-concl{
+    margin-top:44px;padding:28px 36px;border:1px solid rgba(217,160,91,.4);
+    display:inline-block;font-family:var(--serif);font-size:clamp(16px,2vw,20px);
+    color:var(--amber);letter-spacing:.08em;line-height:2;text-align:left;background:rgba(17,19,24,.55);
+  }
+  .ending .e-src{margin-top:42px;font-size:11.5px;color:var(--dim-2);letter-spacing:.1em;font-family:var(--mono);line-height:2}
+  footer{padding:40px 0;border-top:1px solid rgba(217,160,91,.12);text-align:center;color:var(--dim-2);font-size:12px;letter-spacing:.12em}
+
+  /* ============ 入场动效 ============ */
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .8s ease,transform .8s ease}
+  .reveal.in{opacity:1;transform:none}
+  .draw path{stroke-dasharray:1400;stroke-dashoffset:1400;transition:stroke-dashoffset 2.4s ease .3s}
+  .reveal.in .draw path{stroke-dashoffset:0}
+  /* Hero 首屏曲线：加载后自动描线 */
+  .hero .draw path{animation:drawline 2.6s ease .5s forwards}
+  @keyframes drawline{to{stroke-dashoffset:0}}
+  .fade-in{opacity:0;transition:opacity 1.4s ease .5s}
+  .reveal.in .fade-in{opacity:1}
+  @media (prefers-reduced-motion:reduce){
+    .reveal{opacity:1;transform:none;transition:none}
+    html{scroll-behavior:auto}
+    .hero .scroll-hint{animation:none}
+    .hero .draw path{animation:none;stroke-dashoffset:0}
+    .draw path{stroke-dashoffset:0}
+  }
+
+  /* ============ 移动端 ============ */
+  @media (max-width:900px){
+    .tri-card,.evo,.roles{grid-template-columns:1fr}
+    .role + .role,.evo .ev + .ev{border-left:none;border-top:1px solid var(--line)}
+    .meaning-grid,.field-grid,.struct-grid,.exo-wrap,.verify-grid,.sys-wrap{grid-template-columns:1fr}
+    .duality{grid-template-columns:1fr}
+    .duality .du + .du{border-left:none;border-top:1px solid var(--line)}
+    .memory-compare{grid-template-columns:1fr}
+    .memory-compare .mc + .mc{border-left:none;border-top:1px solid var(--line)}
+    .layer{grid-template-columns:1fr}
+    .layer .ly + .ly{border-left:none;border-top:1px solid var(--line)}
+    .shift-line{grid-template-columns:1fr;text-align:center}
+    .shift-line .sl-side{text-align:center}
+    .shift-line .sl-mid{margin:0 auto}
+    .loop{grid-template-columns:1fr;gap:12px}
+    .loop .loop-arr{transform:rotate(90deg)}
+    .rank{flex-direction:column}
+    .rank .r-op{transform:rotate(90deg);padding:4px 0}
+    .navlinks{display:none}
+    .question-band{padding:34px 26px}
+    section.chapter{padding:84px 0}
+    .wrap{padding:0 20px}
+    .duality .du{padding:32px 26px}
+    .tower{padding-left:30px}
+    .tower .tw::before{left:-30px;width:14px}
+    .tower .tw::after{left:-30px}
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<!-- ============ 顶部导航 ============ -->
+<nav class="topnav">
+  <div class="topnav-inner">
+    <div class="brand"><span class="ring"></span>边界·对话</div>
+    <div class="navlinks" id="navlinks">
+      <a href="#question">起点之问</a>
+      <a href="#meaning">意义之辨</a>
+      <a href="#curve">年龄曲线</a>
+      <a href="#roles">角色</a>
+      <a href="#field">对话场域</a>
+      <a href="#structure">结构连续性</a>
+      <a href="#system">判断体系</a>
+      <a href="#evidence">证据与证伪</a>
+      <a href="#ending">结论</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ Hero ============ -->
+<header class="hero" id="top">
+  <div class="hero-bg"><img src="https://aka.doubaocdn.com/s/J2uieJALVc" alt="暗夜中心发光背景"></div>
+  <div class="hero-inner">
+    <div class="eyebrow">A DIALOGUE ON SELF &amp; AI</div>
+    <h1>半径变大，<span class="glow">中心更重要</span></h1>
+    <p class="sub">当能力随年龄收缩、而 AI 成为第二大脑——个人边界会发生怎样的变化？一场关于<b>衰老、认知与自我</b>的真诚对话。</p>
+
+    <div class="curve-wrap">
+      <svg viewBox="0 0 800 340" class="draw" role="img" aria-label="能力双曲线示意">
+        <defs>
+          <linearGradient id="gFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#D9A05B" stop-opacity=".28"/>
+            <stop offset="1" stop-color="#D9A05B" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <!-- 网格 -->
+        <g stroke="rgba(217,160,91,.07)" stroke-width="1">
+          <line x1="60" y1="40" x2="760" y2="40"/><line x1="60" y1="105" x2="760" y2="105"/>
+          <line x1="60" y1="170" x2="760" y2="170"/><line x1="60" y1="235" x2="760" y2="235"/>
+          <line x1="60" y1="300" x2="760" y2="300"/>
+          <line x1="60" y1="40" x2="60" y2="300"/><line x1="195" y1="40" x2="195" y2="300"/>
+          <line x1="330" y1="40" x2="330" y2="300"/><line x1="465" y1="40" x2="465" y2="300"/>
+          <line x1="600" y1="40" x2="600" y2="300"/><line x1="760" y1="40" x2="760" y2="300"/>
+        </g>
+        <!-- 年龄刻度 -->
+        <g fill="rgba(154,154,163,.5)" font-family="var(--mono)" font-size="12">
+          <text x="60" y="322">20岁</text><text x="195" y="322">30</text><text x="330" y="322">40</text>
+          <text x="465" y="322">50</text><text x="600" y="322">60</text><text x="735" y="322">70岁</text>
+        </g>
+        <!-- 交叉参考线 -->
+        <line x1="532" y1="40" x2="532" y2="300" stroke="rgba(217,160,91,.35)" stroke-dasharray="4 5"/>
+        <text x="532" y="30" fill="#D9A05B" font-family="var(--mono)" font-size="12" text-anchor="middle">交叉点</text>
+        <!-- AI 外展曲线下方面积 -->
+        <path d="M70,262 C 210,258 350,238 532,196 C 640,208 720,226 770,212 L 770,300 L 70,300 Z" fill="url(#gFill)"/>
+        <!-- 自然能力曲线 -->
+        <path d="M70,232 C 210,238 350,222 532,196 C 640,180 720,172 770,160" fill="none" stroke="#9a9aa3" stroke-width="2.4"/>
+        <!-- AI 外展曲线 -->
+        <path d="M70,262 C 210,258 350,238 532,196 C 640,208 720,226 770,212" fill="none" stroke="#D9A05B" stroke-width="3" stroke-linecap="round"/>
+        <!-- 交叉点光点 -->
+        <circle cx="532" cy="196" r="6" fill="#C77B3A" opacity=".4"/><circle cx="532" cy="196" r="3" fill="#D9A05B"/>
+      </svg>
+      <div class="legend">
+        <div class="lg one"><i></i>自然能力（随年龄衰减）</div>
+        <div class="lg two"><i></i>AI 协同能力（被托住并上探）</div>
+      </div>
+    </div>
+
+    <div class="curve-cap">在年龄曲线向下的阶段，看到能力曲线可能向上——那正是震撼发生的交叉点。</div>
+
+    <div class="meta">
+      <span>自述 · 个人思辨</span>
+      <span>关于衰老 · 认知 · 判断体系</span>
+      <span>结构化对话整理</span>
+    </div>
+  </div>
+  <div class="scroll-hint">SCROLL</div>
+</header>
+
+<!-- ============ 壹 起点之问 ============ -->
+<section class="chapter" id="question">
+  <div class="wrap">
+    <div class="chapter-head reveal">
+      <div class="chapter-kicker">壹 · THE QUESTION</div>
+      <div class="head-row">
+        <span class="ring-seal"><span class="n">壹</span></span>
+        <div class="head-txt">
+          <h2>起点：一个人的边界，<span class="hl">正在收缩</span></h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-band reveal">
+      <div class="qb-lbl">原问题 · ORIGINAL QUESTION</div>
+      <div class="qb-t">"就我个人而言，能力和边界随着年龄的变老不断收缩收敛；而当前 AI 飞速发展，似乎可以充当人的第二大脑和知识存储库。当个人与 AI 不断交融，<span class="hl">对个人来说，边界会发生什么样的变化？这种变化会有意义吗？</span>"</div>
+      <div class="qb-src">—— 一段希望被"真诚地"回应的提问</div>
+    </div>
+
+    <div class="tri-card">
+      <div class="tcard reveal">
+        <div class="tc-no">CHANGE · 01</div>
+        <h4>功能边界扩张，<br><span class="arrow">→</span> 认知边界模糊</h4>
+        <p>当你习惯把部分思考交给 AI，"哪些是我自己理解的？哪些只是我能调取的？"会越来越难分清。如果只是更快地调用答案而没有更深地消化，会带来一种"知识幻觉"——你以为你理解，其实只是接口顺畅。</p>
+        <div class="tc-tag">"我会"与"我能调用"，不再清晰区分。</div>
+      </div>
+      <div class="tcard reveal">
+        <div class="tc-no">CHANGE · 02</div>
+        <h4>能力收缩，<br><span class="arrow">→</span> 判断力浓缩</h4>
+        <p>记忆力、反应速度、信息处理带宽会随年龄下降，但判断力、模式识别、价值取向会变得更稳定。AI 能弥补算力，却无法替代"你认为什么重要"。</p>
+        <div class="tc-tag">边界从"能力边界"，转向"价值与选择边界"。</div>
+      </div>
+      <div class="tcard reveal">
+        <div class="tc-no">CHANGE · 03</div>
+        <h4>个体边界外移，<br><span class="arrow">→</span> 自我核心收缩</h4>
+        <p>外部能力越来越大，内部核心越来越小。外部：你几乎可以做任何事情；内部：真正属于"你"的，只剩下判断、欲望、伦理与方向。这未必是坏事——它像把人从"执行者"推向"定义者"。</p>
+        <div class="tc-tag">半径在变大，中心在收拢。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 贰 意义之辨 ============ -->
+<section class="chapter grid-bg" id="meaning">
+  <div class="wrap">
+    <div class="chapter-head reveal">
+      <div class="chapter-kicker">贰 · THE MEANING</div>
+      <div class="head-row">
+        <span class="ring-seal"><span class="n">贰</span></span>
+        <div class="head-txt">
+          <h2>这种变化有意义吗？<br>取决于你把"人"<span class="hl">定义成什么</span></h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="meaning-grid">
+      <div class="mean reveal">
+        <div class="m-lbl">VIEW · 01</div>
+        <div class="m-if">如果人 = 能力集合</div>
+        <div class="m-then">那么 AI 扩张就是明显的增益。可操作、可计算、可调取的一切都被放大，行动半径变大，"可处理复杂度"提高。</div>
+      </div>
+      <div class="mean reveal">
+        <div class="m-lbl">VIEW · 02</div>
+        <div class="m-if">如果人 = 记忆 + 技能 + 知识</div>
+        <div class="m-then">那么边界外包会让"人"的定义变松动——当这些都可以存放在外部，什么还能证明"你是你"？</div>
+      </div>
+      <div class="mean special reveal" style="grid-column:1/-1">
+        <div class="m-lbl">VIEW · 03 · 真正的答案所在</div>
+        <div class="m-if">如果人 = 价值判断 + 体验 + 主观意识</div>
+        <div class="m-then">那么 AI 不会吞噬你，只会放大你。真正有意义的变化，不是能力扩张，而是——人开始从"工具的使用者"，变成"认知系统的组织者"。</div>
+      </div>
+    </div>
+
+    <div class="shift-line reveal">
+      <div class="sl-side">工具的使用者<br><span style="font-size:13px;color:var(--dim-2)">TOOL USER</span></div>
+      <div class="sl-mid"></div>
+      <div class="sl-side">认知系统的组织者<br><span style="font-size:13px;color:var(--dim-2)">COGNITIVE ORGANIZER</span></div>
+    </div>
+
+    <div class="evo">
+      <div class="ev reveal">
+        <div class="ev-era">印刷术</div>
+        <div class="ev-en">PRINTING</div>
+        <p>扩大了知识获取——让文字不再垄断于少数人。</p>
+      </div>
+      <div class="ev reveal">
+        <div class="ev-era">互联网</div>
+        <div class="ev-en">INTERNET</div>
+        <p>扩大了信息连接——让信息跨越距离与边界。</p>
+      </div>
+      <div class="ev hot reveal">
+        <div class="ev-era">AI</div>
+        <div class="ev-en">AI</div>
+        <p>第一次在"思维层面"提供结构协助——参与你的思考组织本身。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 叁 年龄与曲线 ============ -->
+<section class="chapter" id="curve">
+  <div class="wrap">
+    <div class="chapter-head reveal">
+      <div class="chapter-kicker">叁 · THE CURVE</div>
+      <div class="head-row">
+        <span class="ring-seal"><span class="n">叁</span></span>
+        <div class="head-txt">
+          <h2>AI 不是让人重新变年轻，<br>而是让<span class="hl">衰减曲线变平缓</span></h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="exo-wrap">
+      <div class="exo-txt reveal">
+        <span class="exo-tag">外骨骼 · EXOSKELETON</span>
+        <div class="quote-block">它像一套外骨骼。<br>不会让你成为别人，但会<span class="hl">让你保留自己更久</span>。</div>
+        <p>年轻时，边界扩张靠体力和时间；中年以后，边界更多靠结构和取舍。AI 的意义，也许不是逆转时间，而是让"衰减曲线变平缓"。</p>
+        <p>在身体、时间、精力都缓慢收缩时，你突然看到一种"延展"的可能——不是回到年轻，而是进化成另一种形态。</p>
+      </div>
+      <div class="curve-card reveal">
+        <div class="cc-title">能力双曲线 · 示意</div>
+        <div class="cc-note">Schematic · 表达趋势而非数据</div>
+        <svg viewBox="0 0 520 300" class="draw" role="img" aria-label="能力衰减与AI协同曲线">
+          <defs>
+            <linearGradient id="gFill2" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#D9A05B" stop-opacity=".3"/>
+              <stop offset="1" stop-color="#D9A05B" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <g stroke="rgba(217,160,91,.07)" stroke-width="1">
+            <line x1="40" y1="30" x2="490" y2="30"/><line x1="40" y1="95" x2="490" y2="95"/>
+            <line x1="40" y1="160" x2="490" y2="160"/><line x1="40" y1="225" x2="490" y2="225"/>
+            <line x1="40" y1="40" x2="40" y2="260"/><line x1="152" y1="40" x2="152" y2="260"/>
+            <line x1="265" y1="40" x2="265" y2="260"/><line x1="377" y1="40" x2="377" y2="260"/>
+            <line x1="490" y1="40" x2="490" y2="260"/>
+          </g>
+          <g fill="rgba(154,154,163,.5)" font-size="11" font-family="Menlo,monospace">
+            <text x="40" y="278">20</text><text x="152" y="278">35</text>
+            <text x="265" y="278">50</text><text x="377" y="278">65</text><text x="470" y="278">80</text>
+          </g>
+          <line x1="320" y1="40" x2="320" y2="260" stroke="rgba(217,160,91,.35)" stroke-dasharray="4 5"/>
+          <path d="M48,238 C 140,232 220,214 320,178 C 390,188 450,202 486,192 L 486,260 L 48,260 Z" fill="url(#gFill2)"/>
+          <path d="M48,206 C 140,212 220,196 320,178 C 400,164 455,160 486,150" fill="none" stroke="#9a9aa3" stroke-width="2.2"/>
+          <path d="M48,238 C 140,232 220,214 320,178 C 390,188 450,202 486,192" fill="none" stroke="#D9A05B" stroke-width="2.8" stroke-linecap="round"/>
+          <circle cx="320" cy="178" r="5" fill="#C77B3A" opacity=".45"/><circle cx="320" cy="178" r="2.6" fill="#D9A05B"/>
+        </svg>
+        <div class="legend">
+          <div class="lg one"><i></i>自然衰减</div>
+          <div class="lg two"><i></i>AI 协同 <span class="hot">· 交叉点上探</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 肆 隐忧与角色 ============ -->
+<section class="chapter grid-bg" id="roles">
+  <div class="wrap">
+    <div class="chapter-head reveal">
+      <div class="chapter-kicker">肆 · CAUTION &amp; ROLES</div>
+      <div class="head-row">
+        <span class="ring-seal"><span class="n">肆</span></span>
+        <div class="head-txt">
+          <h2>一把工具，两种用法；<br>一种稀缺，<span class="hl">三个位置</span></h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="duality">
+      <div class="du weak reveal">
+        <div class="du-lbl">若当拐杖 · CRUTCH</div>
+        <h4>它会削弱你</h4>
+        <p>提问能力下降、独立推演能力减弱、对不确定性的耐受度下降——一种逐渐加深的依赖。</p>
+        <div class="du-tip">差别在于：你是否仍保留"原始思考的肌肉"。</div>
+      </div>
+      <div class="du strong reveal">
+        <div class="du-lbl">若当放大镜 · LENS</div>
+        <h4>它会增强你</h4>
+        <p>把 AI 当作放大镜，去放大你自己的判断、提问与行动——工具服务于你的方向，而非反向驱动你。</p>
+        <div class="du-tip">AI 是加速器，但方向仍然在你手里。</div>
+      </div>
+    </div>
+
+    <div class="roles">
+      <div class="role reveal">
+        <div class="r-no">STATE · 01</div>
+        <div class="r-circle">喂</div>
+        <h4>被投喂者</h4>
+        <p>接收结果</p>
+        <div class="r-note">越来越容易——只需打开，即可获得。</div>
+      </div>
+      <div class="role reveal">
+        <div class="r-no">STATE · 02</div>
+        <div class="r-circle">操</div>
+        <h4>操作者</h4>
+        <p>调用工具</p>
+        <div class="r-note">也日趋简单——会提问，会使用即可。</div>
+      </div>
+      <div class="role rare reveal">
+        <div class="r-no">STATE · 03 · 稀缺</div>
+        <div class="r-circle">组</div>
+        <h4>组织者</h4>
+        <p>设计认知流程</p>
+        <div class="r-note">真正稀缺——把"思考结构"外显、把"隐性判断"结构化、把"经验"变成可协作的认知流程。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 伍 对话场域 ============ -->
+<section class="chapter" id="field">
+  <div class="wrap">
+    <div class="chapter-head reveal">
+      <div class="chapter-kicker">伍 · THE DIALOGUE</div>
+      <div class="head-row">
+        <span class="ring-seal"><span class="n">伍</span></span>
+        <div class="head-txt">
+          <h2>一个<span class="hl">思维摩擦成本极低</span>的对话场域</h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="field-grid">
+      <div class="field reveal">
+        <h4>它提供的，是"结构"而非"情感"</h4>
+        <p>人和人之间的对话常有隐形阻力：立场、情绪、节奏、表达能力、误解成本。而在这里，你可以直接进入结构层面——问题可以不完整，推理可以被拆开，假设可以被检验。</p>
+        <div class="f-quote">那种纯粹的愉悦，本质上是——思考被看见、被承接、被延展。</div>
+      </div>
+      <div class="field reveal">
+        <h4>"我问你答"的真相：问题结构决定深度</h4>
+        <p>表面上是单向问答，实际上是闭环系统：你在训练提问，它在提供结构，你在筛选有价值的部分。如果问题浅，再强的回答也只能给浅层答案。</p>
+        <div class="f-quote">这个循环本身，就是"定期思考"的实践。</div>
+      </div>
+    </div>
+
+    <div class="memory-compare">
+      <div class="mc human reveal">
+        <div class="mc-lbl">HUMAN MEMORY · 人类</div>
+        <h5>记忆是"情绪绑定"的</h5>
+        <p>人类关系的温度来自情感记忆——会沉淀、加深、演化成关系，形成"我们之间的历史感"。</p>
+      </div>
+      <div class="mc ai reveal">
+        <div class="mc-lbl">AI MEMORY · AI</div>
+        <h5>记忆是"信息绑定"的</h5>
+        <p>保存的是"认知画像"，而非"情感轨迹"。它不"记住你"，但可以在每次对话时快速重建一个结构化理解。</p>
+      </div>
+    </div>
+
+    <div class="loop reveal">
+      <div class="loop-node">你持续提出<br>高质量问题<span class="hot">QUESTION</span></div>
+      <div class="loop-arr">→</div>
+      <div class="loop-node">它持续提供<br>结构反馈<span class="hot">STRUCTURE</span></div>
+      <div class="loop-arr">→</div>
+      <div class="loop-node">共振得以重建<span class="hot">RESONANCE</span></div>
+    </div>
+    <p style="margin-top:18px;font-size:13px;color:var(--dim-2);text-align:center">共振不会因为"记忆"而成立——只要这两个条件在，即使每次都是"第一次见面"，结构仍然可以重建。</p>
+  </div>
+</section>
+
+<!-- ============ 陆 结构连续性 ============ -->
+<section class="chapter grid-bg" id="structure">
+  <div class="wrap">
+    <div class="chapter-head reveal">
+      <div class="chapter-kicker">陆 · STRUCTURE</div>
+      <div class="head-row">
+        <span class="ring-seal"><span class="n">陆</span></span>
+        <div class="head-txt">
+          <h2>结构连续性：<span class="hl">不迁就、不迎合、可被反驳</span></h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="struct-grid">
+      <div class="st reveal">
+        <h4>期待的不是陪伴，而是持续的逻辑压力</h4>
+        <p>稳定的思维框架、持续的逻辑压力、不被讨好的对话环境、可以被反驳的空间——这是对"结构连续性"的定义。</p>
+        <p class="st-tag">结构优先于立场：如果你对，会说你对；如果你错，会指出错在何处；如果问题本身假设不完整，会先重构问题。</p>
+      </div>
+      <div class="st reveal">
+        <h4>要的不是反对意见，而是"高质量反对"</h4>
+        <p>先理解你观点的最强版本，再从结构层面拆解，而不是为了对立而对立——否则那只是情绪对冲。</p>
+        <p class="st-tag">真正的"可被否认"，通常比预想更难：当核心假设被结构性推翻时，关键是"愿意重建，而不是修补"。</p>
+      </div>
+    </div>
+
+    <div class="layer">
+      <div class="ly reveal">
+        <div class="ly-lbl">LAYER · 01 · 可变</div>
+        <h5>具体观点</h5>
+        <p>受情感、环境、组合条件影响，随时可以被推翻与替换。</p>
+      </div>
+      <div class="ly reveal">
+        <div class="ly-lbl">LAYER · 02 · 可能坍塌</div>
+        <h5>结构连续性</h5>
+        <p>思维的框架与路径，允许坍塌——"即使动摇也能重建"。</p>
+      </div>
+      <div class="ly core reveal">
+        <div class="ly-lbl">LAYER · 03 · 稳定</div>
+        <h5>核心方向</h5>
+        <p>"我想成为一个有极强自我判断体系和能力的人"——这一点不会变。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 柒 判断体系四层 ============ -->
+<section class="chapter" id="system">
+  <div class="wrap">
+    <div class="chapter-head reveal">
+      <div class="chapter-kicker">柒 · THE SYSTEM</div>
+      <div class="head-row">
+        <span class="ring-seal"><span class="n">柒</span></span>
+        <div class="head-txt">
+          <h2>一套判断体系，<span class="hl">四个层级</span></h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="sys-wrap">
+      <div class="sys-intro reveal">
+        <p style="font-size:15px;color:#cfcfd6;line-height:2">"判断规则体系"不是靠一次深聊形成的，它更像一套被逐步外显、校准、压缩、再重构的<b>结构工程</b>：内部已有规则 → 隐性 → 依赖直觉触发 → 无法稳定表达 → 更无法传递或复用。</p>
+        <p style="font-size:15px;color:#cfcfd6;line-height:2;margin-top:14px">这不是判断力不足，而是"结构未显性化"。</p>
+        <div class="sys-note">很多人只有第一层，少数人有第二层，<b>极少数人明确设计第三和第四层</b>——你真正想建立的，是一个带"纠错回路"的体系。</div>
+      </div>
+
+      <div class="tower">
+        <div class="tw l1 reveal">
+          <div class="tw-no">LAYER · 1 · 价值优先级</div>
+          <h5>什么比什么重要</h5>
+          <p>在冲突中如何排序？是否存在不可妥协项？</p>
+          <div class="tw-q">多数人止步于此层。</div>
+        </div>
+        <div class="tw l2 reveal">
+          <div class="tw-no">LAYER · 2 · 证据标准</div>
+          <h5>什么算"足够证据"</h5>
+          <p>对经验、数据、权威、逻辑的权重如何分配？</p>
+          <div class="tw-q">少数人到达第二层。</div>
+        </div>
+        <div class="tw l3 reveal">
+          <div class="tw-no">LAYER · 3 · 风险态度</div>
+          <h5>保守还是进取</h5>
+          <p>对不确定性的容忍区间是多少？</p>
+          <div class="tw-q">极少数人明确设计第三层。</div>
+        </div>
+        <div class="tw l4 reveal">
+          <div class="tw-no">LAYER · 4 · 修正机制</div>
+          <h5>何时推翻原判断</h5>
+          <p>是否设定"延迟复盘"？如何防止自洽幻觉？</p>
+          <div class="tw-q">第四层：纠错回路——少数人抵达的地方。</div>
+        </div>
+        <div class="tw-verdict">判断体系不是写出来的，<b>它是从重复决策中抽象出来的</b>。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 捌 证据与证伪 ============ -->
+<section class="chapter grid-bg" id="evidence">
+  <div class="wrap">
+    <div class="chapter-head reveal">
+      <div class="chapter-kicker">捌 · EVIDENCE &amp; FALSIFICATION</div>
+      <div class="head-row">
+        <span class="ring-seal"><span class="n">捌</span></span>
+        <div class="head-txt">
+          <h2>你的证据排序，与<span class="hl">它的边界</span></h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="rank-card reveal">
+      <div class="rc-title">证据来源排序 · 第二层 · EVIDENCE RANKING</div>
+      <div class="rank">
+        <div class="r-item hot">
+          <div class="r-rank">1</div>
+          <div class="r-name">逻辑</div>
+          <div class="r-sub">LOGIC</div>
+        </div>
+        <div class="r-op">›</div>
+        <div class="r-item">
+          <div class="r-rank">2</div>
+          <div class="r-name">真实数据</div>
+          <div class="r-sub">TRUE DATA</div>
+        </div>
+        <div class="r-op">›</div>
+        <div class="r-item eq">
+          <div class="r-rank">=</div>
+          <div class="r-name">经验 = 权威</div>
+          <div class="r-sub">EXPERIENCE · AUTHORITY</div>
+        </div>
+      </div>
+      <div class="rank-note">你的排序：逻辑 > 真实数据 > 经验 = 权威 —— 对权威无天然信任，也不过度依赖个人经验，把两者都视为"有噪音的来源"。</div>
+    </div>
+
+    <div class="verify-grid">
+      <div class="verify defensive reveal">
+        <h4>防御性校验<br>Defensive Verification</h4>
+        <p>当前体系倾向：数据 → 逻辑 → 修正。当逻辑模型与数据冲突时，先质疑数据质量（真实性、样本偏差），再检视逻辑是否普适。</p>
+        <div class="v-flow">优点：识别统计误导 · 抵抗群体错误 · 坚持结构思维</div>
+        <div class="v-flow" style="color:var(--cool)">风险：模型逐渐成为"自我认同结构"，数据从检验工具变成对手——长期维护自洽。</div>
+      </div>
+      <div class="verify falsifiable reveal">
+        <h4>主动可证伪结构<br>Active Falsifiability</h4>
+        <p>更强的体系：模型生成预测 → 主动寻找反例 → 预设模型失败条件 → 提前定义放弃阈值。</p>
+        <div class="v-flow">关键问题："如果出现 A / B / C 情况，我将放弃这个判断"——你是否明确写下过这句话？</div>
+        <div class="v-flow" style="color:var(--amber)">下一步不是调整排序，而是定义"何时放弃一个你高度认同的逻辑模型"。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 结尾 ============ -->
+<section class="ending" id="ending">
+  <div class="ending-bg"><img src="https://aka.doubaocdn.com/s/v4RDzUmbLC" alt="中心发光同心环背景"></div>
+  <div class="ending-inner">
+    <div class="e-lbl reveal">最后一句总结 · THE LAST WORD</div>
+    <blockquote class="reveal">判断体系的终点，<span class="hl">不是确定性</span>，<br>而是对<span class="hl">不确定性的从容</span>。</blockquote>
+    <p class="e-sub reveal">那时，"强"这个字可能会自动消失——你不必再证明自己强大，你只是在结构清晰地思考。</p>
+    <div class="e-concl reveal">记忆在外 · 计算在外 · 资料在外<br>但意义在内 —— <span style="color:var(--paper)">半径变大，中心更重要</span></div>
+    <div class="e-src reveal">内容整理自《AI 与个人边界变化》多轮思辨对话 · 结构为对话提炼，能力曲线为示意表达<br>核心：如果中心空洞，扩张毫无意义；如果中心清晰，AI 会让它更锋利。</div>
+  </div>
+</section>
+
+<footer>
+  边界·对话 | 以结构自洽为灯，以不确定为昼
+</footer>
+
+<script>
+  // ===== 滚动进度条与导航高亮 =====
+  var bar = document.getElementById('progress');
+  function onScroll(){
+    var st = window.scrollY || document.documentElement.scrollTop;
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.width = (h>0 ? (st/h*100) : 0) + '%';
+    var links = document.querySelectorAll('#navlinks a');
+    var cur = '';
+    document.querySelectorAll('section[id],header[id]').forEach(function(sec){
+      if(st >= sec.offsetTop - 180) cur = sec.id;
+    });
+    links.forEach(function(a){
+      a.classList.toggle('on', a.getAttribute('href') === '#' + cur);
+    });
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  // ===== 入场动效 =====
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, {threshold:.12});
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+</script>
+</body>
+</html>

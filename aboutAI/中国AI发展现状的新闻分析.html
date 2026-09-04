@@ -1,0 +1,880 @@
+<!-- by:豆包 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>中国AI领跑？——一则新闻的叙事解剖</title>
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap">
+<style>
+  /* ============ 基础 ============ */
+  :root{
+    --ink:#0d0d0f;          /* 墨黑 */
+    --ink-2:#121216;
+    --panel:#16161a;        /* 面板深灰 */
+    --panel-2:#1c1c22;
+    --red:#C8102E;          /* 中国红 */
+    --red-deep:#8f0b21;
+    --gold:#E8B64C;         /* 鎏金 */
+    --paper:#EDEDED;        /* 米白 */
+    --dim:#9a9aa3;          /* 弱化灰 */
+    --dim-2:#6f6f78;
+    --line:rgba(232,182,76,.18);
+    --line-red:rgba(200,16,46,.35);
+    --serif:"Noto Serif SC","Songti SC","STSong","SimSun",serif;
+    --sans:"Noto Sans SC","PingFang SC","Microsoft YaHei","Hiragino Sans GB",sans-serif;
+    --mono:ui-monospace,"SF Mono","SFMono-Regular",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:var(--sans);
+    font-weight:300;
+    line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--red);color:#fff}
+  img{display:block;max-width:100%}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 32px}
+
+  /* 背景网格纹理 */
+  .grid-bg{
+    background-image:
+      linear-gradient(rgba(232,182,76,.05) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(232,182,76,.05) 1px,transparent 1px);
+    background-size:56px 56px;
+  }
+
+  /* ============ 顶部导航 ============ */
+  .topnav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    background:rgba(13,13,15,.82);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    border-bottom:1px solid rgba(232,182,76,.14);
+    transition:background .3s;
+  }
+  .topnav-inner{
+    max-width:1240px;margin:0 auto;padding:14px 32px;
+    display:flex;align-items:center;gap:28px;
+  }
+  .brand{display:flex;align-items:center;gap:12px;font-family:var(--serif);font-weight:700;font-size:17px;letter-spacing:.12em;white-space:nowrap}
+  .brand .seal{width:26px;height:26px;background:var(--red);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-family:var(--serif);transform:rotate(-2deg)}
+  .navlinks{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
+  .navlinks a{padding:6px 12px;font-size:13.5px;color:var(--dim);letter-spacing:.05em;border-radius:2px;transition:color .2s,background .2s}
+  .navlinks a:hover{color:var(--gold)}
+  .navlinks a.on{color:var(--paper);background:rgba(200,16,46,.16)}
+  .progress{position:fixed;top:0;left:0;height:2px;background:var(--red);z-index:101;width:0;box-shadow:0 0 12px rgba(200,16,46,.7)}
+
+  /* ============ Hero ============ */
+  .hero{
+    position:relative;min-height:100vh;
+    display:flex;align-items:center;justify-content:center;text-align:center;
+    padding:140px 24px 90px;overflow:hidden;
+  }
+  .hero-bg{position:absolute;inset:0;z-index:0}
+  .hero-bg img{width:100%;height:100%;object-fit:cover;object-position:center}
+  .hero-bg::after{content:"";position:absolute;inset:0;background:
+    radial-gradient(ellipse at 50% 40%,rgba(13,13,15,.25) 0%,rgba(13,13,15,.82) 78%,var(--ink) 100%)}
+  .hero-inner{position:relative;z-index:2;max-width:980px}
+  .hero .eyebrow{
+    display:inline-flex;align-items:center;gap:12px;
+    font-family:var(--mono);font-size:12.5px;letter-spacing:.34em;color:var(--gold);
+    text-transform:uppercase;margin-bottom:34px;
+  }
+  .hero .eyebrow::before,.hero .eyebrow::after{content:"";width:44px;height:1px;background:rgba(232,182,76,.5)}
+  .hero h1{
+    font-family:var(--serif);font-weight:900;font-size:clamp(40px,7vw,88px);
+    line-height:1.12;letter-spacing:.04em;color:#fff;
+  }
+  .hero h1 .q{color:var(--red)}
+  .hero .sub{
+    margin:30px auto 0;max-width:640px;font-size:clamp(15px,2vw,19px);
+    color:var(--dim);letter-spacing:.06em;line-height:2;
+  }
+  .hero .sub b{color:var(--gold);font-weight:500}
+  .hero .meta{
+    margin-top:44px;display:flex;justify-content:center;gap:0;flex-wrap:wrap;
+    font-family:var(--mono);font-size:12px;color:var(--dim-2);letter-spacing:.08em;
+  }
+  .hero .meta span{padding:0 18px;border-right:1px solid rgba(232,182,76,.22)}
+  .hero .meta span:last-child{border-right:none}
+  .hero .scroll-hint{
+    position:absolute;bottom:30px;left:50%;transform:translateX(-50%);z-index:2;
+    color:var(--dim-2);font-size:11px;letter-spacing:.4em;font-family:var(--mono);
+    animation:hint 2.2s ease-in-out infinite;
+  }
+  @keyframes hint{0%,100%{opacity:.35}50%{opacity:1}}
+
+  /* ============ 章节通用 ============ */
+  section.chapter{padding:120px 0;position:relative}
+  .chapter-head{margin-bottom:64px}
+  .chapter-kicker{
+    display:flex;align-items:center;gap:16px;margin-bottom:20px;
+    font-family:var(--mono);font-size:12px;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;
+  }
+  .chapter-kicker .num{color:var(--red);letter-spacing:.1em}
+  .chapter-kicker::after{content:"";height:1px;flex:0 0 60px;background:rgba(232,182,76,.3)}
+  .chapter-head h2{
+    font-family:var(--serif);font-weight:900;font-size:clamp(30px,4.4vw,52px);
+    letter-spacing:.04em;line-height:1.2;color:#fff;
+  }
+  .chapter-head h2 .hl{color:var(--red)}
+  .chapter-lead{max-width:760px;margin-top:22px;color:var(--dim);font-size:16.5px;line-height:2}
+  .chapter-lead b{color:var(--paper);font-weight:500}
+  .seal{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:52px;height:52px;background:var(--red);color:#fff;
+    font-family:var(--serif);font-weight:900;font-size:24px;
+    transform:rotate(-2.5deg);flex:none;
+    box-shadow:inset 0 0 0 2px rgba(0,0,0,.22),inset 0 0 0 3.5px rgba(255,255,255,.18);
+  }
+  .chapter-head .head-row{display:flex;align-items:center;gap:24px}
+  .chapter-head .head-txt{flex:1}
+
+  /* ============ 1 新闻本体 ============ */
+  .news-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:stretch}
+  .news-card{
+    background:var(--panel);border:1px solid var(--line);
+    padding:40px 40px 36px;position:relative;
+  }
+  .news-card .tag{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.22em;color:var(--gold);border:1px solid var(--line);padding:4px 10px;margin-bottom:24px}
+  .news-card h3{font-family:var(--serif);font-weight:700;font-size:26px;line-height:1.5;letter-spacing:.02em}
+  .news-card .src{font-family:var(--mono);font-size:11.5px;color:var(--dim-2);margin:16px 0 20px;letter-spacing:.08em}
+  .news-card p{font-size:15px;color:#c8c8cf;line-height:1.95}
+  .news-card .verified{
+    margin-top:26px;padding-top:18px;border-top:1px dashed rgba(232,182,76,.3);
+    display:flex;align-items:center;gap:10px;font-size:13px;color:var(--gold);
+  }
+  .stamp{
+    display:inline-flex;align-items:center;justify-content:center;
+    border:2px solid rgba(232,182,76,.75);color:var(--gold);
+    font-family:var(--serif);font-weight:700;font-size:11px;letter-spacing:.18em;
+    padding:3px 8px;transform:rotate(-2deg);
+  }
+  .data-panel{
+    background:linear-gradient(160deg,var(--panel) 0%,var(--ink-2) 100%);
+    border:1px solid var(--line);padding:36px 34px;
+  }
+  .data-panel .panel-title{font-family:var(--serif);font-size:15px;letter-spacing:.14em;color:var(--gold);margin-bottom:8px;display:flex;align-items:center;gap:10px}
+  .data-panel .panel-title::before{content:"";width:6px;height:6px;background:var(--red)}
+  .data-panel .panel-note{font-size:12.5px;color:var(--dim-2);margin-bottom:26px}
+  .kpis{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:rgba(232,182,76,.12)}
+  .kpi{background:var(--ink-2);padding:26px 22px;position:relative;overflow:hidden}
+  .kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--red);opacity:.85}
+  .kpi .val{font-family:var(--serif);font-weight:900;font-size:44px;color:#fff;line-height:1.1;letter-spacing:.01em}
+  .kpi .val .unit{font-size:17px;color:var(--gold);margin-left:3px;font-weight:700}
+  .kpi .lbl{font-size:13px;color:var(--dim);margin-top:8px;letter-spacing:.06em}
+  .kpi .en{font-family:var(--mono);font-size:10.5px;color:var(--dim-2);letter-spacing:.12em;margin-top:3px}
+
+  /* ============ 2 理性解读 ============ */
+  .insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+  .insight{
+    background:var(--panel);border:1px solid var(--line);padding:36px 34px;
+    position:relative;transition:transform .3s,border-color .3s;
+  }
+  .insight:hover{transform:translateY(-4px);border-color:var(--line-red)}
+  .insight .i-top{display:flex;align-items:center;gap:16px;margin-bottom:20px}
+  .insight .i-seal{width:44px;height:44px;background:var(--red);color:#fff;font-family:var(--serif);font-weight:900;font-size:18px;display:flex;align-items:center;justify-content:center;transform:rotate(-2deg);flex:none}
+  .insight h4{font-family:var(--serif);font-weight:700;font-size:21px;letter-spacing:.02em}
+  .insight p{font-size:14.5px;color:#c2c2ca;line-height:1.95}
+  .insight .foot{margin-top:18px;padding-top:14px;border-top:1px solid rgba(232,182,76,.16);font-size:13px;color:var(--gold)}
+
+  /* ============ 3 风险 ============ */
+  .risk-zone{background:linear-gradient(180deg,rgba(200,16,46,.06),rgba(13,13,15,0) 60%),var(--ink)}
+  .risk-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+  .risk{
+    background:rgba(22,22,26,.72);border:1px solid var(--line-red);
+    padding:34px 32px;position:relative;
+  }
+  .risk::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--red)}
+  .risk .r-idx{font-family:var(--mono);font-size:12px;color:var(--red);letter-spacing:.2em;margin-bottom:14px}
+  .risk h4{font-family:var(--serif);font-weight:700;font-size:20px;color:#f0e6e8;margin-bottom:14px;letter-spacing:.02em}
+  .risk p{font-size:14.5px;color:#c9c2c5;line-height:1.95}
+
+  /* ============ 4 叙事解构 ============ */
+  .narr-zone{background:var(--ink-2)}
+  .narr-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;align-items:stretch}
+  .narr{background:var(--panel);border:1px solid var(--line);padding:38px 32px;display:flex;flex-direction:column}
+  .narr .n-no{font-family:var(--serif);font-weight:900;font-size:15px;color:var(--red);letter-spacing:.3em;margin-bottom:18px}
+  .narr h4{font-family:var(--serif);font-weight:700;font-size:21px;margin-bottom:18px;letter-spacing:.02em;line-height:1.45}
+  .narr ul{list-style:none}
+  .narr li{font-size:14px;color:#c2c2ca;line-height:1.9;padding-left:18px;position:relative;margin-bottom:10px}
+  .narr li::before{content:"";position:absolute;left:0;top:11px;width:7px;height:7px;background:var(--red);transform:rotate(45deg)}
+  .narr .quote{
+    margin-top:auto;padding-top:20px;border-top:1px solid rgba(232,182,76,.2);
+    font-family:var(--serif);font-size:14.5px;color:var(--gold);line-height:1.9;
+  }
+  .narr .quote i{font-style:normal}
+  .triptych{margin-top:34px;display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line)}
+  .triptych .tp{padding:26px 28px;background:rgba(13,13,15,.5)}
+  .triptych .tp + .tp{border-left:1px solid var(--line)}
+  .triptych .tp .tp-lbl{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--dim-2);margin-bottom:10px}
+  .triptych .tp .tp-t{font-family:var(--serif);font-weight:700;font-size:18px;color:#fff}
+  .triptych .tp.red .tp-t{color:var(--red)}
+
+  /* ============ 5 中美对比 ============ */
+  .cnus{
+    position:relative;border:1px solid var(--line);overflow:hidden;
+    display:grid;grid-template-columns:1fr 1fr;
+    background-image:url('https://aka.doubaocdn.com/s/2JtT9ZfgFr');
+    background-size:cover;background-position:center;
+  }
+  .cnus::before{content:"";position:absolute;inset:0;background:rgba(13,13,15,.62);z-index:0}
+  .cnus .side{padding:52px 46px;position:relative;z-index:1}
+  .cnus .side.cn{background:linear-gradient(150deg,rgba(200,16,46,.22),rgba(13,13,15,.35) 62%)}
+  .cnus .side.us{background:linear-gradient(150deg,rgba(26,42,66,.3),rgba(13,13,15,.4) 70%)}
+  .cnus .side .flag{display:flex;align-items:center;gap:14px;margin-bottom:26px}
+  .cnus .side .flag .flag-icon{width:42px;height:42px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-weight:900;font-size:15px}
+  .cn .flag-icon{background:var(--red);color:#fff}
+  .us .flag-icon{background:#1f3a5f;color:#fff;border:1px solid rgba(255,255,255,.25)}
+  .cnus .side h4{font-family:var(--serif);font-weight:900;font-size:27px;letter-spacing:.04em}
+  .cnus .side .side-sub{font-size:13px;color:var(--dim-2);font-family:var(--mono);letter-spacing:.16em;margin-top:6px}
+  .cnus .side ul{list-style:none;margin-top:26px}
+  .cnus .side li{display:flex;gap:14px;padding:14px 0;border-bottom:1px dashed rgba(232,182,76,.16);font-size:14.5px;color:#cfcfd6;line-height:1.7;align-items:flex-start}
+  .cnus .side li:last-child{border-bottom:none}
+  .cnus .side li .dot{flex:none;width:8px;height:8px;margin-top:9px;border-radius:50%}
+  .cn li .dot{background:var(--red)}
+  .us li .dot{background:#4d7cb8}
+  .cnus .divider{position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(232,182,76,.45);z-index:2}
+  .cnus .divider .mid{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    background:var(--ink);border:1px solid var(--gold);color:var(--gold);
+    font-family:var(--serif);font-weight:700;font-size:12px;letter-spacing:.2em;
+    padding:8px 12px;white-space:nowrap;
+  }
+  .axis-block{margin-top:40px;border:1px solid var(--line);padding:34px 36px;background:var(--panel)}
+  .axis-block .ax-title{font-family:var(--serif);font-size:15px;letter-spacing:.12em;color:var(--gold);margin-bottom:26px;display:flex;align-items:center;gap:10px}
+  .axis-block .ax-title::before{content:"";width:6px;height:6px;background:var(--red)}
+  .ax{display:flex;align-items:center;gap:16px;margin-bottom:20px}
+  .ax .ax-name{flex:0 0 150px;font-size:14px;color:#d6d6dc;text-align:right}
+  .ax .track{flex:1;position:relative;height:8px;background:linear-gradient(90deg,rgba(200,16,46,.55),rgba(28,28,34,.2) 45%,rgba(28,28,34,.2) 55%,rgba(77,124,184,.55));border-radius:2px}
+  .ax .track .mark{position:absolute;top:-6px;width:2px;height:20px;background:var(--gold)}
+  .ax .pos{flex:0 0 130px;font-size:11.5px;color:var(--dim-2);font-family:var(--mono);letter-spacing:.08em}
+  .cnus-note{margin-top:26px;font-size:12.5px;color:var(--dim-2);line-height:1.9;border-left:2px solid var(--line);padding-left:16px}
+
+  /* ============ 6 交锋 ============ */
+  .duel-head{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:56px;border:1px solid var(--line)}
+  .duel-head .who{padding:30px 34px}
+  .duel-head .who + .who{border-left:1px solid var(--line)}
+  .duel-head .who .w-role{font-family:var(--mono);font-size:11px;letter-spacing:.22em;margin-bottom:12px}
+  .duel-head .who.rev .w-role{color:var(--red)}
+  .duel-head .who.sup .w-role{color:var(--gold)}
+  .duel-head .who h5{font-family:var(--serif);font-weight:900;font-size:23px;margin-bottom:10px}
+  .duel-head .who p{font-size:13.5px;color:var(--dim);line-height:1.85}
+  .duel{margin-bottom:26px;display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);overflow:hidden}
+  .duel .d{position:relative;padding:34px 34px}
+  .duel .d + .d{border-left:1px solid var(--line)}
+  .duel .d .d-label{font-family:var(--mono);font-size:11px;letter-spacing:.2em;margin-bottom:14px}
+  .duel .d.rev{background:linear-gradient(150deg,rgba(200,16,46,.13),rgba(13,13,15,.4) 70%)}
+  .duel .d.sup{background:linear-gradient(150deg,rgba(232,182,76,.09),rgba(13,13,15,.4) 72%)}
+  .duel .d.rev .d-label{color:var(--red)}
+  .duel .d.sup .d-label{color:var(--gold)}
+  .duel .d h5{font-family:var(--serif);font-weight:700;font-size:19px;line-height:1.5;margin-bottom:16px}
+  .duel .d p{font-size:14px;color:#c6c6ce;line-height:1.95}
+  .duel .d .why{margin-top:16px;padding-top:14px;border-top:1px dashed rgba(232,182,76,.25);font-size:12.5px;color:var(--gold);line-height:1.8}
+  .duel .d.rev .why{color:#e8a9b4}
+  .crux{
+    margin-top:44px;position:relative;padding:52px 56px;text-align:center;
+    background:var(--panel);border:1px solid var(--line);
+    overflow:hidden;
+  }
+  .crux::before{content:"";position:absolute;left:0;top:0;right:0;height:3px;background:linear-gradient(90deg,var(--red),var(--gold),var(--red))}
+  .crux .c-lbl{font-family:var(--mono);font-size:12px;letter-spacing:.32em;color:var(--red);margin-bottom:22px}
+  .crux h4{font-family:var(--serif);font-weight:900;font-size:clamp(22px,3vw,32px);line-height:1.5;color:#fff}
+  .crux h4 .hl{color:var(--red)}
+  .crux .two{margin-top:30px;display:grid;grid-template-columns:1fr 1fr;gap:0}
+  .crux .two .c{font-size:15px;line-height:1.9;color:#cfcfd6;padding:0 26px}
+  .crux .two .c + .c{border-left:1px solid var(--line)}
+  .crux .two .c b{font-family:var(--serif);font-weight:700;font-size:16.5px;display:block;margin-bottom:8px}
+  .crux .two .c.rev b{color:#f0b7c0}
+  .crux .two .c.sup b{color:var(--gold)}
+
+  /* ============ 7 抽象 ============ */
+  .abst-zone{background:var(--ink-2)}
+  .abst-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+  .abst{background:var(--panel);border:1px solid var(--line);padding:44px 40px;position:relative}
+  .abst .a-tag{font-family:var(--mono);font-size:11px;letter-spacing:.24em;margin-bottom:22px}
+  .abst.rev .a-tag{color:var(--red)}
+  .abst.sup .a-tag{color:var(--gold)}
+  .abst h4{font-family:var(--serif);font-weight:900;font-size:24px;margin-bottom:24px;line-height:1.4}
+  .abst .formula{
+    font-family:var(--serif);font-weight:700;font-size:20px;letter-spacing:.02em;
+    padding:20px 22px;border:1px dashed rgba(232,182,76,.35);margin-bottom:20px;line-height:1.7;
+  }
+  .abst.rev .formula{color:#f2b8c1;border-color:rgba(200,16,46,.5)}
+  .abst.sup .formula{color:var(--gold)}
+  .abst p{font-size:14px;color:#c2c2ca;line-height:1.95;margin-bottom:14px}
+  .abst .bias{margin-top:26px;padding-top:20px;border-top:1px solid rgba(232,182,76,.18);font-size:13.5px;color:#d6d6dc;line-height:1.9}
+  .why-side{
+    margin-top:34px;display:grid;grid-template-columns:1fr 1fr;gap:0;
+    border:1px solid var(--line);background:var(--panel);
+  }
+  .why-side .ws{padding:36px 38px}
+  .why-side .ws + .ws{border-left:1px solid var(--line)}
+  .why-side .ws .ws-t{font-family:var(--serif);font-weight:700;font-size:19px;margin-bottom:12px;line-height:1.5}
+  .why-side .ws.rev .ws-t{color:#f0b7c0}
+  .why-side .ws.sup .ws-t{color:var(--gold)}
+  .why-side .ws p{font-size:14px;color:#c2c2ca;line-height:1.9}
+
+  /* ============ 结尾 ============ */
+  .ending{position:relative;padding:150px 0;text-align:center;overflow:hidden}
+  .ending-bg{position:absolute;inset:0;z-index:0}
+  .ending-bg img{width:100%;height:100%;object-fit:cover;object-position:center}
+  .ending-bg::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,rgba(13,13,15,.4) 0%,rgba(13,13,15,.86) 82%,var(--ink) 100%)}
+  .ending-inner{position:relative;z-index:2;max-width:920px;margin:0 auto}
+  .ending .e-lbl{font-family:var(--mono);font-size:12px;letter-spacing:.34em;color:var(--gold);margin-bottom:34px}
+  .ending blockquote{
+    font-family:var(--serif);font-weight:700;font-size:clamp(21px,3vw,32px);
+    line-height:1.85;color:#fff;letter-spacing:.02em;
+  }
+  .ending blockquote .hl{color:var(--red)}
+  .ending .e-concl{
+    margin-top:44px;padding:30px 36px;border:1px solid rgba(232,182,76,.3);
+    display:inline-block;font-family:var(--serif);font-size:clamp(16px,2vw,20px);
+    color:var(--gold);letter-spacing:.06em;line-height:1.9;text-align:left;
+  }
+  .ending .e-src{margin-top:40px;font-size:12px;color:var(--dim-2);letter-spacing:.08em;font-family:var(--mono)}
+
+  footer{padding:40px 0;border-top:1px solid rgba(232,182,76,.12);text-align:center;color:var(--dim-2);font-size:12.5px;letter-spacing:.1em}
+
+  /* ============ 入场动效 ============ */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s ease,transform .8s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){
+    .reveal{opacity:1;transform:none;transition:none}
+    html{scroll-behavior:auto}
+    .hero .scroll-hint{animation:none}
+  }
+
+  /* ============ 移动端 ============ */
+  @media (max-width:900px){
+    .news-grid,.insight-grid,.risk-grid,.abst-grid{grid-template-columns:1fr}
+    .narr-grid{grid-template-columns:1fr;gap:20px}
+    .triptych{grid-template-columns:1fr}
+    .triptych .tp + .tp{border-left:none;border-top:1px solid var(--line)}
+    .cnus{grid-template-columns:1fr}
+    .cnus .divider{display:none}
+    .duel{grid-template-columns:1fr}
+    .duel .d + .d{border-left:none;border-top:1px solid var(--line)}
+    .duel-head{grid-template-columns:1fr}
+    .duel-head .who + .who{border-left:none;border-top:1px solid var(--line)}
+    .crux .two{grid-template-columns:1fr}
+    .crux .two .c + .c{border-left:none;border-top:1px solid var(--line);padding-top:22px}
+    .why-side{grid-template-columns:1fr}
+    .why-side .ws + .ws{border-left:none;border-top:1px solid var(--line)}
+    .navlinks{display:none}
+    .kpis{grid-template-columns:1fr 1fr}
+    .kpi .val{font-size:34px}
+    section.chapter{padding:88px 0}
+    .wrap{padding:0 20px}
+    .ax .ax-name{flex:0 0 104px;font-size:12.5px}
+    .ax .pos{flex:0 0 96px;font-size:10.5px}
+    .cnus .side{padding:36px 26px}
+    .crux{padding:42px 24px}
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<!-- ============ 顶部导航 ============ -->
+<nav class="topnav">
+  <div class="topnav-inner">
+    <div class="brand"><span class="seal">叙</span>AI·叙事解剖</div>
+    <div class="navlinks" id="navlinks">
+      <a href="#news">新闻本体</a>
+      <a href="#insight">理性解读</a>
+      <a href="#risk">风险局限</a>
+      <a href="#narrative">叙事解构</a>
+      <a href="#cnus">中美对比</a>
+      <a href="#duel">交锋</a>
+      <a href="#abst">抽象</a>
+      <a href="#ending">结论</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ Hero ============ -->
+<header class="hero" id="top">
+  <div class="hero-bg"><img src="https://aka.doubaocdn.com/s/MethSStpv7" alt="中国AI 红黑抽象背景"></div>
+  <div class="hero-inner">
+    <div class="eyebrow">A Narrative Autopsy · 叙事解剖</div>
+    <h1>中国AI<span class="q">全面领跑</span>？</h1>
+    <p class="sub">一则官方新闻的<strong>思辨拆解</strong>：从<b>数据光环</b>，到<b>叙事底层逻辑</b>，再到"技术视角与系统视角"的<b>终极分歧</b>。</p>
+    <div class="meta">
+      <span>2026.02.03</span>
+      <span>来源 · 新华社 / 行业报告</span>
+      <span>多轮思辨对话整理</span>
+    </div>
+  </div>
+  <div class="scroll-hint">SCROLL</div>
+</header>
+
+<!-- ============ 1 新闻本体 ============ -->
+<section class="chapter" id="news">
+  <div class="wrap">
+    <div class="chapter-head reveal">
+      <div class="chapter-kicker"><span class="num">壹</span>新闻本体 · THE NEWS</div>
+      <div class="head-row">
+        <span class="seal">壹</span>
+        <div class="head-txt">
+          <h2>先看它说了什么：<span class="hl">量</span>的全面跃升</h2>
+          <p class="chapter-lead">这条新闻用三组指标描绘了中国 AI 的"全面领跑"——企业、产业、开源模型。它们是整场讨论的<b>起点与靶心</b>。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="news-grid">
+      <div class="news-card reveal">
+        <span class="tag">ORIGINAL REPORT</span>
+        <h3>中国AI全面领跑，专利与产业规模双突破</h3>
+        <p class="src">2026年2月3日 · 新华社 / 行业报告</p>
+        <p>最新数据显示，中国人工智能企业数量超 6000 家，核心产业规模预计突破 1.2 万亿元、同比增长近 30%。国产开源大模型全球累计下载量突破 100 亿次，在具身智能、柔性芯片等领域建立全球优势。中国 AI 已从跟跑、并跑进入领跑阶段，技术突破与产业应用形成良性循环。</p>
+        <div class="verified">
+          <span class="stamp">已核验</span>
+          <span>上述关键数据与新华社等多家官方稿件一致披露。</span>
+        </div>
+      </div>
+
+      <div class="data-panel reveal">
+        <div class="panel-title">核心指标 · KEY METRICS</div>
+        <div class="panel-note">报道所引用的硬数据（官方口径，已核验）</div>
+        <div class="kpis">
+          <div class="kpi"><div class="val" data-count="6000">0<span class="unit">+</span></div><div class="lbl">AI 企业数量（家）</div><div class="en">AI ENTERPRISES</div></div>
+          <div class="kpi"><div class="val" data-count="1.2" data-dec="1">0<span class="unit">万亿</span></div><div class="lbl">核心产业规模（元）</div><div class="en">CORE INDUSTRY SCALE</div></div>
+          <div class="kpi"><div class="val" data-count="30">0<span class="unit">%</span></div><div class="lbl">同比增速</div><div class="en">YOY GROWTH ≈</div></div>
+          <div class="kpi"><div class="val" data-count="100">0<span class="unit">亿+</span></div><div class="lbl">开源大模型累计下载（次）</div><div class="en">OPEN-SOURCE DOWNLOADS</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2 理性解读 ============ -->
+<section class="chapter grid-bg" id="insight">
+  <div class="wrap">
+    <div class="chapter-head reveal">
+      <div class="chapter-kicker"><span class="num">贰</span>理性解读 · READING</div>
+      <div class="head-row">
+        <span class="seal">贰</span>
+        <div class="head-txt">
+          <h2>数字背后：<span class="hl">读得懂</span>的增长，与<span class="hl">读不懂</span>的领先</h2>
+          <p class="chapter-lead">对新闻的冷静拆解指出：这些数据说明"<b>量</b>"在跃升，但<b>并不自动等于</b>"质"的领先。四个要点逐层展开。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="insight-grid">
+      <div class="insight reveal">
+        <div class="i-top"><span class="i-seal">01</span><h4>从"量"看：生态进入广泛扩张期</h4></div>
+        <p>企业数量、产业规模、下载量三组指标同时大幅增长，说明中国 AI 生态在创业、资本化与工程化落地方面进入广泛扩张期——这与政策、投资与市场需求的合力相符。</p>
+        <div class="foot">解读：从"跟跑 / 并跑"走向"领跑"的判断，建立在这组"量的共振"之上。</div>
+      </div>
+
+      <div class="insight reveal">
+        <div class="i-top"><span class="i-seal">02</span><h4>开源扩散：门槛降低 ≠ 质量同等</h4></div>
+        <p>开源大模型下载量巨大，能快速降低企业与开发者进入门槛，推动下游应用快速落地。但这种"广泛部署"并不等于同等质量，也不等于长期可持续的竞争优势。</p>
+        <div class="foot">解读：扩散速度快，是优势，也是需要打问号的地方。</div>
+      </div>
+
+      <div class="insight reveal">
+        <div class="i-top"><span class="i-seal">03</span><h4>专利领先 ≠ 底层技术全面领先</h4></div>
+        <p>专利数大幅增加说明研发投入与产出活跃，但专利的数量 / 质量、基础性与可部署性的比例，才决定其对全球竞争力的真实贡献。官方报道强调专利规模，却未逐条说明影响力与被引用情况。</p>
+        <div class="foot">解读：规模领先与"关键基础技术受制于人"可以同时为真。</div>
+      </div>
+
+      <div class="insight reveal">
+        <div class="i-top"><span class="i-seal">04</span><h4>良性循环已现，结构短板仍在</h4></div>
+        <p>大量应用与产业化促进资本与人才流入，形成短期良性循环；但底层——高端算力、EDA / 半导体、基础算法理论、可靠性与安全——仍需长期积累。</p>
+        <div class="foot">解读：循环是"短期的"，短板是"结构性的"。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3 风险 ============ -->
+<section class="chapter risk-zone" id="risk">
+  <div class="wrap">
+    <div class="chapter-head reveal">
+      <div class="chapter-kicker"><span class="num">叁</span>风险与局限 · CAUTION</div>
+      <div class="head-row">
+        <span class="seal" style="background:#8f0b21">叁</span>
+        <div class="head-txt">
+          <h2>光环之下的<span class="hl">四道阴影</span></h2>
+          <p class="chapter-lead">宏观数据不能替代对底层技术质量、专利实用性、供应链脆弱点与国际环境风险的审慎评估。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="risk-grid">
+      <div class="risk reveal">
+        <div class="r-idx">RISK · 01</div>
+        <h4>指标的"光环"效应</h4>
+        <p>数量指标容易被解读为整体领先，但质量、被引用度和标准制定权更重要。单看专利占比，可能掩盖"关键基础技术受制于人"的事实。</p>
+      </div>
+      <div class="risk reveal">
+        <div class="r-idx">RISK · 02</div>
+        <h4>"下载量＝全球影响力"需谨慎</h4>
+        <p>高下载量反映广泛采用或镜像分发，但不直接等于高商业化收入或对高端市场的控制力。部分下载可能来自自动镜像、边缘设备更新等非直接商业使用。</p>
+      </div>
+      <div class="risk reveal">
+        <div class="r-idx">RISK · 03</div>
+        <h4>产业链与算力瓶颈</h4>
+        <p>报告提到智能算力增长（如 1590 EFLOPS），但高端制程芯片、EDA 工具、极端工艺仍可能受外部制约；若外部供应受限，将影响长期自研与量产。</p>
+      </div>
+      <div class="risk reveal">
+        <div class="r-idx">RISK · 04</div>
+        <h4>地缘政治与"脱钩"风险</h4>
+        <p>在国际技术竞争与出口管控背景下，产业的外向型扩展与国际合作可能遇摩擦，需在"开放"与"安全"之间反复权衡。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4 叙事解构 ============ -->
+<section class="chapter narr-zone" id="narrative">
+  <div class="wrap">
+    <div class="chapter-head reveal">
+      <div class="chapter-kicker"><span class="num">肆</span>叙事底层逻辑 · UNDER THE STORY</div>
+      <div class="head-row">
+        <span class="seal">肆</span>
+        <div class="head-txt">
+          <h2>它为什么这样写？——<span class="hl">共识管理</span></h2>
+          <p class="chapter-lead">追问从"事实"转向"叙事"：这类报道的核心功能，并非严格的信息传递，而是对不确定现实进行<b>可接受解释</b>——在"短期可见成果"与"长期决定性优势"、以及"不由自己掌控的国际评价标准"之间，维持"我们走在正确路径上"的社会共识。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="narr-grid">
+      <div class="narr reveal">
+        <div class="n-no">逻辑一 · LOGIC 01</div>
+        <h4>「发展阶段论」的合法化框架</h4>
+        <ul>
+          <li>将"原创性不足"重新编码为"阶段性结构问题"——不是方向错，而是时间未到。</li>
+          <li>将"规模优势"上升为"未来技术优势的前置条件"——数据→应用→反馈→技术。</li>
+          <li>将"追赶路径"描述为"另一种现代化路径"——并非所有国家都必须先原创再走规模。</li>
+        </ul>
+        <div class="quote"><i>"我们现在还不够强" 与 "我们正在走向必然的强"，可以同时成立。</i></div>
+      </div>
+
+      <div class="narr reveal">
+        <div class="n-no">逻辑二 · LOGIC 02</div>
+        <h4>指标可见性偏置<br>Visibility Bias</h4>
+        <ul>
+          <li>所选指标三特征：可量化、可比较、短期可增长——企业数、规模、下载量、专利数。</li>
+          <li>被弱化的指标：基础理论原创性、算法范式全球影响、核心技术不可替代性。</li>
+          <li>因为它们不可快速证明、不可由单一主体确认、容易引入外部话语权。</li>
+        </ul>
+        <div class="quote"><i>选择"可见指标"，本质是降低认知成本与争议成本，换取更稳定的社会接受度。</i></div>
+      </div>
+
+      <div class="narr reveal">
+        <div class="n-no">逻辑三 · LOGIC 03</div>
+        <h4>「内外双受众」的折中表达</h4>
+        <ul>
+          <li>内部受众：需要信心、方向感、确定性，又不能否认短板（否则被专业圈层否定）。</li>
+          <li>外部受众：展示能力与规模，同时保留"仍在学习、并非威胁"的缓冲叙事。</li>
+          <li>由此形成典型的叙事层级分化。</li>
+        </ul>
+        <div class="quote"><i>这不是矛盾，而是叙事层级分化。</i></div>
+      </div>
+    </div>
+
+    <div class="triptych reveal">
+      <div class="tp"><div class="tp-lbl">标题 · HEADLINE</div><div class="tp-t red">强势 · 确定 · 上升</div></div>
+      <div class="tp"><div class="tp-lbl">正文 · BODY</div><div class="tp-t">条件 · 风险 · 提醒</div></div>
+      <div class="tp"><div class="tp-lbl">结论 · CONCLUSION</div><div class="tp-t">继续投入 · 保持开放</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5 中美对比 ============ -->
+<section class="chapter" id="cnus">
+  <div class="wrap">
+    <div class="chapter-head reveal">
+      <div class="chapter-kicker"><span class="num">伍</span>中美分野 · FIELD DIVISION</div>
+      <div class="head-row">
+        <span class="seal">伍</span>
+        <div class="head-txt">
+          <h2>"领跑"的<span class="hl">定义权</span>，握在谁手里</h2>
+          <p class="chapter-lead">文章反复提示一个关键分野：中国在<b>应用与规模</b>上建立优势，而在<b>底层技术与原创能力</b>上仍有差距；真正的技术主导权，常取决于"谁定义评测标准、谁控制主流框架、谁决定下游兼容成本"。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cnus reveal">
+      <div class="side cn">
+        <div class="flag"><span class="flag-icon">中</span><div><h4>量的优势</h4><div class="side-sub">CHINA · SCALE &amp; APPLICATION</div></div></div>
+        <ul>
+          <li><span class="dot"></span>应用落地与市场规模：6000+ 企业、1.2 万亿产业规模</li>
+          <li><span class="dot"></span>开源扩散速度：100 亿次下载带来的低门槛生态</li>
+          <li><span class="dot"></span>具身智能、柔性芯片等新兴领域建立全球优势</li>
+          <li><span class="dot"></span>政策支持 × 数据优势 × 市场需求的共振</li>
+          <li><span class="dot"></span>数据与工程化能力驱动的快速迭代</li>
+        </ul>
+      </div>
+      <div class="divider"><span class="mid">分野</span></div>
+      <div class="side us">
+        <div class="flag"><span class="flag-icon">美</span><div><h4>质的优势</h4><div class="side-sub">US / INTERNATIONAL · ORIGINALITY &amp; BASE</div></div></div>
+        <ul>
+          <li><span class="dot"></span>基础算法原创与范式突破（CNN、Transformer 等）</li>
+          <li><span class="dot"></span>高端算力、EDA / 半导体生态的完整链条</li>
+          <li><span class="dot"></span>国际评测标准与主流框架 / API 习惯的定义权</li>
+          <li><span class="dot"></span>前沿理论在全球学术生态中的影响力</li>
+          <li><span class="dot"></span>决定下游兼容成本的技术控制力</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="axis-block reveal">
+      <div class="ax-title">实力偏向示意 · BALANCE OF STRENGTH（定性，非数值）</div>
+      <div class="ax">
+        <div class="ax-name">应用与规模</div>
+        <div class="track"><span class="mark" style="left:78%"></span></div>
+        <div class="pos">偏中国</div>
+      </div>
+      <div class="ax">
+        <div class="ax-name">开源扩散</div>
+        <div class="track"><span class="mark" style="left:68%"></span></div>
+        <div class="pos">偏中国</div>
+      </div>
+      <div class="ax">
+        <div class="ax-name">基础算法原创</div>
+        <div class="track"><span class="mark" style="left:26%"></span></div>
+        <div class="pos">偏美国</div>
+      </div>
+      <div class="ax">
+        <div class="ax-name">算力 / EDA 生态</div>
+        <div class="track"><span class="mark" style="left:22%"></span></div>
+        <div class="pos">偏美国</div>
+      </div>
+      <div class="ax">
+        <div class="ax-name">标准与框架定义权</div>
+        <div class="track"><span class="mark" style="left:24%"></span></div>
+        <div class="pos">偏美国</div>
+      </div>
+      <p class="cnus-note">注：该对比为对原分析与公开讨论的定性归纳，用于呈现"量 / 质"与"应用 / 底层"的结构性分野，不涉及具体数值与排名。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6 交锋 ============ -->
+<section class="chapter grid-bg" id="duel">
+  <div class="wrap">
+    <div class="chapter-head reveal">
+      <div class="chapter-kicker"><span class="num">陆</span>双方交锋 · THE DUEL</div>
+      <div class="head-row">
+        <span class="seal">陆</span>
+        <div class="head-txt">
+          <h2>反驳者 <span class="hl">对决</span> 支持者</h2>
+          <p class="chapter-lead">刻意站在双方立场，<b>挑选对方最难化解的论点</b>——命中核心假设、否定其自洽性、且不依赖情绪判断。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="duel-head reveal">
+      <div class="who rev">
+        <div class="w-role">REBUTTAL · 技术视角</div>
+        <h5>反驳者</h5>
+        <p>把 AI 看作"认知技术问题"。关心算法范式是否原创、理论突破是否不可逆领先、是否掌握"下一次跃迁的钥匙"。</p>
+      </div>
+      <div class="who sup">
+        <div class="w-role">SUPPORT · 系统视角</div>
+        <h5>支持者</h5>
+        <p>把 AI 看作"社会—工业系统问题"。关心技术是否被广泛采用、是否形成自我强化的投入—产出循环、是否具备抗外部冲击的韧性。</p>
+      </div>
+    </div>
+
+    <div class="duel reveal">
+      <div class="d rev">
+        <div class="d-label">反驳 · 01</div>
+        <h5>"规模 → 原创转化"并非经验上成立的因果</h5>
+        <p>深度学习三次跃迁（CNN、Transformer、RLHF）均源于小团队的范式创新，而非大规模产业应用自然"涌现"；历史上"最大数据＋最大应用"的主体并未自动产生下一代核心范式。</p>
+        <div class="why">对方难以反驳：任何反驳都必须拿出"已发生的原创跃迁实例"，而非"未来可能"。</div>
+      </div>
+      <div class="d sup">
+        <div class="d-label">支持 · 01</div>
+        <h5>"技术竞争"不是纯学术竞赛，而是系统工程</h5>
+        <p>AI 的真实竞争力 = 算法 × 算力 × 数据 × 工程 × 市场。没有规模化应用，原创算法难以验证、优化、泛化；今日最具影响力的模型，并非算法最优，而是系统整合最强。</p>
+        <div class="why">对方难以反驳：算法脱离系统，无法成为产业力量。</div>
+      </div>
+    </div>
+
+    <div class="duel reveal">
+      <div class="d rev">
+        <div class="d-label">反驳 · 02</div>
+        <h5>专利与下载量是"滞后指标"，方向性错误</h5>
+        <p>AI 专利高度碎片化，关键算法思想往往无法或不值得专利化；高下载量（尤其开源）往往意味着快速扩散而非技术控制。主导权在于：谁定义评测标准、谁控制主流框架与 API 习惯、谁决定下游兼容成本。</p>
+        <div class="why">对方难以反驳：一旦承认"这些不是领先指标"，整套叙事的数据基础即被抽空。</div>
+      </div>
+      <div class="d sup">
+        <div class="d-label">支持 · 02</div>
+        <h5>在现实约束下，原创突破依赖"非原创阶段"</h5>
+        <p>所有技术强国在关键跃迁前，都经历过长期"吸收—工程化—再创新"阶段。外部技术封锁，决定了"从工程与应用反向逼近原创"是理性路径；在算力、制造、标准受限条件下，强调应用与规模是最可行的突破口。</p>
+        <div class="why">对方难以反驳：必须提出一个在现实约束下更优且可执行的路径。</div>
+      </div>
+    </div>
+
+    <div class="duel reveal">
+      <div class="d rev">
+        <div class="d-label">反驳 · 03</div>
+        <h5>"承认短板"不能修复"错误的主叙事"</h5>
+        <p>在标题与主线中强调"全面领跑"，在尾部补一句"需警惕短板"，并不能在逻辑上平衡前者。人类认知对标题与首因高度敏感，后置修正对整体判断影响极弱——这是方向性判断错误，而非程度判断偏差。</p>
+        <div class="why">对方难以反驳：这涉及叙事伦理与认知心理，而非技术细节。</div>
+      </div>
+      <div class="d sup">
+        <div class="d-label">支持 · 03</div>
+        <h5>新闻叙事服务的是"社会行动一致性"</h5>
+        <p>若在原创尚未突破前反复强调"并未领先"，将直接削弱投资、人才与政策连续性。技术发展存在路径依赖，信心与预期本身是生产要素；新闻并未否认短板，而是在保持主方向稳定的前提下暴露风险。</p>
+        <div class="why">对方难以反驳：这触及"社会系统如何运行"，而非"技术是否纯粹正确"。</div>
+      </div>
+    </div>
+
+    <div class="crux reveal">
+      <div class="c-lbl">真正的分歧点 · THE CRUX</div>
+      <h4>AI 的决定性优势，究竟来自<br><span class="hl">"认知与范式突破"</span>，还是<span class="hl">"规模化系统能力的累积"</span>？</h4>
+      <div class="two">
+        <div class="c rev"><b>反驳者</b>把错误的东西做得更大，只会更难纠正。</div>
+        <div class="c sup"><b>支持者</b>没有把东西做大，根本轮不到纠正。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 7 抽象 ============ -->
+<section class="chapter abst-zone" id="abst">
+  <div class="wrap">
+    <div class="chapter-head reveal">
+      <div class="chapter-kicker"><span class="num">柒</span>终极抽象 · THE ABSTRACTION</div>
+      <div class="head-row">
+        <span class="seal">柒</span>
+        <div class="head-txt">
+          <h2>这不是立场对错，<span class="hl">而是问题定义不同</span></h2>
+          <p class="chapter-lead">把分歧压缩到最小表达式：反驳者的出发点是"<b>不可被规模替代的部分</b>"，支持者的出发点是"<b>必须嵌入可运转现实系统才有意义</b>"。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="abst-grid">
+      <div class="abst rev reveal">
+        <div class="a-tag">REBUTTAL · 认知技术问题</div>
+        <h4>规模是乘数<br>原创是底数</h4>
+        <div class="formula">底数为 0，乘多少都无意义</div>
+        <p>反驳者关心的是：算法范式是否原创、理论突破是否具有不可逆领先、是否掌握"下一次跃迁的钥匙"。</p>
+        <div class="bias">在反驳者视角中，规模只是放大倍数，真正的价值锚点在"原创"这一底数上。</div>
+      </div>
+      <div class="abst sup reveal">
+        <div class="a-tag">SUPPORT · 社会工业系统问题</div>
+        <h4>原创是变量之一<br>系统稳定性是约束条件</h4>
+        <div class="formula">在约束下求最优，而非理论最优</div>
+        <p>支持者关心的是：技术是否被广泛采用、是否形成自我强化的投入—产出循环、是否具备抗外部冲击（封锁、脱钩）的韧性。</p>
+        <div class="bias">在支持者视角中，原创只是众多变量中的一个，系统不崩溃才是硬约束。</div>
+      </div>
+    </div>
+
+    <div class="why-side reveal">
+      <div class="ws rev">
+        <div class="ws-t">反驳者在回答</div>
+        <p>"技术会不会真赢"——更关心范式与原创。</p>
+      </div>
+      <div class="ws sup">
+        <div class="ws-t">支持者在回答</div>
+        <p>"社会能不能撑到赢"——更关心系统存续。</p>
+      </div>
+    </div>
+
+    <div class="why-side reveal">
+      <div class="ws rev">
+        <div class="ws-t">系统失败 = 不可承受风险</div>
+        <p>系统一旦失速或崩溃，一切技术路线都将失去载体，代价不可逆。</p>
+      </div>
+      <div class="ws sup">
+        <div class="ws-t">技术路线错误 = 可修正风险</div>
+        <p>选错技术路线仍可调整，系统仍在，还有纠错的机会。</p>
+      </div>
+    </div>
+
+    <div class="crux reveal">
+      <div class="c-lbl">为什么新闻叙事必然站在支持者一侧</div>
+      <h4>新闻系统天然服务于<br><span class="hl">"如何让系统不崩溃"</span>，<br>而不是<span class="hl">"如何在理论上选到最优技术路径"</span>。</h4>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 结尾 ============ -->
+<section class="ending" id="ending">
+  <div class="ending-bg"><img src="https://aka.doubaocdn.com/s/SMCFi0TVOU" alt="鎏金笔触印章背景"></div>
+  <div class="ending-inner">
+    <div class="e-lbl reveal">最后一句总结 · THE LAST WORD</div>
+    <blockquote class="reveal">
+      这类争论其实不是"谁更懂 AI"，而是把 AI 当作"科学问题"，还是当作"<span class="hl">国家级复杂系统工程</span>"。新闻叙事选择了后者——这在技术上可以被质疑，但在系统层面并非不理性。
+    </blockquote>
+    <div class="e-concl reveal">把"量的领先"，转为"质的不可替代性"。</div>
+    <div class="e-src reveal">内容整理自《中国AI发展现状的新闻分析》· 多轮思辨对话 · 数据口径以新华社及行业报告公开报道为准</div>
+  </div>
+</section>
+
+<footer>
+  红黑思辨 · AI 叙事解剖 | 以"量"为镜，以"质"为尺
+</footer>
+
+<script>
+  // ===== 滚动进度条 =====
+  var bar = document.getElementById('progress');
+  function onScroll(){
+    var st = window.scrollY || document.documentElement.scrollTop;
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.width = (h>0 ? (st/h*100) : 0) + '%';
+    // 导航高亮
+    var links = document.querySelectorAll('#navlinks a');
+    var cur = '';
+    document.querySelectorAll('section[id],header[id]').forEach(function(sec){
+      if(st >= sec.offsetTop - 160) cur = sec.id;
+    });
+    links.forEach(function(a){
+      a.classList.toggle('on', a.getAttribute('href') === '#' + cur);
+    });
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  // ===== 入场动效 =====
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, {threshold:.12});
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+
+  // ===== 数字滚动 =====
+  function animate(el){
+    var target = parseFloat(el.getAttribute('data-count'));
+    var dec = parseInt(el.getAttribute('data-dec') || '0', 10);
+    var dur = 1600, t0 = null;
+    function fmt(v){
+      return dec>0 ? v.toFixed(dec) : Math.round(v).toLocaleString('en-US');
+    }
+    function step(ts){
+      if(!t0) t0 = ts;
+      var p = Math.min((ts - t0) / dur, 1);
+      var ease = 1 - Math.pow(1-p, 3);
+      el.firstChild.textContent = fmt(target * ease);
+      if(p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  var vio = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ animate(e.target); vio.unobserve(e.target); }
+    });
+  }, {threshold:.5});
+  document.querySelectorAll('.kpi .val').forEach(function(el){ vio.observe(el); });
+</script>
+</body>
+</html>
