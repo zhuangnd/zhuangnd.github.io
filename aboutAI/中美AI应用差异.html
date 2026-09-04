@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>智能工具箱 / 智能体雏形 · 中美 AI 应用差异</title>
+<style>
+  :root {
+    --bg:#FAFAF8;
+    --card:#FFFFFF;
+    --ink:#1C1C1A;
+    --ink-2:#5F5E5A;
+    --ink-3:#8F8E87;
+    --line:rgba(0,0,0,.10);
+    --line-2:rgba(0,0,0,.06);
+
+    --us:#378ADD;
+    --us-bg:#F2F8FE;
+    --us-line:#B5D4F4;
+    --us-ink:#0C447C;
+
+    --cn:#BA7517;
+    --cn-bg:#FEF8EE;
+    --cn-line:#FAC775;
+    --cn-ink:#633806;
+
+    --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+
+    --r:16px;
+    --r-s:10px;
+    --pad:clamp(20px,4vw,44px);
+    --ease:cubic-bezier(.22,.61,.36,1);
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%;scroll-snap-type:y proximity;scroll-behavior:smooth}
+  body{
+    font-family:var(--sans);
+    background:var(--bg);
+    color:var(--ink);
+    line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+    background-image:repeating-linear-gradient(90deg,rgba(0,0,0,.028) 0 1px,transparent 1px 84px);
+  }
+  ::selection{background:#FAC775;color:#412402}
+
+  /* ---------- 滚动容器：一屏一卡的翻阅节奏 ---------- */
+  .card{
+    scroll-snap-align:start;
+    min-height:100svh;
+    display:flex;flex-direction:column;justify-content:center;
+    padding:clamp(56px,10vh,120px) var(--pad);
+    position:relative;
+  }
+  .card--short{min-height:76svh}
+  .wrap{max-width:1080px;margin-inline:auto;width:100%}
+
+  /* ---------- 进度条 ---------- */
+  .bar{position:fixed;top:0;left:0;height:2px;background:var(--cn);width:0;z-index:60;transition:width .12s linear}
+
+  /* ---------- 左侧层级指示 ---------- */
+  .rail{
+    position:fixed;left:clamp(12px,2vw,28px);top:50%;transform:translateY(-50%);
+    display:flex;flex-direction:column;gap:16px;z-index:50;
+  }
+  .rail__i{display:flex;align-items:center;gap:10px;cursor:pointer;background:none;border:0;padding:0;font-family:var(--sans)}
+  .rail__n{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;transition:color .3s var(--ease)}
+  .rail__d{width:16px;height:2px;background:var(--ink-3);opacity:.4;transition:all .3s var(--ease)}
+  .rail__i.on .rail__n{color:var(--ink);font-weight:600}
+  .rail__i.on .rail__d{width:28px;opacity:1;background:var(--ink)}
+
+  /* ---------- Hero ---------- */
+  .hero{min-height:100svh;display:flex;flex-direction:column;justify-content:center;padding:clamp(56px,10vh,120px) var(--pad);scroll-snap-align:start}
+  .hero__in{max-width:1080px;margin-inline:auto;width:100%}
+  .eyebrow{
+    font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--ink-3);
+    text-transform:uppercase;margin-bottom:clamp(20px,4vh,36px);
+    display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+  }
+  .eyebrow b{font-weight:500;color:var(--ink-2)}
+  .eyebrow s{text-decoration:none;color:var(--line);}
+
+  h1{
+    font-size:clamp(34px,6.2vw,74px);
+    line-height:1.14;font-weight:600;letter-spacing:-.02em;margin-bottom:clamp(20px,3.4vh,34px);
+  }
+  .h1a{color:var(--cn)} .h1b{color:var(--us)}
+  .h1s{color:var(--line);font-weight:300;margin:0 .28em}
+
+  .hero__sub{font-size:clamp(15px,1.6vw,19px);color:var(--ink-2);max-width:60ch;margin-bottom:clamp(28px,5vh,48px)}
+  .hero__sub em{font-style:normal;color:var(--ink);font-weight:600}
+
+  .who{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:clamp(28px,5vh,44px)}
+  .who span{
+    font-family:var(--mono);font-size:12px;letter-spacing:.04em;
+    padding:5px 12px;border-radius:999px;border:1px solid var(--line);color:var(--ink-2);background:var(--card);
+  }
+  .who span i{font-style:normal;color:var(--ink-3)}
+
+  .note{font-size:13px;color:var(--ink-3);border-left:2px solid var(--line);padding-left:14px;max-width:56ch}
+
+  .scrollcue{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.1em;margin-top:clamp(28px,5vh,48px)}
+
+  /* ---------- 层首卡 ---------- */
+  .layer{min-height:70svh}
+  .layer__n{font-family:var(--mono);font-size:clamp(56px,11vw,132px);line-height:.9;font-weight:500;color:var(--line);letter-spacing:-.04em}
+  .layer__t{font-size:clamp(26px,4.4vw,50px);font-weight:600;letter-spacing:-.02em;margin-top:-.1em}
+  .layer__d{font-size:clamp(14px,1.5vw,17px);color:var(--ink-2);max-width:52ch;margin-top:18px}
+
+  /* ---------- 内容卡 ---------- */
+  .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--ink-3);text-transform:uppercase;margin-bottom:14px}
+  h2{font-size:clamp(21px,2.9vw,34px);font-weight:600;letter-spacing:-.015em;line-height:1.3;margin-bottom:10px}
+  .lede{color:var(--ink-2);font-size:clamp(13.5px,1.35vw,16px);max-width:62ch;margin-bottom:clamp(24px,4vh,40px)}
+
+  /* 双栏对照 */
+  .cmp{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,1.8vw,24px);align-items:stretch}
+  .side{border-radius:var(--r);border:1px solid var(--line-2);display:flex;flex-direction:column}
+  .side__hd{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line-2)}
+  .tag{font-family:var(--mono);font-size:11px;letter-spacing:.1em;padding:3px 9px;border-radius:6px;font-weight:500}
+  .side__hd h3{font-size:16px;font-weight:600;letter-spacing:-.01em}
+
+  .side--us{background:var(--us-bg);border-color:var(--us-line)}
+  .side--us .tag{background:var(--us);color:#fff}
+  .side--us .side__hd h3{color:var(--us-ink)}
+  .side--us .side__hd{border-bottom-color:var(--us-line)}
+
+  .side--cn{background:var(--cn-bg);border-color:var(--cn-line)}
+  .side--cn .tag{background:var(--cn);color:#fff}
+  .side--cn .side__hd h3{color:var(--cn-ink)}
+  .side--cn .side__hd{border-bottom-color:var(--cn-line)}
+
+  /* 关键：两侧用不同的视觉密度呈现论点本身 */
+  .body{padding:22px 20px 24px;flex:1;display:flex;flex-direction:column}
+  .body--us{gap:16px}
+  .body--cn{gap:9px;padding:16px 16px 18px}
+
+  .pt{font-size:14.5px;line-height:1.7;display:flex;gap:10px;align-items:flex-start}
+  .pt::before{content:"";width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:10px}
+  .side--us .pt{color:#2A4560}
+  .side--us .pt::before{background:var(--us)}
+  .side--cn .pt{color:#5A3E14;font-size:13.5px;line-height:1.62}
+  .side--cn .pt::before{background:var(--cn)}
+
+  .chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:4px}
+  .chip{
+    font-size:11.5px;padding:4px 9px;border-radius:7px;line-height:1.5;
+    background:rgba(186,117,23,.13);color:var(--cn-ink);border:1px solid rgba(186,117,23,.22);
+  }
+  .chip--us{background:rgba(55,138,221,.10);color:var(--us-ink);border-color:rgba(55,138,221,.2)}
+
+  .spacer{flex:1;min-height:22px}
+
+  .quote{
+    margin-top:clamp(18px,3vh,28px);font-size:13.5px;line-height:1.75;color:var(--ink-2);
+    border-left:2px solid var(--line);padding:2px 0 2px 16px;max-width:74ch;
+  }
+  .quote b{font-weight:600;color:var(--ink-3);font-family:var(--mono);font-size:11px;letter-spacing:.08em;display:block;margin-top:6px}
+
+  /* 界面示意：US 极简 vs CN 高密度 */
+  .mock{border-radius:12px;border:1px solid var(--line-2);overflow:hidden;background:var(--card)}
+  .mock__bar{height:26px;border-bottom:1px solid var(--line-2);display:flex;align-items:center;gap:5px;padding:0 10px}
+  .mock__bar i{width:6px;height:6px;border-radius:50%;background:var(--line);display:block}
+  .mock__in{padding:20px 18px 22px}
+  .mock__in--cn{padding:13px 12px 14px}
+
+  .l{height:7px;border-radius:4px;background:var(--line);margin-bottom:12px}
+  .l.w78{width:78%} .l.w60{width:60%} .l.w44{width:44%} .l.w92{width:92%} .l.w86{width:86%} .l.w70{width:70%}
+  .l.us{background:var(--us-line)} .l.cn{background:var(--cn-line)}
+  .l.b{height:9px;background:var(--cn);opacity:.5}
+
+  .input{
+    height:34px;border-radius:9px;border:1px solid var(--us-line);background:#fff;
+    display:flex;align-items:center;padding:0 12px;margin-top:26px;
+  }
+  .input span{font-size:11.5px;color:var(--ink-3);font-family:var(--mono)}
+
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:9px 0 8px}
+  .blk{height:38px;border-radius:7px;background:rgba(186,117,23,.16);border:1px solid rgba(186,117,23,.2)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .blk--tall{height:26px}
+
+  /* 五因对照行 */
+  .rows{border:1px solid var(--line-2);border-radius:var(--r);overflow:hidden;background:var(--card)}
+  .row{display:grid;grid-template-columns:minmax(0,.82fr) minmax(0,1fr) minmax(0,1fr);border-bottom:1px solid var(--line-2)}
+  .row:last-child{border-bottom:0}
+  .row__t{
+    font-family:var(--mono);font-size:11px;letter-spacing:.05em;color:var(--ink-3);
+    padding:14px 16px;background:#FCFCFA;border-right:1px solid var(--line-2);
+    display:flex;align-items:center;
+  }
+  .row__c{padding:16px 18px;font-size:14px;line-height:1.68}
+  .row__c.us{color:#2A4560;background:var(--us-bg)}
+  .row__c.cn{color:#5A3E14;background:var(--cn-bg)}
+  .row__c b{font-weight:600;display:block;margin-bottom:3px;font-size:14.5px}
+
+  .polar{display:grid;grid-template-columns:1fr auto 1fr;gap:clamp(12px,2vw,26px);align-items:center;margin-bottom:clamp(22px,4vh,36px)}
+  .polar__s{border-radius:var(--r);padding:20px 22px;border:1px solid var(--line-2)}
+  .polar__s.us{background:var(--us-bg);border-color:var(--us-line)}
+  .polar__s.cn{background:var(--cn-bg);border-color:var(--cn-line)}
+  .polar__s h4{font-size:clamp(15px,1.7vw,19px);font-weight:600;letter-spacing:-.01em;margin-bottom:6px}
+  .polar__s.us h4{color:var(--us-ink)} .polar__s.cn h4{color:var(--cn-ink)}
+  .polar__s p{font-size:13.5px;line-height:1.65}
+  .polar__s.us p{color:#2A4560} .polar__s.cn p{color:#5A3E14}
+  .polar__v{font-family:var(--mono);font-size:12px;color:var(--ink-3);letter-spacing:.1em}
+
+  /* 幕后折叠卡 */
+  .behind{
+    border:1px solid var(--line);border-radius:var(--r);background:#FCFCFA;overflow:hidden;
+  }
+  .behind summary{
+    cursor:pointer;padding:18px 22px;list-style:none;
+    display:flex;align-items:center;gap:12px;
+    font-size:15px;font-weight:600;
+  }
+  .behind summary::-webkit-details-marker{display:none}
+  .behind summary:hover{background:#F7F6F2}
+  .behind .mark{
+    font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:#fff;background:var(--ink-3);
+    padding:3px 8px;border-radius:5px;
+  }
+  .behind .hint{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em}
+  .behind[open] .hint{visibility:hidden}
+  .behind__b{padding:4px 22px 24px;display:flex;flex-direction:column;gap:16px}
+  .raw{
+    font-family:var(--mono);font-size:13px;line-height:1.85;color:#3A3A36;
+    background:var(--card);border:1px solid var(--line-2);border-left:2px solid var(--cn-line);
+    border-radius:8px;padding:16px 18px;
+  }
+  .raw s{text-decoration:none;color:var(--cn-ink);font-weight:600}
+
+  /* 结语 */
+  .out{text-align:left}
+  .big{font-size:clamp(22px,3.4vw,40px);font-weight:600;line-height:1.36;letter-spacing:-.02em;max-width:22ch}
+  .big em{font-style:normal;color:var(--cn)} .big i{font-style:normal;color:var(--us)}
+  .conv{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,2vw,24px);margin-top:clamp(28px,5vh,48px)}
+  .conv__c{border:1px solid var(--line-2);border-radius:var(--r);padding:20px 22px;background:var(--card)}
+  .conv__c h5{font-size:13px;font-weight:600;margin-bottom:8px;font-family:var(--mono);letter-spacing:.04em}
+  .conv__c.us h5{color:var(--us-ink)} .conv__c.cn h5{color:var(--cn-ink)}
+  .conv__c p{font-size:13.5px;color:var(--ink-2);line-height:1.7}
+  .foot{margin-top:clamp(32px,6vh,60px);font-size:12.5px;color:var(--ink-3);line-height:1.8;max-width:66ch}
+
+  /* 入场动画 */
+  .rv{opacity:0;transform:translateY(18px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+  .rv.in{opacity:1;transform:none}
+
+  /* ---------- 响应式 ---------- */
+  @media (max-width:860px){
+    .rail{display:none}
+    .cmp,.conv{grid-template-columns:1fr}
+    .row{grid-template-columns:1fr}
+    .row__t{border-right:0;border-bottom:1px solid var(--line-2);padding:11px 16px}
+    .polar{grid-template-columns:1fr;gap:10px}
+    .polar__v{text-align:center;padding:2px 0}
+    .card{min-height:auto;padding:64px var(--pad)}
+    .card--short{min-height:auto}
+    .hero{min-height:auto;padding:88px var(--pad) 72px}
+    .layer{min-height:auto}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .rv{opacity:1;transform:none;transition:none}
+    .deck{scroll-snap-type:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="bar" id="bar"></div>
+
+<nav class="rail" id="rail" aria-label="章节导航">
+  <button class="rail__i" data-go="l1" type="button"><span class="rail__n">01</span><span class="rail__d"></span></button>
+  <button class="rail__i" data-go="l2" type="button"><span class="rail__n">02</span><span class="rail__d"></span></button>
+  <button class="rail__i" data-go="l3" type="button"><span class="rail__n">03</span><span class="rail__d"></span></button>
+  <button class="rail__i" data-go="l4" type="button"><span class="rail__n">EX</span><span class="rail__d"></span></button>
+</nav>
+
+<main class="deck" id="deck">
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="hero__in">
+    <p class="eyebrow">同一个问题 · 问了三个模型 <s>/</s> <b>ChatGPT</b> <s>·</s> <b>DeepSeek</b> <s>·</s> <b>Kimi</b></p>
+    <h1><span class="h1a">智能工具箱</span><span class="h1s">/</span><span class="h1b">智能体雏形</span></h1>
+    <p class="hero__sub">中美 AI 应用为什么长成两种样子 —— 从<em>看得见的界面</em>，一路拆到<em>改不了的约束</em>。</p>
+    <div class="who">
+      <span>界面 <i>interface</i></span>
+      <span>风格 <i>style</i></span>
+      <span>功能 <i>feature</i></span>
+      <span>用户偏好 <i>preference</i></span>
+      <span>市场定位 <i>positioning</i></span>
+    </div>
+    <p class="note">三个模型的答案骨架高度一致：现象 → 成因 → 约束。分歧只在切分方式，不在结论 —— 差异无优劣，是不同市场条件下的理性选择。</p>
+    <p class="scrollcue">向下滚动 · 逐卡翻阅</p>
+  </div>
+</header>
+
+<!-- ============ 01 表层 ============ -->
+<section class="card card--short layer rv" id="l1">
+  <div class="wrap">
+    <p class="layer__n">01</p>
+    <h2 class="layer__t">表层 · 看得见的差异</h2>
+    <p class="layer__d">界面、风格、功能组织。这是用户第一眼就能感知的部分，也是三个模型最先达成的共识。</p>
+  </div>
+</section>
+
+<!-- 卡 1 界面 -->
+<section class="card rv" data-sec="l1">
+  <div class="wrap">
+    <p class="kicker">01.1 / Interface</p>
+    <h2>界面与交互：留白，还是入口</h2>
+    <p class="lede">同样是一个对话框该放多少东西，两侧给出了相反的答案。下面两张示意图的密度差，本身就是论点。</p>
+
+    <div class="cmp">
+      <div class="side side--us">
+        <div class="side__hd"><span class="tag">US</span><h3>极简 · 单一路径</h3></div>
+        <div class="body body--us">
+          <div class="mock">
+            <div class="mock__bar"><i></i><i></i><i></i></div>
+            <div class="mock__in">
+              <div class="l w78 us"></div>
+              <div class="l w60 us"></div>
+              <div class="l w44 us"></div>
+              <div class="input"><span>说点什么…</span></div>
+            </div>
+          </div>
+          <p class="pt">界面极简，单一主任务路径清晰</p>
+          <p class="pt">强调「低认知负担」与沉浸体验</p>
+          <p class="pt">留白多、流程直接，几乎没有二级入口</p>
+          <div class="spacer"></div>
+        </div>
+      </div>
+
+      <div class="side side--cn">
+        <div class="side__hd"><span class="tag">CN</span><h3>高密 · 多入口</h3></div>
+        <div class="body body--cn">
+          <div class="mock">
+            <div class="mock__bar"><i></i><i></i><i></i></div>
+            <div class="mock__in mock__in--cn">
+              <div class="chips">
+                <span class="chip">写作</span><span class="chip">画图</span><span class="chip">PPT</span>
+                <span class="chip">表格</span><span class="chip">简历</span><span class="chip">翻译</span>
+                <span class="chip">搜索</span><span class="chip">文库</span><span class="chip">网盘</span>
+              </div>
+              <div class="grid3">
+                <div class="blk"></div><div class="blk"></div><div class="blk"></div>
+                <div class="blk"></div><div class="blk"></div><div class="blk"></div>
+              </div>
+              <div class="grid2">
+                <div class="blk blk--tall"></div><div class="blk blk--tall"></div>
+              </div>
+              <div class="l b w92" style="margin-top:9px"></div>
+              <div class="l b w70" style="margin-bottom:0"></div>
+            </div>
+          </div>
+          <p class="pt">信息密度高、功能入口多，强调「可用性与效率」</p>
+          <p class="pt">偏向超级应用结构，一键直达具体功能</p>
+          <p class="pt">常融合社交分享、话题榜、打赏等互动元素</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="quote">「ChatGPT 界面几乎只有对话框和历史记录列表；而文心一言首页通常集成搜索、画图、文档处理等入口，更像『瑞士军刀』。」<b>KIMI</b></p>
+  </div>
+</section>
+
+<!-- 卡 2 风格 -->
+<section class="card rv" data-sec="l1">
+  <div class="wrap">
+    <p class="kicker">01.2 / Style</p>
+    <h2>风格与表达：助手，还是工具</h2>
+    <p class="lede">一个把自己摆成「陪你聊的人」，一个把自己摆成「帮你干活的箱子」。</p>
+
+    <div class="cmp">
+      <div class="side side--us">
+        <div class="side__hd"><span class="tag">US</span><h3>助手化 · 对话导向</h3></div>
+        <div class="body body--us">
+          <p class="pt">强调通用智能、陪伴感与自然语言体验</p>
+          <p class="pt">回答结构化、分点式，逻辑严谨 —— 像「高效助手」</p>
+          <p class="pt">注重隐私提示与专业感，较少捆绑社交或娱乐模块</p>
+          <div class="spacer"></div>
+          <div class="chips">
+            <span class="chip chip--us">通用智能</span>
+            <span class="chip chip--us">对话连贯</span>
+            <span class="chip chip--us">冷静克制</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="side side--cn">
+        <div class="side__hd"><span class="tag">CN</span><h3>工具化 · 任务导向</h3></div>
+        <div class="body body--cn">
+          <p class="pt">强调解决具体问题：写文案、改简历、生成表格</p>
+          <p class="pt">语言更口语化、委婉，注重情感共鸣 —— 像「倾听者」</p>
+          <p class="pt">娱乐化与情感交互普遍：虚拟人直播、AI 伴侣、游戏化设计</p>
+          <p class="pt">视觉风格鲜艳、动效丰富，强调沉浸感与娱乐化</p>
+          <div class="chips">
+            <span class="chip">文案生成</span><span class="chip">表情包</span><span class="chip">短视频</span>
+            <span class="chip">AI 伴侣</span><span class="chip">虚拟直播</span><span class="chip">人情味</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="quote">中文语境更重视「人情味」和委婉表达，因此国产 AI 在情感计算和本土化梗理解上投入更多。<b>KIMI</b></p>
+  </div>
+</section>
+
+<!-- 卡 3 功能 -->
+<section class="card rv" data-sec="l1">
+  <div class="wrap">
+    <p class="kicker">01.3 / Feature</p>
+    <h2>功能组织：能力内核，还是场景闭环</h2>
+    <p class="lede">一个把能力做深再向外延展，一个把场景铺满再向内聚合。</p>
+
+    <div class="cmp">
+      <div class="side side--us">
+        <div class="side__hd"><span class="tag">US</span><h3>能力内核</h3></div>
+        <div class="body body--us">
+          <p class="pt">功能模块相对克制，通过插件或生态延展能力</p>
+          <p class="pt">API 优先、GPTs 生态 —— 把 AI 当「基础设施」</p>
+          <p class="pt">面向企业客户提供垂直行业解决方案</p>
+          <div class="spacer"></div>
+          <div class="chips">
+            <span class="chip chip--us">文本生成</span>
+            <span class="chip chip--us">代码编程</span>
+            <span class="chip chip--us">数据分析</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="side side--cn">
+        <div class="side__hd"><span class="tag">CN</span><h3>场景闭环</h3></div>
+        <div class="body body--cn">
+          <p class="pt">功能高度集成：办公、内容、搜索、插件、行业模板</p>
+          <p class="pt">深度绑定自有生态 —— 文心一言 × 百度网盘/百科，豆包 × 抖音短视频生成</p>
+          <p class="pt">本地生活整合：AI 嵌入购物、出行、外卖等场景</p>
+          <p class="pt">实时内容生成与本土化服务更强</p>
+          <div class="chips">
+            <span class="chip">办公</span><span class="chip">文库</span><span class="chip">电商</span>
+            <span class="chip">出行</span><span class="chip">外卖</span><span class="chip">行业模板</span>
+            <span class="chip">社交裂变</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 中层 ============ -->
+<section class="card card--short layer rv" id="l2">
+  <div class="wrap">
+    <p class="layer__n">02</p>
+    <h2 class="layer__t">中层 · 为什么会这样</h2>
+    <p class="layer__d">用户偏好、市场竞争、商业模式。表层差异不是审美偶然，而是这三股力量共同挤出来的形状。</p>
+  </div>
+</section>
+
+<!-- 卡 4 用户偏好 -->
+<section class="card rv" data-sec="l2">
+  <div class="wrap">
+    <p class="kicker">02.1 / Users</p>
+    <h2>用户偏好：容忍复杂，还是厌恶学习</h2>
+    <p class="lede">对「复杂度」的定价不同，直接塑造了「多入口 vs 单路径」「高密度 vs 极简」的设计分歧。</p>
+
+    <div class="cmp">
+      <div class="side side--us">
+        <div class="side__hd"><span class="tag">US</span><h3>重一致性 · 厌学习成本</h3></div>
+        <div class="body body--us">
+          <p class="pt">更重体验一致性与可解释性</p>
+          <p class="pt">对「学习成本」更敏感，接受功能渐进式展开</p>
+          <p class="pt">习惯「工具用完即走」，社交与工具的边界较清晰</p>
+          <p class="pt">为优质专业服务付费的意愿较强</p>
+          <div class="spacer"></div>
+        </div>
+      </div>
+
+      <div class="side side--cn">
+        <div class="side__hd"><span class="tag">CN</span><h3>重目标 · 容忍复杂</h3></div>
+        <div class="body body--cn">
+          <p class="pt">强目标导向、时间敏感</p>
+          <p class="pt">容忍复杂界面，以换取功能完整</p>
+          <p class="pt">偏好「立刻可用」的确定性结果</p>
+          <p class="pt">期待「一站式解决」，偏好免费 + 增值服务</p>
+          <p class="pt">对娱乐化、社交化有更高期待（AI 算命、AI 生成短视频）</p>
+          <p class="pt">对数据隐私的敏感度相对较低 —— 但近期在提升</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="quote">中美用户对「复杂度」的定价不同：一边愿意用学习成本换纯粹，一边愿意用界面复杂度换功能完整。<b>综合三个模型的表述</b></p>
+  </div>
+</section>
+
+<!-- 卡 5 市场竞争 -->
+<section class="card rv" data-sec="l2">
+  <div class="wrap">
+    <p class="kicker">02.2 / Market</p>
+    <h2>市场竞争：比谁多，还是比谁深</h2>
+    <p class="lede">竞争结构决定了产品必须拿什么去证明自己。</p>
+
+    <div class="cmp">
+      <div class="side side--us">
+        <div class="side__hd"><span class="tag">US</span><h3>技术叙事 · 长期信任</h3></div>
+        <div class="body body--us">
+          <p class="pt">更强调技术领先叙事：AGI、推理能力、模型规模</p>
+          <p class="pt">产品节奏相对克制，靠长期信任和生态扩展</p>
+          <p class="pt">市场更分散，垂直领域竞争激烈，AI 应用易作为独立工具存活</p>
+          <p class="pt">常通过技术优势或细分场景切入（写作、设计、编程）</p>
+          <div class="spacer"></div>
+        </div>
+      </div>
+
+      <div class="side side--cn">
+        <div class="side__hd"><span class="tag">CN</span><h3>红海 · 立竿见影</h3></div>
+        <div class="body body--cn">
+          <p class="pt">红海竞争激烈，新产品需要快速展示「我比你多什么」</p>
+          <p class="pt">To B / To C 边界模糊，强调「立竿见影的生产力」</p>
+          <p class="pt">互联网格局被少数超级 App 主导，AI 常作为现有平台的增强功能出现</p>
+          <p class="pt">独立 App 需快速获取流量，倾向多功能聚合与社交裂变</p>
+          <p class="pt">竞争环境催生「流量变现优先」的逻辑</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 卡 6 商业模式 -->
+<section class="card rv" data-sec="l2">
+  <div class="wrap">
+    <p class="kicker">02.3 / Business</p>
+    <h2>商业模式：解决方案集合，还是能力内核</h2>
+    <p class="lede">钱从哪来，产品就长成什么样。</p>
+
+    <div class="cmp">
+      <div class="side side--us">
+        <div class="side__hd"><span class="tag">US</span><h3>平台化 → 能力内核</h3></div>
+        <div class="body body--us">
+          <p class="pt">平台化、API、开发者生态 —— 倾向做「能力内核」</p>
+          <p class="pt">更早推行付费订阅制（如 ChatGPT Plus）</p>
+          <p class="pt">强调技术壁垒与高端用户价值，部分直接面向企业收费</p>
+          <p class="pt">以技术领先和全球化生态为核心壁垒</p>
+          <div class="spacer"></div>
+          <div class="chips">
+            <span class="chip chip--us">订阅制</span>
+            <span class="chip chip--us">API</span>
+            <span class="chip chip--us">开发者生态</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="side side--cn">
+        <div class="side__hd"><span class="tag">CN</span><h3>场景绑定 → 解决方案集合</h3></div>
+        <div class="body body--cn">
+          <p class="pt">订阅转化、企业付费、场景绑定 —— 倾向做「解决方案集合」</p>
+          <p class="pt">免费基础服务 + 内购增值，靠广告、电商导流、打赏变现</p>
+          <p class="pt">大厂将 AI 作为流量入口与生态粘合剂，功能必须「大而全」以覆盖变现场景</p>
+          <p class="pt">市场定位注重「普惠」与低门槛，覆盖更广年龄层</p>
+          <div class="chips">
+            <span class="chip">免费增值</span><span class="chip">广告</span><span class="chip">电商导流</span>
+            <span class="chip">打赏</span><span class="chip">积分制</span><span class="chip">生态反哺</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 底层 ============ -->
+<section class="card card--short layer rv" id="l3">
+  <div class="wrap">
+    <p class="layer__n">03</p>
+    <h2 class="layer__t">底层 · 改不了的约束</h2>
+    <p class="layer__d">制度环境与技术路径。前两层是选择，这一层更接近条件 —— 它决定了哪些选择在当初是可能的。</p>
+  </div>
+</section>
+
+<!-- 卡 7 监管 -->
+<section class="card rv" data-sec="l3">
+  <div class="wrap">
+    <p class="kicker">03.1 / Regulation</p>
+    <h2>监管与合规：前置审查，还是责任后置</h2>
+    <p class="lede">同一种技术，两侧被要求守的门不是同一扇。</p>
+
+    <div class="cmp">
+      <div class="side side--us">
+        <div class="side__hd"><span class="tag">US</span><h3>开放 · 通用 · 责任后置</h3></div>
+        <div class="body body--us">
+          <p class="pt">更强调开放性、通用性、责任后置</p>
+          <p class="pt">更关注数据隐私（GDPR 影响）、版权问题与伦理风险</p>
+          <p class="pt">监管侧重透明度与问责制，功能设计需规避法律争议</p>
+          <p class="pt">在训练数据透明度上更受关注</p>
+          <div class="spacer"></div>
+          <div class="chips">
+            <span class="chip chip--us">数据隐私</span>
+            <span class="chip chip--us">版权</span>
+            <span class="chip chip--us">伦理问责</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="side side--cn">
+        <div class="side__hd"><span class="tag">CN</span><h3>可控 · 场景明确 · 输出边界</h3></div>
+        <div class="body body--cn">
+          <p class="pt">更强调可控性、场景明确性、输出边界</p>
+          <p class="pt">对 AI 生成内容有严格的安全审查与合规要求，需前置审核与内置过滤</p>
+          <p class="pt">界面中常加入「AI 生成」「请谨慎辨别」等标识</p>
+          <p class="pt">在敏感话题处理、实时信息获取上策略更保守</p>
+          <p class="pt">政策鼓励 AI 与实体经济结合，推动产业应用</p>
+          <div class="chips">
+            <span class="chip">内容安全</span><span class="chip">前置审核</span><span class="chip">生成标识</span>
+            <span class="chip">实体经济</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="quote">这直接影响了功能的开放程度、内容风格与交互自由度。<b>CHATGPT</b></p>
+  </div>
+</section>
+
+<!-- 卡 8 技术路径 -->
+<section class="card rv" data-sec="l3">
+  <div class="wrap">
+    <p class="kicker">03.2 / Technology</p>
+    <h2>技术路径：往上堆应用，还是往下挖模型</h2>
+    <p class="lede">资源与禀赋不同，创新的着力点也就不同。</p>
+
+    <div class="cmp">
+      <div class="side side--us">
+        <div class="side__hd"><span class="tag">US</span><h3>模型能力的跃迁</h3></div>
+        <div class="body body--us">
+          <p class="pt">更偏「模型能力本身的跃迁」</p>
+          <p class="pt">在大语言模型、底层框架、企业服务上更具优势</p>
+          <p class="pt">开源生态（如 Hugging Face）推动开发者创新</p>
+          <p class="pt">追求通用人工智能，强调泛化能力与跨语言性能</p>
+          <div class="spacer"></div>
+        </div>
+      </div>
+
+      <div class="side side--cn">
+        <div class="side__hd"><span class="tag">CN</span><h3>应用层创新与工程整合</h3></div>
+        <div class="body body--cn">
+          <p class="pt">更偏「应用层创新」「工程整合能力」</p>
+          <p class="pt">在视觉 AI、短视频处理、实时交互等领域迭代快</p>
+          <p class="pt">受益于成熟的移动供应链与短视频生态</p>
+          <p class="pt">侧重垂直场景优化与本土化知识增强（成语、古文）</p>
+          <p class="pt">以「小而美」的专项能力弥补通用性的不足</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 番外 ============ -->
+<section class="card card--short layer rv" id="l4">
+  <div class="wrap">
+    <p class="layer__n">EX</p>
+    <h2 class="layer__t">番外 · 同一个市场里的异类</h2>
+    <p class="layer__d">追问：DeepSeek 与国内其他 AI App 也风格迥异，是功能定位、模型能力，还是别的原因？—— 由 DeepSeek 自答。</p>
+  </div>
+</section>
+
+<section class="card rv" data-sec="l4">
+  <div class="wrap">
+    <p class="kicker">EX.1 / Two Mindsets</p>
+    <h2>工程师思维，还是产品经理思维</h2>
+    <p class="lede">同样的市场、同样的监管，依然长出了两种东西 —— 说明差异不在环境，而在基因。</p>
+
+    <div class="polar">
+      <div class="polar__s us">
+        <h4>技术驱动 · 工程师思维</h4>
+        <p>相信核心技术优势本身就是最好的用户体验。追求效率与纯粹，像为「AI 原生用户」准备的专业工具。</p>
+      </div>
+      <div class="polar__v">VS</div>
+      <div class="polar__s cn">
+        <h4>市场驱动 · 产品经理思维</h4>
+        <p>相信用户要的是解决具体问题的「功能」，而非「技术」。致力于降低认知门槛、提供即时满足与情感价值。</p>
+      </div>
+    </div>
+
+    <div class="rows">
+      <div class="row">
+        <div class="row__t">01 产品哲学与目标用户</div>
+        <div class="row__c us"><b>生产力伙伴与思考工具</b>面向学生、研究者、开发者、专业工作者。理念接近「技术本身即体验」，信任用户自主探索场景。</div>
+        <div class="row__c cn"><b>全民 AI 助手</b>面向营销、内容创作者、普通消费者。用预制场景降低心智负担，强调开箱即用与娱乐性。</div>
+      </div>
+      <div class="row">
+        <div class="row__t">02 公司基因与技术路径</div>
+        <div class="row__c us"><b>研究机构背景</b>技术信仰强烈，以追求顶尖模型能力为核心驱动，产品是「模型能力直接外化」而非过度包装。</div>
+        <div class="row__c cn"><b>市场需求驱动</b>源自互联网公司，擅长用户运营、场景挖掘与快速迭代，把 AI 包装成大众认知里的「功能点」。</div>
+      </div>
+      <div class="row">
+        <div class="row__t">03 竞争切入策略</div>
+        <div class="row__c us"><b>回归 AI 本质</b>以免费、强大、无干扰的底层能力吸引高价值用户与开发者，建立技术口碑 —— 一种「基座化」思路。</div>
+        <div class="row__c cn"><b>在红海中正面竞争</b>靠功能丰富度、运营活动、本地化场景争夺用户时长与付费意愿，娱乐化与社交化是提频手段。</div>
+      </div>
+      <div class="row">
+        <div class="row__t">04 商业模式与长期愿景</div>
+        <div class="row__c us"><b>先要覆盖与生态</b>当前重点可能是最大化用户覆盖与开发者采用，应用本身可以承担「不赚钱」的角色。</div>
+        <div class="row__c cn"><b>明确的盈利压力</b>需更快验证变现路径，因此设计更直接的付费转化点，并探索广告、电商导流等成熟模式。</div>
+      </div>
+      <div class="row">
+        <div class="row__t">05 合规的呈现方式</div>
+        <div class="row__c us"><b>内化</b>将安全与合规约束内化在模型响应中，界面提示较少，力求对话自然流畅。</div>
+        <div class="row__c cn"><b>外显</b>出于风险控制或监管透明化要求，界面中更显眼地加入「AI 生成」标识，或设置更频繁的安全拦截提示。</div>
+      </div>
+    </div>
+
+    <p class="quote">在一片喧闹中，用专业感吸引真正有深度需求的用户，反而形成了高黏性壁垒 —— 那些被娱乐化 AI 吸引的用户，本来也不是他们的目标客户。<b>DEEPSEEK</b></p>
+  </div>
+</section>
+
+<!-- ============ 幕后 ============ -->
+<section class="card rv" data-sec="l4">
+  <div class="wrap">
+    <p class="kicker">Behind the answer</p>
+    <h2>幕后 · 模型自述</h2>
+    <p class="lede">文档里保留了一段罕见的东西：DeepSeek 在给出正式回答前的思考过程原文。它比整理后的答案更口语，也更有判断力。</p>
+
+    <details class="behind">
+      <summary><span class="mark">RAW</span>展开未经整理的思考过程<span class="hint">点击展开</span></summary>
+      <div class="behind__b">
+        <p class="raw">「嗯，用户问的是中美 AI 应用在界面、风格和功能上的差异是否源于用户偏好和市场定位。这个问题涉及到跨文化产品设计、市场竞争环境和技术发展路径的比较，需要从多个维度分析。」</p>
+        <p class="raw">「国内很多 AI 应用像<s>『热闹的游乐园』</s>—— 功能塞得满、娱乐性强、跟着热点跑；而 DeepSeek 更像<s>『安静的图书馆』</s>—— 界面干净、专注对话、不搞花哨玩意。这种反差其实比中美对比还鲜明。」</p>
+        <p class="raw">「用户可能没明说但会好奇的是：这种<s>『性冷淡风』</s>在中国市场能成功吗？我觉得这正是 DeepSeek 的聪明之处 —— 在一片喧闹中，用专业感吸引真正有深度需求的用户（学生、开发者、研究者），反而形成了高黏性壁垒。那些被娱乐化 AI 吸引的用户，本来也不是他们的目标客户。」</p>
+        <p class="raw" style="border-left-color:var(--line)">「总之，这不是简单的『定位不同』，而是从技术基因到产品哲学的系统性差异。DeepSeek 本质上在证明：在中国市场，极简和专业也能成为一种强大的竞争力。」</p>
+      </div>
+    </details>
+
+    <p class="quote">值得留意的是：这段自述预判了提问者没说出口的疑问，也给出了一个比正式回答更锋利的比喻。<b>编辑观察</b></p>
+  </div>
+</section>
+
+<!-- ============ 结语 ============ -->
+<section class="card rv out">
+  <div class="wrap">
+    <p class="kicker">Coda</p>
+    <p class="big">不是优劣之分，是不同市场环境下的 <em>产品—市场匹配</em>。</p>
+
+    <div class="conv">
+      <div class="conv__c cn">
+        <h5>中国路径正在补的课</h5>
+        <p>学习美国的付费深度服务模式，推出更多专业工具；同时持续提升长文本与逻辑推理能力，向「深对话」进化。</p>
+      </div>
+      <div class="conv__c us">
+        <h5>美国路径正在补的课</h5>
+        <p>增加插件生态、语音交互与可分享对话，并尝试融入更多社交传播与娱乐元素，向「重功能」靠拢。</p>
+      </div>
+    </div>
+
+    <p class="foot">
+      随着技术成熟与用户习惯变化，两种路径正在相互借鉴、逐步收敛 —— DeepSeek 可能逐步增加高需求的生产力模板，其他应用也会在模型底层能力上持续追赶。但本土化差异仍将长期存在。<br><br>
+      本页内容整理自 ChatGPT、DeepSeek、Kimi 于 2026 年 2 月对同一问题的回答，观点归属各自模型，页面仅做结构化呈现与对照编排。文中「US / CN」为分析标签，指代典型产品形态，不代表具体某一家公司。
+    </p>
+  </div>
+</section>
+
+</main>
+
+<script>
+(function () {
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* 卡片入场 */
+  var items = document.querySelectorAll('.rv');
+  if (reduce || !('IntersectionObserver' in window)) {
+    for (var i = 0; i < items.length; i++) items[i].classList.add('in');
+  } else {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { rootMargin: '-12% 0px -12% 0px', threshold: 0.05 });
+    for (var j = 0; j < items.length; j++) io.observe(items[j]);
+  }
+
+  /* 进度条 */
+  var bar = document.getElementById('bar');
+  /* 左侧层级指示 */
+  var railBtns = [].slice.call(document.querySelectorAll('.rail__i'));
+  var marks = ['l1', 'l2', 'l3', 'l4'].map(function (id) { return document.getElementById(id); });
+
+  var ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () {
+      var h = document.documentElement;
+      var max = h.scrollHeight - h.clientHeight;
+      var p = max > 0 ? h.scrollTop / max : 0;
+      bar.style.width = (p * 100).toFixed(2) + '%';
+
+      var probe = h.clientHeight * 0.42;
+      var cur = -1;
+      for (var k = 0; k < marks.length; k++) {
+        var m = marks[k];
+        if (m && m.getBoundingClientRect().top <= probe) cur = k;
+      }
+      for (var n = 0; n < railBtns.length; n++) {
+        railBtns[n].classList.toggle('on', n === cur);
+      }
+      ticking = false;
+    });
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  onScroll();
+
+  railBtns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      var t = document.getElementById(b.getAttribute('data-go'));
+      if (t) t.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    });
+  });
+})();
+</script>
+</body>
+</html>
