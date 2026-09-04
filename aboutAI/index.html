@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>半径越大，中心越重要 · 关于 AI 的六次追问</title>
+<style>
+:root{
+  --bg:#0B111C;
+  --bg-2:#111A2B;
+  --bg-3:#16202F;
+  --line:rgba(255,255,255,.11);
+  --line-2:rgba(255,255,255,.06);
+  --ink:#E9E4D8;
+  --ink-2:#A3AEBE;
+  --ink-3:#6E7A8C;
+  --l1:#A48BFF;
+  --l2:#5B9BC9;
+  --l3:#E8A33D;
+  --l4:#4FC8D9;
+  --font:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--font);font-size:15px;line-height:1.78;
+  -webkit-font-smoothing:antialiased;letter-spacing:.01em;
+}
+h1,h2,h3,p,ul{margin:0}
+ul{padding:0;list-style:none}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:940px;margin:0 auto;padding:0 28px}
+
+/* ---------- Hero ---------- */
+.hero{padding:78px 0 54px;text-align:center}
+.orb{width:min(268px,68vw);height:auto;display:block;margin:0 auto 30px}
+.rg{fill:none;stroke-width:1.6;transition:stroke-width .3s var(--ease),opacity .3s var(--ease)}
+.hit{fill:none;stroke:transparent;stroke-width:26;cursor:pointer}
+.orb__g{cursor:pointer}
+.orb__g:hover .rg,.orb__g.on .rg{stroke-width:3}
+.orb__g:hover .orb__lb,.orb__g.on .orb__lb{opacity:1}
+.orb__dot{fill:var(--ink-3);transition:fill .3s var(--ease)}
+.orb__g:hover .orb__dot,.orb__g.on .orb__dot{fill:var(--ink)}
+
+.hero__t{
+  font-size:clamp(28px,4.6vw,44px);font-weight:500;line-height:1.28;
+  letter-spacing:-.02em;margin-bottom:14px;
+}
+.hero__t em{font-style:normal;color:var(--ink-3);font-weight:400;margin:0 .3em}
+.hero__sub{font-size:15.5px;color:var(--ink-2);max-width:560px;margin:0 auto 22px}
+.hero__meta{
+  display:flex;justify-content:center;flex-wrap:wrap;
+  font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--ink-3);
+}
+.hero__meta span{padding:0 14px;border-left:1px solid var(--line)}
+.hero__meta span:first-child{border-left:0}
+
+/* ---------- 层标签（同心图下） ---------- */
+.lvs{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.lvbtn{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--ink-2);
+  background:var(--bg-2);border:1px solid var(--line);border-radius:99px;
+  padding:6px 14px;cursor:pointer;transition:border-color .25s var(--ease),color .25s var(--ease);
+  font-family:var(--mono);
+}
+.lvbtn:hover,.lvbtn.on{border-color:currentColor;color:var(--ink)}
+.lvbtn i{width:7px;height:7px;border-radius:50%;background:currentColor;flex:0 0 auto}
+
+/* ---------- 区块 ---------- */
+.sec{padding:56px 0;border-top:1px solid var(--line-2)}
+.sec__hd{display:flex;align-items:baseline;gap:12px;margin-bottom:10px}
+.sec__k{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;color:var(--ink-3)}
+.sec__t{font-size:clamp(19px,2.4vw,25px);font-weight:500;letter-spacing:-.01em}
+.sec__lede{font-size:15px;color:var(--ink-2);max-width:660px;margin-bottom:26px}
+.sec__lede b{font-weight:500;color:var(--ink)}
+
+/* ---------- 尺度轴 ---------- */
+.axis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.ax{
+  padding:16px 16px 18px;border-radius:12px;
+  background:var(--bg-2);border:1px solid var(--line);
+  border-top:2px solid var(--c);
+}
+.ax__n{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--c);margin-bottom:7px}
+.ax b{display:block;font-size:14.5px;font-weight:500;margin-bottom:5px}
+.ax p{font-size:12.5px;color:var(--ink-2);line-height:1.62}
+.axis__note{
+  margin-top:14px;padding:13px 16px;border-radius:10px;
+  background:var(--bg-3);border:1px solid var(--line-2);
+  font-size:13.5px;color:var(--ink-2);line-height:1.7;
+}
+.axis__note b{font-weight:500;color:var(--ink)}
+
+/* ---------- 三条关系 ---------- */
+.rel{display:grid;gap:12px}
+.rel__r{
+  display:grid;grid-template-columns:96px minmax(0,1fr);gap:18px;align-items:baseline;
+  padding:15px 0;border-bottom:1px solid var(--line-2);
+}
+.rel__r:first-child{border-top:1px solid var(--line)}
+.rel__r:last-child{border-bottom:1px solid var(--line)}
+.rel__k{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:var(--ink-3);padding-top:4px}
+.rel__b strong{display:block;font-size:15px;font-weight:500;margin-bottom:4px}
+.rel__b p{font-size:13.5px;color:var(--ink-2);line-height:1.68}
+.rel__b p b{font-weight:500;color:var(--ink)}
+
+/* ---------- 话题组 ---------- */
+.grp{margin-bottom:34px;scroll-margin-top:24px}
+.grp:last-child{margin-bottom:0}
+.grp__hd{display:flex;align-items:center;gap:11px;margin-bottom:14px}
+.grp__dot{width:9px;height:9px;border-radius:50%;background:var(--c);flex:0 0 auto}
+.grp__lv{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--ink-3)}
+.grp__line{flex:1;height:1px;background:var(--line-2)}
+.grp__cnt{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--ink-3)}
+
+.tpc{
+  position:relative;overflow:hidden;
+  background:var(--bg-2);border:1px solid var(--line);border-radius:14px;
+  padding:20px 24px 22px;margin-bottom:14px;
+}
+.tpc:last-child{margin-bottom:0}
+.tpc::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c)}
+.tpc__q{font-size:13.5px;color:var(--ink-3);margin-bottom:9px;line-height:1.65}
+.tpc__t{font-size:17.5px;font-weight:500;margin-bottom:7px;letter-spacing:-.01em}
+.tpc__q2{font-size:14.5px;color:var(--ink-2);margin-bottom:15px;line-height:1.7}
+.tpc__key{
+  display:inline-block;margin-bottom:16px;padding:8px 14px;border-radius:8px;
+  background:var(--bg-3);border:1px solid var(--line-2);
+  font-size:13.5px;color:var(--ink);line-height:1.6;
+}
+.tpc__key::before{content:"「";color:var(--c);margin-right:2px}
+.tpc__key::after{content:"」";color:var(--c);margin-left:2px}
+.tagline{
+  display:inline-flex;align-items:center;gap:7px;margin-left:10px;
+  font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--ink-3);
+  border:1px solid var(--line);border-radius:99px;padding:3px 10px;vertical-align:2px;
+}
+
+/* ---------- 入口 ---------- */
+.ents{display:grid;gap:9px}
+.ent{
+  --c:var(--l2);
+  display:grid;grid-template-columns:9px minmax(0,1fr) auto;gap:13px;align-items:center;
+  padding:13px 16px;border-radius:10px;
+  background:var(--bg-3);border:1px solid var(--line-2);
+  transition:border-color .25s var(--ease),background .25s var(--ease),transform .25s var(--ease);
+}
+.ent:hover{border-color:var(--c);background:#1B2740;transform:translateX(3px)}
+.ent__d{width:9px;height:9px;border-radius:50%;background:var(--c)}
+.ent__t{font-size:14.8px;line-height:1.5}
+.ent__t s{display:block;text-decoration:none;font-size:12.5px;color:var(--ink-3);margin-top:2px;line-height:1.55}
+.ent__a{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.1em;white-space:nowrap}
+.ent:hover .ent__a{color:var(--c)}
+
+/* ---------- 页脚 ---------- */
+.ft{
+  padding:40px 0 56px;border-top:1px solid var(--line-2);
+  font-size:12.5px;color:var(--ink-3);line-height:1.75;
+}
+.ft b{font-weight:500;color:var(--ink-2)}
+.ft__n{margin-top:10px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em}
+
+/* ---------- 入场 ---------- */
+.rv{opacity:0;transform:translateY(16px);transition:opacity .65s var(--ease),transform .65s var(--ease)}
+.rv.is-in{opacity:1;transform:none}
+
+/* ---------- 响应式 ---------- */
+@media (max-width:800px){
+  .axis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .hero{padding:52px 0 40px}
+  .orb{width:min(216px,60vw)}
+}
+@media (max-width:560px){
+  .wrap{padding:0 16px}
+  .axis{grid-template-columns:1fr}
+  .rel__r{grid-template-columns:1fr;gap:5px}
+  .rel__k{padding-top:0}
+  .tpc{padding:18px 16px 20px}
+  .ent{grid-template-columns:9px minmax(0,1fr);gap:11px}
+  .ent__a{grid-column:2;font-size:10.5px;margin-top:5px}
+  .sec{padding:42px 0}
+  .hero__meta span{padding:0 9px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .rv{opacity:1;transform:none;transition:none}
+  .ent:hover{transform:none}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <svg class="orb" id="orb" viewBox="0 0 280 280" role="img" aria-label="同心四层：由内到外依次为个体认知、个人边界与判断、社会结构、产业与国家，点击可跳到对应层级">
+      <g class="orb__g" data-lv="4">
+        <circle class="hit" cx="140" cy="140" r="122"/>
+        <circle class="rg" cx="140" cy="140" r="122" stroke="#4FC8D9"/>
+      </g>
+      <g class="orb__g" data-lv="3">
+        <circle class="hit" cx="140" cy="140" r="92"/>
+        <circle class="rg" cx="140" cy="140" r="92" stroke="#E8A33D"/>
+      </g>
+      <g class="orb__g" data-lv="2">
+        <circle class="hit" cx="140" cy="140" r="62"/>
+        <circle class="rg" cx="140" cy="140" r="62" stroke="#5B9BC9"/>
+      </g>
+      <g class="orb__g" data-lv="1">
+        <circle class="hit" cx="140" cy="140" r="34"/>
+        <circle class="rg" cx="140" cy="140" r="34" stroke="#A48BFF"/>
+      </g>
+      <circle class="orb__dot" cx="140" cy="140" r="4"/>
+    </svg>
+
+    <div class="lvs" id="lvs">
+      <button class="lvbtn" type="button" data-lv="1" style="color:#A48BFF"><i></i>L1 个体认知</button>
+      <button class="lvbtn" type="button" data-lv="2" style="color:#5B9BC9"><i></i>L2 个人边界与判断</button>
+      <button class="lvbtn" type="button" data-lv="3" style="color:#E8A33D"><i></i>L3 社会结构</button>
+      <button class="lvbtn" type="button" data-lv="4" style="color:#4FC8D9"><i></i>L4 产业与国家</button>
+    </div>
+
+    <h1 class="hero__t">半径越大<em>中心越重要</em></h1>
+    <p class="hero__sub">关于 AI 的六次追问。它们不是并列的 —— 从「我的大脑」一路问到「世界怎么运转」，越往外，答案越不确定。</p>
+    <div class="hero__meta">
+      <span>6 个话题</span>
+      <span>7 份阅读页</span>
+      <span>4 个尺度层级</span>
+    </div>
+  </div>
+</header>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="sec__hd"><span class="sec__k">主线</span><h2 class="sec__t">一条由内向外的尺度轴</h2></div>
+    <p class="sec__lede">六个话题可以按<b>「这件事离我多远」</b>排成四层。内层关乎"我会怎样"——可以自省、可以验证；外层只能观察和解读，而且没有定论。</p>
+    <div class="axis rv">
+      <div class="ax" style="--c:var(--l1)">
+        <div class="ax__n">L1</div>
+        <b>个体认知</b>
+        <p>AI 会不会让我的大脑退化。可以自我检验的一层。</p>
+      </div>
+      <div class="ax" style="--c:var(--l2)">
+        <div class="ax__n">L2</div>
+        <b>个人边界与判断</b>
+        <p>当 AI 成为第二大脑，人的边界在哪，判断该怎么组织。</p>
+      </div>
+      <div class="ax" style="--c:var(--l3)">
+        <div class="ax__n">L3</div>
+        <b>社会结构</b>
+        <p>AI 究竟拉平了差距，还是放大了差距。</p>
+      </div>
+      <div class="ax" style="--c:var(--l4)">
+        <div class="ax__n">L4</div>
+        <b>产业与国家</b>
+        <p>官方叙事怎么建构，产品形态为何分岔。</p>
+      </div>
+    </div>
+    <div class="axis__note rv"><b>由内到外，确定性递减。</b>越往外，能做的从"检验"退到"解读"，从"我该怎么办"退到"它为什么会是这样"。</div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="sec__hd"><span class="sec__k">关系</span><h2 class="sec__t">三条把话题串起来的线</h2></div>
+    <div class="rel rv">
+      <div class="rel__r">
+        <div class="rel__k">唯一的血缘</div>
+        <div class="rel__b">
+          <strong>「个人边界变化」长出了「个人判断体系」</strong>
+          <p>这两份是<b>同一场对话</b>：前者是原始问答，后者是把那次对话整理成的结构化笔记。所以两者的核心结论是同一句话的两种说法 —— 半径变大/中心更重要，就是<b>边界外移/核心稳定</b>。</p>
+        </div>
+      </div>
+      <div class="rel__r">
+        <div class="rel__k">5 : 1</div>
+        <div class="rel__b">
+          <strong>五份在观察，只有一份在立规矩</strong>
+          <p>六份里五份是<b>观察与解读</b>（AI 给的答案：会怎样、为什么），只有「个人判断体系」是<b>方法与规范</b>（人自己定的规则：我该怎么办）。它是唯一一份没有"提问对象"的文档。</p>
+        </div>
+      </div>
+      <div class="rel__r">
+        <div class="rel__k">一破一立</div>
+        <div class="rel__b">
+          <strong>解构别人的叙事，构建自己的判断</strong>
+          <p>「中国AI新闻分析」教你拆解一条新闻的叙事结构（共识管理、指标可见性偏置、双重受众），「个人判断体系」教你搭建自己的判断规则。<b>同一套认知工具的两面。</b></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="sec__hd"><span class="sec__k">目录</span><h2 class="sec__t">六个话题，七个入口</h2></div>
+    <p class="sec__lede">按尺度层级排列。点标题进入阅读页 —— 都是本地单文件，无需联网。</p>
+
+    <!-- L1 -->
+    <div class="grp" id="L1" style="--c:var(--l1)">
+      <div class="grp__hd">
+        <span class="grp__dot"></span>
+        <span class="grp__lv">L1 · 个体认知</span>
+        <span class="grp__line"></span>
+        <span class="grp__cnt">2 份页面</span>
+      </div>
+      <div class="tpc rv">
+        <p class="tpc__q">机器取代体力劳动，人的体能随之退化，于是人类发明了健身。认知会不会重演？</p>
+        <h3 class="tpc__t">认知的退化与进化</h3>
+        <p class="tpc__q2">同一份源文档做出了两个版本：一个忠实复刻完整论述并附上模型的思考过程复盘，一个横向对比三个模型的回答、提炼共识。</p>
+        <div class="ents">
+          <a class="ent" style="--c:#7FD9A8" href="AI%E6%97%B6%E4%BB%A3%E8%AE%A4%E7%9F%A5%E7%9A%84%E9%80%80%E5%8C%96%E4%B8%8E%E8%BF%9B%E5%8C%96-%E5%AF%B9%E8%B0%88%E5%8D%A1%E7%89%87%E9%A1%B5.html">
+            <span class="ent__d"></span>
+            <span class="ent__t">AI 时代认知的退化与进化<s>三方对谈版 · Claude / ChatGPT / Gemini，按原文档七节推进，末尾附模型自述的思考过程复盘</s></span>
+            <span class="ent__a">暗底四色</span>
+          </a>
+          <a class="ent" style="--c:#E88A3C" href="AI%20%E6%97%B6%E4%BB%A3%E8%AE%A4%E7%9F%A5%E7%9A%84%E9%80%80%E5%8C%96%E4%B8%8E%E8%BF%9B%E5%8C%96_doubao.html">
+            <span class="ent__d"></span>
+            <span class="ent__t">当大脑开始「用进废退」退化，还是进化？<s>三模型并答版 · 重新组织结构，提炼四重共识，并给出「认知健身」的具体路径</s></span>
+            <span class="ent__a">亮底橙青</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- L2 -->
+    <div class="grp" id="L2" style="--c:var(--l2)">
+      <div class="grp__hd">
+        <span class="grp__dot"></span>
+        <span class="grp__lv">L2 · 个人边界与判断</span>
+        <span class="grp__line"></span>
+        <span class="grp__cnt">2 个话题</span>
+      </div>
+
+      <div class="tpc rv">
+        <p class="tpc__q">能力随年龄不断收缩，AI 飞速发展、似乎可以充当第二大脑 —— 人的边界会怎么变？这种变化有意义吗？</p>
+        <h3 class="tpc__t">AI 与个人边界变化</h3>
+        <span class="tpc__key">半径变大，中心更重要</span>
+        <div class="ents">
+          <a class="ent" style="--c:#D9A05B" href="AI%20%E4%B8%8E%E4%B8%AA%E4%BA%BA%E8%BE%B9%E7%95%8C%E5%8F%98%E5%8C%96.html">
+            <span class="ent__d"></span>
+            <span class="ent__t">半径变大，中心更重要 —— AI 与个人边界的变化<s>三种变化：功能边界扩张而认知边界模糊、能力收缩而判断力浓缩、个体边界外移而自我核心收缩</s></span>
+            <span class="ent__a">暖纸琥珀</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="tpc rv">
+        <p class="tpc__q">上面那场对话整理成的结构化笔记 —— 整个目录里唯一一份规范性文档。</p>
+        <h3 class="tpc__t">个人判断体系<span class="tagline">由上一份对话派生</span></h3>
+        <span class="tpc__key">边界外移，核心稳定</span>
+        <div class="ents">
+          <a class="ent" style="--c:#5B9BC9" href="AI%E8%BE%85%E5%8A%A9%E4%B8%8B%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%88%A4%E6%96%AD%E4%BD%93%E7%B3%BB.html">
+            <span class="ent__d"></span>
+            <span class="ent__t">边界外移，核心稳定 —— 个人判断体系探索<s>同心四层结构：愿望结构 / AI 扩展层 / 判断体系四层 / 六条规则，末尾停在四个待消化点和一个未答之问</s></span>
+            <span class="ent__a">冷灰蓝</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- L3 -->
+    <div class="grp" id="L3" style="--c:var(--l3)">
+      <div class="grp__hd">
+        <span class="grp__dot"></span>
+        <span class="grp__lv">L3 · 社会结构</span>
+        <span class="grp__line"></span>
+        <span class="grp__cnt">1 份页面</span>
+      </div>
+      <div class="tpc rv">
+        <p class="tpc__q">AI 究竟是拉平了差距，还是拉大了差距？</p>
+        <h3 class="tpc__t">AI 与不平等</h3>
+        <span class="tpc__key">起点趋平、轨迹分化、终点差距扩大</span>
+        <div class="ents">
+          <a class="ent" style="--c:#E8A33D" href="ai%E4%B8%8E%E4%B8%8D%E5%B9%B3%E7%AD%89-%E5%8D%A1%E7%89%87%E9%98%85%E8%AF%BB%E9%A1%B5.html">
+            <span class="ent__d"></span>
+            <span class="ent__t">AI 与不平等：深度讨论摘要总结<s>核心命题是「应用平等 vs 创造不平等」—— AI 降低了能力进入门槛，却放大了把能力转化为结果的效率差异</s></span>
+            <span class="ent__a">暗底琥珀金</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- L4 -->
+    <div class="grp" id="L4" style="--c:var(--l4)">
+      <div class="grp__hd">
+        <span class="grp__dot"></span>
+        <span class="grp__lv">L4 · 产业与国家</span>
+        <span class="grp__line"></span>
+        <span class="grp__cnt">2 个话题</span>
+      </div>
+
+      <div class="tpc rv">
+        <p class="tpc__q">「中国AI全面领跑，专利与产业规模双突破」—— 这样一条新闻该怎么读？</p>
+        <h3 class="tpc__t">中国AI发展现状的新闻分析</h3>
+        <span class="tpc__key">这条新闻的真实对象不是事实，而是共识管理</span>
+        <div class="ents">
+          <a class="ent" style="--c:#D6576B" href="%E4%B8%AD%E5%9B%BDAI%E5%8F%91%E5%B1%95%E7%8E%B0%E7%8A%B6%E7%9A%84%E6%96%B0%E9%97%BB%E5%88%86%E6%9E%90.html">
+            <span class="ent__d"></span>
+            <span class="ent__t">中国AI领跑？—— 一则新闻的叙事解剖<s>拆出叙事的三重底层逻辑：发展阶段论的合法化框架、指标可见性偏置、内外双重受众的折中表达</s></span>
+            <span class="ent__a">亮底深红</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="tpc rv">
+        <p class="tpc__q">中美的 AI 应用在界面、风格、功能上差异明显，是不是用户偏好和市场定位造成的？</p>
+        <h3 class="tpc__t">中美AI应用差异</h3>
+        <span class="tpc__key">中国像智能工具箱，美国像智能体雏形</span>
+        <div class="ents">
+          <a class="ent" style="--c:#FAC775" href="%E4%B8%AD%E7%BE%8EAI%E5%BA%94%E7%94%A8%E5%B7%AE%E5%BC%82.html">
+            <span class="ent__d"></span>
+            <span class="ent__t">智能工具箱 / 智能体雏形 —— 中美 AI 应用差异<s>三层成因：表层现象 → 中层机制（用户偏好、市场定位、商业模式）→ 底层约束（制度与合规）</s></span>
+            <span class="ent__a">近白双色</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer class="ft">
+  <div class="wrap">
+    <b>关于颜色：</b>这 7 份页面由不同会话各自设计，本就没有统一风格。导航页选了深蓝黑作底 —— 它是这批页面里唯一出现过两次的调子；每张入口卡左侧的圆点则<b>取自该页面自己的主色</b>，让你在进入前就知道即将看到什么色调。
+    <div class="ft__n">6 个话题 · 7 份页面 · 全部为本地单文件</div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  /* 入场动画 */
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+    [].slice.call(document.querySelectorAll('.rv')).forEach(function (el) { io.observe(el); });
+  } else {
+    [].slice.call(document.querySelectorAll('.rv')).forEach(function (el) { el.classList.add('is-in'); });
+  }
+
+  /* 同心图 / 层按钮 → 跳到对应层级 */
+  var groups = {};
+  [1, 2, 3, 4].forEach(function (i) { groups[i] = document.getElementById('L' + i); });
+  var orbG = [].slice.call(document.querySelectorAll('.orb__g'));
+  var btns = [].slice.call(document.querySelectorAll('.lvbtn'));
+
+  function go(lv) {
+    var g = groups[lv];
+    if (g && g.scrollIntoView) g.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  function mark(lv) {
+    orbG.forEach(function (g) { g.classList.toggle('on', g.dataset.lv === String(lv)); });
+    btns.forEach(function (b) { b.classList.toggle('on', b.dataset.lv === String(lv)); });
+  }
+
+  orbG.forEach(function (g) {
+    g.addEventListener('click', function () { go(parseInt(g.dataset.lv, 10)); });
+    g.addEventListener('mouseenter', function () { mark(parseInt(g.dataset.lv, 10)); });
+    g.addEventListener('mouseleave', function () { mark(0); });
+  });
+  btns.forEach(function (b) {
+    b.addEventListener('click', function () { go(parseInt(b.dataset.lv, 10)); });
+  });
+
+  /* 滚动到某层时，同心图对应环保持高亮 */
+  if ('IntersectionObserver' in window) {
+    var seen = {};
+    var io2 = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        seen[e.target.id] = e.isIntersecting ? e.intersectionRatio : 0;
+      });
+      var best = null, bv = 0;
+      Object.keys(seen).forEach(function (k) { if (seen[k] > bv) { bv = seen[k]; best = k; } });
+      mark(best ? parseInt(best.slice(1), 10) : 0);
+    }, { threshold: [0, .25, .5, .75] });
+    [1, 2, 3, 4].forEach(function (i) { if (groups[i]) io2.observe(groups[i]); });
+  }
+})();
+</script>
+</body>
+</html>
